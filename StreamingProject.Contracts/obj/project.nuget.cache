@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "erQx+wrXfkw=",
+  "success": true,
+  "projectFilePath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/StreamingProject.Contracts.csproj",
+  "expectedPackageFiles": [
+    "/Users/mcaleg2006/.nuget/packages/stylecop.analyzers/1.1.118/stylecop.analyzers.1.1.118.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,17 @@
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/bin/Debug/net9.0/Shared.deps.json
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/bin/Debug/net9.0/Shared.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/bin/Debug/net9.0/Shared.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/bin/Debug/net9.0/StreamingProject.Contracts.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/bin/Debug/net9.0/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/bin/Debug/net9.0/StreamingProject.Contracts.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/bin/Debug/net9.0/StreamingProject.Domain.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.csproj.AssemblyReference.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.AssemblyInfoInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.AssemblyInfo.cs
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.csproj.CoreCompileInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.csproj.Up2Date
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/refint/Shared.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/ref/Shared.dll

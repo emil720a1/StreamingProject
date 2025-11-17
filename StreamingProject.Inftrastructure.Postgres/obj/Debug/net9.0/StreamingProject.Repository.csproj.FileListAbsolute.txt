@@ -1,0 +1,15 @@
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/bin/Debug/net9.0/StreamingProject.Repository.deps.json
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/bin/Debug/net9.0/StreamingProject.Repository.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/bin/Debug/net9.0/StreamingProject.Repository.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/bin/Debug/net9.0/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/bin/Debug/net9.0/StreamingProject.Domain.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/StreamingProject.Repository.csproj.AssemblyReference.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/StreamingProject.Repository.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/StreamingProject.Repository.AssemblyInfoInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/StreamingProject.Repository.AssemblyInfo.cs
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/StreamingProject.Repository.csproj.CoreCompileInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/Streamin.1D6B375F.Up2Date
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/StreamingProject.Repository.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/refint/StreamingProject.Repository.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/StreamingProject.Repository.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Repository/obj/Debug/net9.0/ref/StreamingProject.Repository.dll

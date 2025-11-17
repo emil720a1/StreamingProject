@@ -1,0 +1,15 @@
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/StreamingProject.Application.deps.json
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/StreamingProject.Application.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/StreamingProject.Application.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/StreamingProject.Domain.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.csproj.AssemblyReference.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.AssemblyInfoInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.AssemblyInfo.cs
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.csproj.CoreCompileInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/Streamin.EE8570DA.Up2Date
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/refint/StreamingProject.Application.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/ref/StreamingProject.Application.dll

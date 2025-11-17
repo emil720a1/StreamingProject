@@ -1,0 +1,15 @@
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/bin/Debug/net9.0/StreamingProject.Contracts.deps.json
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/bin/Debug/net9.0/StreamingProject.Contracts.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/bin/Debug/net9.0/StreamingProject.Contracts.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/bin/Debug/net9.0/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/bin/Debug/net9.0/StreamingProject.Domain.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.csproj.AssemblyReference.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.AssemblyInfoInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.AssemblyInfo.cs
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.csproj.CoreCompileInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/Streamin.CA2025FB.Up2Date
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/refint/StreamingProject.Contracts.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/ref/StreamingProject.Contracts.dll

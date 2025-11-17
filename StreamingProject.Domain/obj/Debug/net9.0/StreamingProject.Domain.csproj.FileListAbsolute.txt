@@ -1,0 +1,11 @@
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/bin/Debug/net9.0/StreamingProject.Domain.deps.json
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/bin/Debug/net9.0/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/bin/Debug/net9.0/StreamingProject.Domain.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.AssemblyInfoInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.AssemblyInfo.cs
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.csproj.CoreCompileInputs.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/refint/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/ref/StreamingProject.Domain.dll
