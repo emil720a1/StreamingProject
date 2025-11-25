@@ -1,16 +1,18 @@
 
 using Microsoft.EntityFrameworkCore;
 using Shared.Common;
+using StreamingProject.Application;
 using StreamingProject.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 var configuration = builder.Configuration;
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-builder.Services.AddAutoMapper(typeof(StreamMapper));
+services.AddProgramDependencies();
 
-builder.Services.AddDbContext<StreamingDbContext>(options =>
+services.AddAutoMapper(typeof(StreamMapper));
+
+services.AddDbContext<StreamingDbContext>(options =>
 {
     options.UseNpgsql(configuration.GetConnectionString(nameof(StreamingDbContext)));
 });
@@ -18,12 +20,10 @@ builder.Services.AddDbContext<StreamingDbContext>(options =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "StreamingProject.Web"));
 }
 
 app.UseHttpsRedirection();

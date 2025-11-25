@@ -23,12 +23,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\StreamingProject.Application\StreamingProject.Application.csproj" />
+        <ProjectReference Include="..\StreamingProject.Infrastructure.PasswordHasher\StreamingProject.Infrastructure.PasswordHasher.csproj" />
         <ProjectReference Include="..\StreamingProject.Inftrastructure.Postgres\StreamingProject.Inftrastructure.Postgres.csproj" />
+        <ProjectReference Include="..\StreamingProject.Presenters\StreamingProject.Presenters.csproj" />
     </ItemGroup>
 
 </Project>

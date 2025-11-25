@@ -13,3 +13,8 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/refint/StreamingProject.Application.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/ref/StreamingProject.Application.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/Shared.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/StreamingProject.Contracts.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/Shared.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/bin/Debug/net9.0/StreamingProject.Contracts.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/obj/Debug/net9.0/StreamingProject.Application.sourcelink.json

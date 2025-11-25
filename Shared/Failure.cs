@@ -23,4 +23,8 @@ public class Failure : IEnumerable<Error>
 
     public static implicit operator Failure(Error error) 
         => new([error]);
+
+    public static Failure FromError(Error error) => new(new[] { error });
+    
+    
 }

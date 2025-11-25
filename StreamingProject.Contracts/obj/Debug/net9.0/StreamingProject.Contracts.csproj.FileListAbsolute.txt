@@ -13,3 +13,4 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/refint/StreamingProject.Contracts.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/ref/StreamingProject.Contracts.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/obj/Debug/net9.0/StreamingProject.Contracts.sourcelink.json

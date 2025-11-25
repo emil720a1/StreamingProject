@@ -15,3 +15,4 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/refint/Shared.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/ref/Shared.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/obj/Debug/net9.0/Shared.sourcelink.json

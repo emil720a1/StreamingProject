@@ -17,7 +17,7 @@ public class StreamConfiguration : IEntityTypeConfiguration<StreamEntity>
         builder
             .HasMany(a => a.ChatMessages)
             .WithOne(b => b.Stream)
-            .HasForeignKey(x => x.Id)
+            .HasForeignKey(x => x.StreamId)
             .IsRequired();
     }
     

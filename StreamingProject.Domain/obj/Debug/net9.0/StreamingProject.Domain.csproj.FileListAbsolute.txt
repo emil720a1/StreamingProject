@@ -9,3 +9,4 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/refint/StreamingProject.Domain.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/ref/StreamingProject.Domain.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/obj/Debug/net9.0/StreamingProject.Domain.sourcelink.json

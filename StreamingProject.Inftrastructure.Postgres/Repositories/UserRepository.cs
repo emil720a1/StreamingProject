@@ -13,11 +13,11 @@ public class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
-    public async Task<UserEntity?> AddUserAsync(UserEntity user)
+    public async Task<UserEntity> AddUserAsync(UserEntity user)
     {
         await _dbContext.Users.AddAsync(user);
         await _dbContext.SaveChangesAsync();
-        
+
         return user;
     }
 
@@ -26,7 +26,7 @@ public class UserRepository : IUserRepository
     {
         _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync();
-        
+
         return user;
     }
 
@@ -34,13 +34,13 @@ public class UserRepository : IUserRepository
     {
         var user = await GetUserById(id);
         if (String.IsNullOrEmpty(user?.Id.ToString())) return false;
-        
+
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync();
-        
+
         return true;
     }
-    
+
     public async Task<UserEntity?> GetUserById(Guid id)
     {
         return await _dbContext.Users
@@ -53,4 +53,19 @@ public class UserRepository : IUserRepository
             .Include(a => a.Streams)
             .FirstOrDefaultAsync(a => a.Id == userId);
     }
+
+    public async Task<bool> UserExists(string username)
+    {
+        return await _dbContext.Users
+            .FirstOrDefaultAsync(a => a.Username == username) != null;
+    }
+
+    public async Task<UserEntity?> GetByEmail(string email)
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Email == email) ?? throw new Exception("User not found");
+    }
 }
+
+    

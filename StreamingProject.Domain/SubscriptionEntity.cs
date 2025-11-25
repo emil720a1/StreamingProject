@@ -14,7 +14,7 @@ public class SubscriptionEntity
     
     public UserEntity Follower { get; set; }
     
-    public DateTime SubscriptionTime { get; set; }
+    public DateTime SubscriptionAt { get; set; }
     
     
 }
