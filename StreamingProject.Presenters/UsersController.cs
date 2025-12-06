@@ -1,8 +1,13 @@
 using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StreamingProject.Application;
-using StreamingProject.Application.User;
-using StreamingProject.Application.User.AuthDto;
+using StreamingProject.Application.Service.User.UserService;
+using StreamingProject.Contracts.Streams;
+using StreamingProject.Contracts.User;
+using StreamingProject.Contracts.User.AuthDto;
+using StreamingProject.Infrastructure.PasswordHasher.AuthorizeAttributes;
 using StreamingProject.Presenters.ResponseExtensions;
 
 namespace StreamingProject.Presenters;
@@ -19,8 +24,8 @@ public class UsersController : ControllerBase
     {
         _userService = userService;
     }
-
-    [HttpPost("register")]
+    
+    [HttpPost("/register")]
 
     public async Task<IActionResult> Register(
       [FromBody]  RegisterUserRequest request,
@@ -33,18 +38,43 @@ public class UsersController : ControllerBase
             : Ok(result.Value);
     }
     
-    [HttpPost("login")]
+    [HttpPost("/login")]
 
     public async Task<IActionResult> Login(
       [FromBody]  LoginUserRequest request,
         CancellationToken cancellationToken)
     {
         var token = await _userService.Login(request.Email, request.Password);
-
+        
+        HttpContext.Response.Cookies.Append("tasty-cookies", token.Value);
+        
         return token.IsFailure 
             ? token.Error.ToResponse() 
             : Ok(token.Value);
     }
 
+    [AuthorizeRead]
+    [HttpGet("/get")]
+    public async Task<IActionResult> GetProfile(
+        [FromRoute] GetUserDto request,
+        CancellationToken cancellationToken)
+    {
+        var user = await _userService.GetUserByIdAsync(request, cancellationToken);
+        
+        return user.IsFailure ? user.Error.ToResponse() : Ok(user.Value);
+    }
+    
+    
+    [AuthorizeRead]
+    [HttpGet("/streams")]
+    public async Task<IActionResult> GetStreamsByUserId(
+        [FromRoute] GetUserDto request,
+        CancellationToken cancellationToken)
+    {
+        var streams = await _userService.GetStreamsByUserId(request, cancellationToken);
+        
+        return streams.IsFailure ? streams.Error.ToResponse() : Ok(streams.Value);
+    }
+    
     
 }

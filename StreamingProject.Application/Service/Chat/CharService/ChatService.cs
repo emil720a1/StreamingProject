@@ -4,11 +4,12 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Extensions;
-using StreamingProject.Application.Service.Chat;
+using StreamingProject.Application.Service.Chat.ChatRepository;
 using StreamingProject.Contracts.Chat;
 using StreamingProject.Domain;
+using StreamingProject.Domain.Chat;
 
-namespace StreamingProject.Application;
+namespace StreamingProject.Application.Service.Chat.CharService;
 
 public class ChatService : IChatService
 {

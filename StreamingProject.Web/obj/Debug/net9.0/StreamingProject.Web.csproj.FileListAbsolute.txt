@@ -130,10 +130,8 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Shared.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Application.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Contracts.dll
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Inftrastructure.Postgres.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Presenters.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Application.pdb
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Inftrastructure.Postgres.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Presenters.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Shared.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Contracts.pdb
@@ -147,5 +145,7 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.PasswordHasher.dll
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.PasswordHasher.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Infrastructure.PasswordHasher.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Infrastructure.PasswordHasher.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.pdb

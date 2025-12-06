@@ -1,6 +1,7 @@
 using StreamingProject.Domain;
+using StreamingProject.Domain.Stream;
 
-namespace StreamingProject.Application;
+namespace StreamingProject.Application.Service.Stream.StreamRepository;
 
 public interface IStreamRepository
 {

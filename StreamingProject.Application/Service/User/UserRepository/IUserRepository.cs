@@ -1,6 +1,7 @@
+using StreamingProject.Domain.Enums;
 using StreamingProject.Domain.User;
 
-namespace StreamingProject.Application;
+namespace StreamingProject.Application.Service.User.UserRepository;
 
 public interface IUserRepository
 {
@@ -15,7 +16,9 @@ public interface IUserRepository
 
     Task<UserEntity?> GetStreamsByUserId(Guid userId);
     
-    Task<bool> UserExists(string username);
+    Task<bool> UserExists(string username, string email);
     
     Task<UserEntity> GetByEmail(string email);
+    
+    Task<HashSet<PermissionEnum>> GetUserPermissions(Guid userId);
 }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Domain;
+using StreamingProject.Domain.Stream;
 
 namespace Shared.Common;
 

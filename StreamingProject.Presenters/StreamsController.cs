@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StreamingProject.Application.Service;
+using StreamingProject.Application.Service.Stream.StreamService;
 using StreamingProject.Contracts.Streams;
+using StreamingProject.Infrastructure.PasswordHasher.AuthorizeAttributes;
 using StreamingProject.Presenters.ResponseExtensions;
 
 namespace StreamingProject.Presenters;
@@ -17,6 +20,7 @@ public class StreamsController : ControllerBase
         _streamService = streamService;
     }
 
+    [AuthorizeCreate]
     [HttpPost]
 
     public async Task<IActionResult> CreateStream([FromBody] CreateStreamDto request, CancellationToken cancellationToken)
@@ -26,6 +30,7 @@ public class StreamsController : ControllerBase
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
 
+    [AuthorizeRead]
     [HttpPost("join")]
 
     public async Task<IActionResult> JoinStream([FromBody] JoinStreamDto request, CancellationToken cancellationToken)
@@ -35,8 +40,8 @@ public class StreamsController : ControllerBase
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
 
+    [AuthorizeRead]
     [HttpGet]
-
     public async Task<IActionResult> GetStreamById([FromQuery] GetStreamByIdDto request,
         CancellationToken cancellationToken)
     {

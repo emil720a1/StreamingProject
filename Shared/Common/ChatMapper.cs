@@ -1,6 +1,7 @@
 using AutoMapper;
 using StreamingProject.Contracts.Chat;
 using StreamingProject.Domain;
+using StreamingProject.Domain.Chat;
 
 namespace Shared.Common;
 

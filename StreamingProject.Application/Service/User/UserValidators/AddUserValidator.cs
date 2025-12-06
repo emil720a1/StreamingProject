@@ -1,7 +1,7 @@
 using FluentValidation;
 using StreamingProject.Contracts.User;
 
-namespace StreamingProject.Application.Validators;
+namespace StreamingProject.Application.Service.User.UserValidators;
 
 public class AddUserValidator : AbstractValidator<AddUserDto>
 {

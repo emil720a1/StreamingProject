@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using Shared;
 using StreamingProject.Contracts.Chat;
 
-namespace StreamingProject.Application.Service.Chat;
+namespace StreamingProject.Application.Service.Chat.CharService;
 
 public interface IChatService
 {

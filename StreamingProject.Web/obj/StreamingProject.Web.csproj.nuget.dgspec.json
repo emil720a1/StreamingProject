@@ -63,6 +63,14 @@
               "target": "Package",
               "version": "[12.1.0, )"
             },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "StyleCop.Analyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -313,14 +321,14 @@
         }
       }
     },
-    "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.PasswordHasher/StreamingProject.Infrastructure.PasswordHasher.csproj": {
+    "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.PasswordHasher/StreamingProject.Infrastructure.PasswordHasher.csproj",
-        "projectName": "StreamingProject.Infrastructure.PasswordHasher",
-        "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.PasswordHasher/StreamingProject.Infrastructure.PasswordHasher.csproj",
+        "projectUniqueName": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj",
+        "projectName": "StreamingProject.Infrastructure.Postgres",
+        "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj",
         "packagesPath": "/Users/mcaleg2006/.nuget/packages/",
-        "outputPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.PasswordHasher/obj/",
+        "outputPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/mcaleg2006/.nuget/NuGet/NuGet.Config"
@@ -361,79 +369,13 @@
               "target": "Package",
               "version": "[4.0.3, )"
             },
-            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+            "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.0, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.307/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Inftrastructure.Postgres/StreamingProject.Inftrastructure.Postgres.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Inftrastructure.Postgres/StreamingProject.Inftrastructure.Postgres.csproj",
-        "projectName": "StreamingProject.Inftrastructure.Postgres",
-        "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Inftrastructure.Postgres/StreamingProject.Inftrastructure.Postgres.csproj",
-        "packagesPath": "/Users/mcaleg2006/.nuget/packages/",
-        "outputPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Inftrastructure.Postgres/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/Users/mcaleg2006/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "net9.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net9.0": {
-            "targetAlias": "net9.0",
-            "projectReferences": {
-              "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/StreamingProject.Application.csproj": {
-                "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/StreamingProject.Application.csproj"
-              },
-              "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/StreamingProject.Domain.csproj": {
-                "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/StreamingProject.Domain.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.300"
-      },
-      "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
-          "dependencies": {
-            "Microsoft.EntityFrameworkCore": {
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.0, )"
             },
@@ -495,6 +437,9 @@
               },
               "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/StreamingProject.Domain.csproj": {
                 "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/StreamingProject.Domain.csproj"
+              },
+              "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj": {
+                "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj"
               }
             }
           }
@@ -565,11 +510,8 @@
               "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/StreamingProject.Application.csproj": {
                 "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Application/StreamingProject.Application.csproj"
               },
-              "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.PasswordHasher/StreamingProject.Infrastructure.PasswordHasher.csproj": {
-                "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.PasswordHasher/StreamingProject.Infrastructure.PasswordHasher.csproj"
-              },
-              "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Inftrastructure.Postgres/StreamingProject.Inftrastructure.Postgres.csproj": {
-                "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Inftrastructure.Postgres/StreamingProject.Inftrastructure.Postgres.csproj"
+              "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj": {
+                "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj"
               },
               "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/StreamingProject.Presenters.csproj": {
                 "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/StreamingProject.Presenters.csproj"

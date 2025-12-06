@@ -1,9 +1,8 @@
 using CSharpFunctionalExtensions;
 using Shared;
-using StreamingProject.Contracts.Streams;
 using StreamingProject.Contracts.SubscriptionsContracts;
 
-namespace StreamingProject.Application;
+namespace StreamingProject.Application.Service.Subscription.SubscriptionService;
 
 public interface ISubscriptionService
 {

@@ -1,11 +1,7 @@
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-using StreamingProject.Application.Service;
-using StreamingProject.Application.Service.Chat;
-using StreamingProject.Application.User;
-using StreamingProject.Repository.Repositories;
+using StreamingProject.Application;
+using StreamingProject.Repository;
 
-namespace StreamingProject.Application;
+namespace StreamProject.Web;
 
 public static class DependencyInjection
 {

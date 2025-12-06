@@ -3,7 +3,7 @@ using Shared;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Contracts.User;
 
-namespace StreamingProject.Application.User;
+namespace StreamingProject.Application.Service.User.UserService;
 
 public interface IUserService
 {
@@ -15,7 +15,7 @@ public interface IUserService
 
     Task<Result<bool, Failure>> DeleteUserAsync(DeleteUserDto userDto, CancellationToken cancellationToken);
     
-    Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserId(GetStreamsByUserId request, CancellationToken cancellationToken);
+    Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserId(GetUserDto userDto, CancellationToken cancellationToken);
 
 
     Task <Result<UserDetailsDto, Failure>> Register(string userName,string email, string PasswordHash);

@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.Applicatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.Web", "StreamingProject.Web\StreamingProject.Web.csproj", "{41FD327E-B21C-4031-B89B-AE08BAF62F1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.Inftrastructure.Postgres", "StreamingProject.Inftrastructure.Postgres\StreamingProject.Inftrastructure.Postgres.csproj", "{1A878A0D-552C-483F-BCCA-92C6B5BB3871}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.Infrastructure.Postgres", "StreamingProject.Infrastructure.Postgres\StreamingProject.Infrastructure.Postgres.csproj", "{1A878A0D-552C-483F-BCCA-92C6B5BB3871}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.Contracts", "StreamingProject.Contracts\StreamingProject.Contracts.csproj", "{F29FD7F6-C350-4F13-B408-1B6B77DFE7EC}"
 EndProject
@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.Presenters", "StreamingProject.Presenters\StreamingProject.Presenters.csproj", "{D6DA168E-4216-4B52-BACD-6C64A6D7EAEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.Infrastructure.PasswordHasher", "StreamingProject.Infrastructure.PasswordHasher\StreamingProject.Infrastructure.PasswordHasher.csproj", "{54BCE3E0-0C5A-4CF9-ABC2-983376A0D322}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7758B04D-87BE-49EE-89AF-A41909D349C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,9 +50,14 @@ Global
 		{D6DA168E-4216-4B52-BACD-6C64A6D7EAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6DA168E-4216-4B52-BACD-6C64A6D7EAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6DA168E-4216-4B52-BACD-6C64A6D7EAEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54BCE3E0-0C5A-4CF9-ABC2-983376A0D322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54BCE3E0-0C5A-4CF9-ABC2-983376A0D322}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54BCE3E0-0C5A-4CF9-ABC2-983376A0D322}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54BCE3E0-0C5A-4CF9-ABC2-983376A0D322}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B3B4C112-9B86-449B-892C-098A59D2FEB4} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
+		{6BA700DC-F75C-4FBA-8E53-7113EAD68021} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
+		{F29FD7F6-C350-4F13-B408-1B6B77DFE7EC} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
+		{621A35F3-4DDD-4A43-86F1-E510B3BC8644} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
+		{1A878A0D-552C-483F-BCCA-92C6B5BB3871} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
+		{D6DA168E-4216-4B52-BACD-6C64A6D7EAEF} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
+		{41FD327E-B21C-4031-B89B-AE08BAF62F1E} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
 	EndGlobalSection
 EndGlobal

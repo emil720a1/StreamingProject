@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace StreamingProject.Application.User.AuthDto;
+namespace StreamingProject.Contracts.User.AuthDto;
 
 public record LoginUserRequest(
    [Required] string Email,

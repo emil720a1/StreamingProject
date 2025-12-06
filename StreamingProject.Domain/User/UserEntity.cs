@@ -1,36 +1,51 @@
+using StreamingProject.Domain.Stream;
+using StreamingProject.Domain.User.UserRole;
+
 namespace StreamingProject.Domain.User;
 
 public class UserEntity
 {
 
-   private UserEntity(Guid id, string username, string password, string email, UserRole role, UserStatus status)
+   private UserEntity(Guid id, string username, string password, string email, UserStatus status, string firstName, string lastName)
    {
       Id = id;
       Username = username;
       Password = password;
       Email = email;
-      Role = role;
       Status = status;
+      FirstName = firstName;
+      LastName = lastName;
+      
+      
+      Roles = new List<RoleEntity>();
+      Streams = new List<StreamEntity>();
    }
+
+   private UserEntity()
+   {
+      Roles = new List<RoleEntity>();
+      Streams = new List<StreamEntity>();
+   }
+   
    public Guid Id { get; set; }
    
    public string Username { get; set; }
    
    public string Password { get; set; }
    
-   public string FirstName { get; set; }
+   public string FirstName { get; set; } 
    
-   public string LastName { get; set; }
+   public string LastName { get; set; } 
    
    public IEnumerable<StreamEntity> Streams {get; set;}
 
    public string Email { get; set; }
-   public UserRole Role { get; set; }
+   public ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
    
    public UserStatus Status { get; set; }
 
 
-   public static UserEntity Create(string Username, string Password, string Email)
+   public static UserEntity Create(string Username, string Password, string Email, RoleEntity Role)
    {
       if (string.IsNullOrWhiteSpace(Username))
       {
@@ -38,11 +53,20 @@ public class UserEntity
       }
       
       var id = Guid.NewGuid();
-      var role = UserRole.User;
       var status = UserStatus.Active;
-      
-      
 
-      return new UserEntity(id, Username, Password, Email, role, status);
+      var user = new UserEntity(id, 
+         Username, 
+         Password, 
+         Email, 
+         status, 
+         string.Empty,
+         string.Empty
+         );
+      
+      
+      user.Roles.Add(Role);
+      
+      return user;
    }
 }

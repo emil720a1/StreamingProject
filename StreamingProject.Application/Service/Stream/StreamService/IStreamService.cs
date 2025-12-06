@@ -1,9 +1,8 @@
 using CSharpFunctionalExtensions;
 using Shared;
 using StreamingProject.Contracts.Streams;
-using StreamingProject.Domain;
 
-namespace StreamingProject.Application.Service;
+namespace StreamingProject.Application.Service.Stream.StreamService;
 
 public interface IStreamService
 {

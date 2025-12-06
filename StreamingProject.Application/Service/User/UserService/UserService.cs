@@ -4,21 +4,24 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Extensions;
+using StreamingProject.Application.Interfaces.Auth;
+using StreamingProject.Application.Service.Role.RoleRepository;
+using StreamingProject.Application.Service.User.UserRepository;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Contracts.User;
 using StreamingProject.Domain.User;
-using StreamingProject.Infrastructure.PasswordHasher;
+using StreamingProject.Domain.User.UserRole;
 
-namespace StreamingProject.Application.User;
+namespace StreamingProject.Application.Service.User.UserService;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly IValidator<AddUserDto> _addUserDtoValidator;
     private readonly IValidator<UpdateUserDto> _updateUserDtoValidator;
     private readonly IValidator<GetUserDto> _getUsersDtoValidator;
     private readonly IValidator<DeleteUserDto> _deleteUserDtoValidator;
-    private readonly IValidator<GetStreamsByUserId> _getStreamsByUserId;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtProvider _jwtProvider;
     private readonly IMapper _mapper;
@@ -31,16 +34,16 @@ public class UserService : IUserService
         ILogger<UserService> logger, 
         IValidator<GetUserDto> getUsersDtoValidator, 
         IValidator<DeleteUserDto> deleteUserDtoValidator, 
-        IValidator<GetStreamsByUserId> getStreamsByUserId, 
         IJwtProvider jwtProvider,
-        IPasswordHasher passwordHasher)
+        IPasswordHasher passwordHasher, 
+        IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
+        _roleRepository = roleRepository;
         _addUserDtoValidator = addUserDtoValidator;
         _updateUserDtoValidator = updateUserDtoValidator;
         _getUsersDtoValidator = getUsersDtoValidator;
         _deleteUserDtoValidator = deleteUserDtoValidator;
-        _getStreamsByUserId = getStreamsByUserId;
         _jwtProvider = jwtProvider;
         _passwordHasher = passwordHasher;
         _mapper = mapper;
@@ -56,19 +59,20 @@ public class UserService : IUserService
         {
             return validationResult.ToErrors();
         }
+        
+        var password = _passwordHasher.Generate(request.Password);
 
         var user = UserEntity.Create(
            
                 Username: request.Username, 
-                Password: request.Password,
-                Email: request.Email
+                Password: password,
+                Email: request.Email,
+                null
             );
         
-
-        if (await _userRepository.UserExists(user.Username)) return Failure.FromError(Error.Validation("UserAlreadyExists", "User already exists", "Username"));
+        if (await _userRepository.UserExists(user.Username, user.Email)) return Failure.FromError(Error.Validation("UserAlreadyExists", "User already exists", "Username"));
       
         var result = await _userRepository.AddUserAsync(user);
-
         
         _logger.LogInformation("User created");
         
@@ -105,12 +109,7 @@ public class UserService : IUserService
         {
             return validationResult.ToErrors();
         }
-        var user = UserEntity.Create(
-           
-            Username: request.Username, 
-            Password: request.Password,
-            Email: request.Email
-        );
+        var user = await _userRepository.GetByEmail(request.Email);
         
         
         var result = await _userRepository.UpdateUserAsync(user);
@@ -139,9 +138,9 @@ public class UserService : IUserService
         return Result.Success<bool, Failure>(result); 
     }
 
-    public async Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserId(GetStreamsByUserId request, CancellationToken cancellationToken)
+    public async Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserId(GetUserDto request, CancellationToken cancellationToken)
     {
-        var validationResult = await _getStreamsByUserId.ValidateAsync(request, cancellationToken);
+        var validationResult = await _getUsersDtoValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -162,13 +161,30 @@ public class UserService : IUserService
     {
         var hashedPassword = _passwordHasher.Generate(password);
         
-        var user = UserEntity.Create(userName, hashedPassword, email);
+        // var roleEntity = await _roleRepository.GetRoleByIdAsync((int)RoleEnum.User);
+        
+        var user = UserEntity.Create(
+            userName, 
+            hashedPassword, 
+            email, 
+            null);
 
-        var result = await _userRepository.AddUserAsync(user);
-
-        if (result == null)
+        if (user.Id == Guid.Empty)
         {
-            return Failure.FromError(Error.Validation("UserNotFound", "User not found", "UserId"));
+            user.Id = Guid.NewGuid();
+        }
+           
+        var exists = await _userRepository.UserExists(userName, email);
+        
+        UserEntity result;
+        
+        if (exists)
+        {
+             return Failure.FromError(Error.Conflict("UserAlreadyExists", "User already exists"));
+        }
+        else
+        {
+            result = await _userRepository.AddUserAsync(user);
         }
         
         var detailsDto = _mapper.Map<UserDetailsDto>(result);
@@ -182,14 +198,12 @@ public class UserService : IUserService
 
         if (user == null)
         {
-            return Failure.FromError(Error.Validation("UserNotFound", "User not found", "UserId"));
+            return Failure.FromError(Error.Unauthorized("UserNotFound", "User not found"));
         }
+        
         var result = _passwordHasher.Verify(password, user.Password);
-
-        if (result == false)
-        {
-           return Failure.FromError(Error.Validation("UserNotFound",  "User not found", "UserId"));
-        }
+        
+        if (!result) return Failure.FromError(Error.Unauthorized("InvalidCredentials", "Invalid credentials"));
         
         var token = _jwtProvider.GenerateToken(user);
 

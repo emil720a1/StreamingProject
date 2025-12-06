@@ -1,8 +1,7 @@
-using CSharpFunctionalExtensions;
-using StreamingProject.Contracts.Chat;
 using StreamingProject.Domain;
+using StreamingProject.Domain.Chat;
 
-namespace StreamingProject.Application;
+namespace StreamingProject.Application.Service.Chat.ChatRepository;
 
 public interface IChatRepository
 {

@@ -20,3 +20,5 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/obj/Debug/net9.0/refint/StreamingProject.Presenters.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/obj/Debug/net9.0/StreamingProject.Presenters.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/obj/Debug/net9.0/ref/StreamingProject.Presenters.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/bin/Debug/net9.0/Infrastructure.PasswordHasher.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/bin/Debug/net9.0/Infrastructure.PasswordHasher.pdb

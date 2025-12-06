@@ -4,10 +4,12 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Extensions;
+using StreamingProject.Application.Service.Subscription.SubscriptionRepository;
 using StreamingProject.Contracts.SubscriptionsContracts;
 using StreamingProject.Domain;
+using StreamingProject.Domain.Subscription;
 
-namespace StreamingProject.Application;
+namespace StreamingProject.Application.Service.Subscription.SubscriptionService;
 
 public class SubscriptionService : ISubscriptionService
 {

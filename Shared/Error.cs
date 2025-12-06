@@ -34,6 +34,9 @@ public record Error
     public static Error Failure(string? code, string message)
         => new(code ?? "failure", message, ErrorType.FAILURE);
 
+    public static Error Unauthorized(string? code, string message) 
+        => new(code ?? "unathorized", message, ErrorType.UNATHORIZED);
+    
     public Failure ToFailure() => this;
 }
 
@@ -67,5 +70,11 @@ public enum ErrorType{
     /// Ошибка конфликт
     /// </summary>
     CONFLICT,
+    
+    
+    /// <summary
+    /// Ошибка авторизации
+    /// </summary>
+    UNATHORIZED,
     
 }

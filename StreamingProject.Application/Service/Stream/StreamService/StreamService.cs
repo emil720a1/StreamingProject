@@ -3,12 +3,14 @@ using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
-using Shared.Common;
 using Shared.Extensions;
+using StreamingProject.Application.Service.Stream.StreamRepository;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Domain;
+using StreamingProject.Domain.Chat;
+using StreamingProject.Domain.Stream;
 
-namespace StreamingProject.Application.Service;
+namespace StreamingProject.Application.Service.Stream.StreamService;
 
 public class StreamService : IStreamService
 {
@@ -20,18 +22,18 @@ public class StreamService : IStreamService
     private readonly ILogger<StreamService> _logger;
     
     
-    public StreamService(IStreamRepository streamRepository, ILogger<StreamService> logger, IValidator<CreateStreamDto> createStreamDtoValidator, IMapper mapper, IValidator<JoinStreamDto> joinStreamDtoValidator)
+    public StreamService(IStreamRepository streamRepository, ILogger<StreamService> logger, IValidator<CreateStreamDto> createStreamDtoValidator, IMapper mapper, IValidator<JoinStreamDto> joinStreamDtoValidator, IValidator<GetStreamByIdDto> getStreamByIdDtoValidator)
     {
         _streamRepository = streamRepository;
         _createStreamDtoValidator = createStreamDtoValidator;
         _joinStreamDtoValidator = joinStreamDtoValidator;
+        _getStreamByIdDtoValidator = getStreamByIdDtoValidator;
         _mapper = mapper;
         _logger = logger;
     }
 
     public async Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(CreateStreamDto request, CancellationToken cancellationToken)
     {
-        
         var validationResult = await _createStreamDtoValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
@@ -86,7 +88,7 @@ public class StreamService : IStreamService
 
     public async Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(GetStreamByIdDto request, CancellationToken cancellationToken)
     {
-        var validationResult = await _getStreamByIdDtoValidator.ValidateAsync(request, cancellationToken);;
+        var validationResult = await _getStreamByIdDtoValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {

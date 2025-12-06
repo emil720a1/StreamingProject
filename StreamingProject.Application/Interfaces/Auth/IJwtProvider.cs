@@ -1,6 +1,6 @@
 using StreamingProject.Domain.User;
 
-namespace StreamingProject.Infrastructure.PasswordHasher;
+namespace StreamingProject.Application.Interfaces.Auth;
 
 public interface IJwtProvider
 {
