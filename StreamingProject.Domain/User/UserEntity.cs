@@ -17,13 +17,13 @@ public class UserEntity
       LastName = lastName;
       
       
-      Roles = new List<RoleEntity>();
+      UserRoles = new List<UserRoleEntity>();
       Streams = new List<StreamEntity>();
    }
 
    private UserEntity()
    {
-      Roles = new List<RoleEntity>();
+      UserRoles = new List<UserRoleEntity>();
       Streams = new List<StreamEntity>();
    }
    
@@ -40,7 +40,7 @@ public class UserEntity
    public IEnumerable<StreamEntity> Streams {get; set;}
 
    public string Email { get; set; }
-   public ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
+   public ICollection<UserRoleEntity> UserRoles { get; set; } = new List<UserRoleEntity>();
    
    public UserStatus Status { get; set; }
 
@@ -63,9 +63,17 @@ public class UserEntity
          string.Empty,
          string.Empty
          );
+
+
+      var userRole = new UserRoleEntity
+      {
+         UserId = user.Id,
+         User = user,
+         RoleId = Role.Id,
+         Role = Role
+      };
       
-      
-      user.Roles.Add(Role);
+      user.UserRoles.Add(userRole);
       
       return user;
    }

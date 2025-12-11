@@ -1,3 +1,3 @@
 namespace StreamingProject.Contracts.Permissions;
 
-public record GetPermissionsDto(int UserId);
+public record GetPermissionsDto(Guid UserId);

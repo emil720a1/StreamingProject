@@ -35,6 +35,8 @@ public class StreamingDbContext : DbContext
     
     public DbSet<PermissionEntity> Permissions { get; set; }
     
+    public DbSet<UserRoleEntity> UserRoles { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new VideoConfiguration());
@@ -44,6 +46,8 @@ public class StreamingDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ChatConfiguration());
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new RolePermissionConfiguration(_authOptions.Value));
+        modelBuilder.ApplyConfiguration(new PermissionConfiguration());
+        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
         
         
         base.OnModelCreating(modelBuilder);

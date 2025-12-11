@@ -1,4 +1,4 @@
-namespace StreamingProject.Infrastructure.PasswordHasher.Authentication;
+namespace StreamingProject.Repository.Authentication;
 
 public class JwtOptions
 {

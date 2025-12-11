@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using StreamingProject.Application.Service.Permission.PermissionService;
 using StreamingProject.Domain.Enums;
-using StreamingProject.Infrastructure.PasswordHasher.Authentication;
 using StreamingProject.Repository.Authentication;
 
 namespace StreamProject.Web.Extensions;

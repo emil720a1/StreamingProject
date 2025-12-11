@@ -86,16 +86,19 @@ public class UserRepository : IUserRepository
 
     public async Task<HashSet<PermissionEnum>> GetUserPermissions(Guid userId)
     {
-        var roles = await _dbContext.Users
+        var user = await _dbContext.Users
             .AsNoTracking()
-            .Include(a => a.Roles)
-            .ThenInclude(a => a.Permissions)
+            .Include(a => a.UserRoles)
+               .ThenInclude(ur => ur.Role)
+                   .ThenInclude(r => r.Permissions)
             .Where(u => u.Id == userId)
-            .Select(u => u.Roles)
-            .ToArrayAsync();
+            .FirstOrDefaultAsync();
+        
+        if (user == null) return new HashSet<PermissionEnum>();
 
-        return roles
-            .SelectMany(r => r)
+        return user.UserRoles
+            .Select(ur => ur.Role)
+            .Where(r => r != null)
             .SelectMany(r => r.Permissions)
             .Select(p => (PermissionEnum)p.Id)
             .ToHashSet();

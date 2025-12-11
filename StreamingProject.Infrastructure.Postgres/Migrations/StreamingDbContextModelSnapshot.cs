@@ -65,7 +65,29 @@ namespace StreamingProject.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PermissionEntity");
+                    b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Read"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Create"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Update"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Delete"
+                        });
                 });
 
             modelBuilder.Entity("StreamingProject.Domain.Permission.RolePermissionEntity", b =>
@@ -81,6 +103,33 @@ namespace StreamingProject.Repository.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("RolePermissionEntity");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 1
+                        });
                 });
 
             modelBuilder.Entity("StreamingProject.Domain.Stream.StreamEntity", b =>
@@ -227,17 +276,17 @@ namespace StreamingProject.Repository.Migrations
 
             modelBuilder.Entity("StreamingProject.Domain.User.UserRole.UserRoleEntity", b =>
                 {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("RoleId", "UserId");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
 
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId", "RoleId");
 
-                    b.ToTable("UserRoleEntity");
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("StreamingProject.Domain.Video.VideoEntity", b =>
@@ -286,17 +335,21 @@ namespace StreamingProject.Repository.Migrations
 
             modelBuilder.Entity("StreamingProject.Domain.Permission.RolePermissionEntity", b =>
                 {
-                    b.HasOne("StreamingProject.Domain.Permission.PermissionEntity", null)
+                    b.HasOne("StreamingProject.Domain.Permission.PermissionEntity", "Permission")
                         .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StreamingProject.Domain.User.UserRole.RoleEntity", null)
+                    b.HasOne("StreamingProject.Domain.User.UserRole.RoleEntity", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("StreamingProject.Domain.Stream.StreamEntity", b =>
@@ -338,17 +391,21 @@ namespace StreamingProject.Repository.Migrations
 
             modelBuilder.Entity("StreamingProject.Domain.User.UserRole.UserRoleEntity", b =>
                 {
-                    b.HasOne("StreamingProject.Domain.User.UserRole.RoleEntity", null)
-                        .WithMany()
+                    b.HasOne("StreamingProject.Domain.User.UserRole.RoleEntity", "Role")
+                        .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StreamingProject.Domain.User.UserEntity", null)
-                        .WithMany()
+                    b.HasOne("StreamingProject.Domain.User.UserEntity", "User")
+                        .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StreamingProject.Domain.Video.VideoEntity", b =>
@@ -375,6 +432,13 @@ namespace StreamingProject.Repository.Migrations
             modelBuilder.Entity("StreamingProject.Domain.User.UserEntity", b =>
                 {
                     b.Navigation("Streams");
+
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("StreamingProject.Domain.User.UserRole.RoleEntity", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,13 +2,11 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.runtimeconfig.json
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.pdb
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/Infrastructure.PasswordHasher.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/Shared.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Application.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Contracts.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Domain.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Application.pdb
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/Infrastructure.PasswordHasher.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/Shared.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Contracts.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/bin/Debug/net9.0/StreamingProject.Domain.pdb

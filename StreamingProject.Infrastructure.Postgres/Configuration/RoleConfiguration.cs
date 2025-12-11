@@ -16,8 +16,14 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
         builder.HasMany(r => r.Permissions)
             .WithMany(p => p.Roles)
             .UsingEntity<RolePermissionEntity>(
-                l => l.HasOne<PermissionEntity>().WithMany().HasForeignKey(e => e.PermissionId),
-                r => r.HasOne<RoleEntity>().WithMany().HasForeignKey(e => e.RoleId));
+                l => 
+                    l.HasOne(e => e.Permission)
+                    .WithMany()
+                    .HasForeignKey(e => e.PermissionId),
+                r =>
+                    r.HasOne(e => e.Role)
+                        .WithMany()
+                        .HasForeignKey(e => e.RoleId));
 
         var roles = Enum
             .GetValues<RoleEnum>()

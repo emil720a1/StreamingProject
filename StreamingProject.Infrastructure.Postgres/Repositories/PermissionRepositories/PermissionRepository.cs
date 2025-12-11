@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StreamingProject.Application.Service.Permission.PermissionRepository;
+using StreamingProject.Domain.Enums;
 using StreamingProject.Domain.Permission;
 
 namespace StreamingProject.Repository.Repositories.PermissionRepositories;
@@ -14,10 +15,12 @@ public class PermissionRepository : IPermissionRepository
     }
     
     
-    public async Task<List<PermissionEntity>> GetPermissionsAsync(int userId)
+    public async Task<List<PermissionEntity>> GetPermissionsAsync(Guid userId)
     {
-        return await _dbContext.Permissions
-            .Where(a => a.Id == userId)
+        return await _dbContext.UserRoles
+            .Where(a => a.UserId == userId)
+            .SelectMany(ur => ur.Role.Permissions)
+            .Distinct()
             .ToListAsync();
     }
 
@@ -57,8 +60,23 @@ public class PermissionRepository : IPermissionRepository
 
     }
 
-    public Task<bool> RemovePermissionAsync(int userId, PermissionEntity permission)
+    public async Task<bool> RemovePermissionAsync(int userId, PermissionEnum permission)
     {
-        throw new NotImplementedException();
+        int permissionId = (int)permission;
+
+        var userPermission = await _dbContext.Permissions
+            .FirstOrDefaultAsync(a => a.Id == userId);
+
+        if (userPermission == null)
+        {
+            return false;
+        }
+        
+        _dbContext.Permissions.Remove(userPermission);
+        
+        await _dbContext.SaveChangesAsync();
+        
+        return true;
     }
+    
 }

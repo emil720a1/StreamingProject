@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using StreamingProject.Domain.Enums;
 
-namespace StreamingProject.Infrastructure.PasswordHasher.Authentication;
+namespace StreamingProject.Repository.Authentication;
 
 public class PermissionRequirement : IAuthorizationRequirement
 {

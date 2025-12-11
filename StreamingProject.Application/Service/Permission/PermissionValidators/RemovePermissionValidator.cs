@@ -9,8 +9,6 @@ public class RemovePermissionValidator : AbstractValidator<RemovePermissionDto>
     {
         RuleFor(x => x.UserId).NotEmpty();
         
-        RuleFor(x => x.Name).NotEmpty();
-
         RuleFor(x => x.Permission).NotEmpty();
     }
 }

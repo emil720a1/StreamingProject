@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using StreamingProject.Application.Service;
 using StreamingProject.Application.Service.Chat;
 using StreamingProject.Application.Service.Chat.CharService;
+using StreamingProject.Application.Service.Permission.PermissionService;
+using StreamingProject.Application.Service.Role.RoleService;
 using StreamingProject.Application.Service.Stream.StreamService;
 using StreamingProject.Application.Service.Subscription.SubscriptionService;
 using StreamingProject.Application.Service.User.UserService;
@@ -20,7 +22,8 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
-        
+        services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IRoleService, RoleService>();
         
         
         return services;

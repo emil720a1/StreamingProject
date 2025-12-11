@@ -8,7 +8,6 @@
     ".NETCoreApp,Version=v9.0": {
       "StreamingProject.Web/1.0.0": {
         "dependencies": {
-          "Infrastructure.PasswordHasher": "1.0.0",
           "Microsoft.AspNetCore.OpenApi": "9.0.9",
           "Microsoft.EntityFrameworkCore.Design": "9.0.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.1",
@@ -885,19 +884,6 @@
       "System.Text.Json/9.0.0": {},
       "System.Threading.Channels/7.0.0": {},
       "System.Threading.Tasks.Extensions/4.6.0": {},
-      "Infrastructure.PasswordHasher/1.0.0": {
-        "dependencies": {
-          "BCrypt.Net-Next": "4.0.3",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.0",
-          "StreamingProject.Application": "1.0.0"
-        },
-        "runtime": {
-          "Infrastructure.PasswordHasher.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "Shared/1.0.0": {
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
@@ -951,7 +937,7 @@
       },
       "StreamingProject.Infrastructure.Postgres/1.0.0": {
         "dependencies": {
-          "Infrastructure.PasswordHasher": "1.0.0",
+          "BCrypt.Net-Next": "4.0.3",
           "Microsoft.EntityFrameworkCore": "9.0.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.1",
           "StreamingProject.Application": "1.0.0"
@@ -965,10 +951,10 @@
       },
       "StreamingProject.Presenters/1.0.0": {
         "dependencies": {
-          "Infrastructure.PasswordHasher": "1.0.0",
           "Microsoft.AspNetCore.Mvc.Core": "2.3.0",
           "StreamingProject.Application": "1.0.0",
-          "StreamingProject.Domain": "1.0.0"
+          "StreamingProject.Domain": "1.0.0",
+          "StreamingProject.Infrastructure.Postgres": "1.0.0"
         },
         "runtime": {
           "StreamingProject.Presenters.dll": {
@@ -1586,11 +1572,6 @@
       "sha512": "sha512-I5G6Y8jb0xRtGUC9Lahy7FUvlYlnGMMkbuKAQBy8Jb7Y6Yn8OlBEiUOY0PqZ0hy6Ua8poVA1ui1tAIiXNxGdsg==",
       "path": "system.threading.tasks.extensions/4.6.0",
       "hashPath": "system.threading.tasks.extensions.4.6.0.nupkg.sha512"
-    },
-    "Infrastructure.PasswordHasher/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
     },
     "Shared/1.0.0": {
       "type": "project",

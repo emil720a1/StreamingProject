@@ -9,6 +9,7 @@ using StreamingProject.Application.Service.Role.RoleRepository;
 using StreamingProject.Application.Service.User.UserRepository;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Contracts.User;
+using StreamingProject.Domain;
 using StreamingProject.Domain.User;
 using StreamingProject.Domain.User.UserRole;
 
@@ -62,12 +63,20 @@ public class UserService : IUserService
         
         var password = _passwordHasher.Generate(request.Password);
 
+        var role = await _roleRepository.GetRoleByIdAsync((int)RoleEnum.User);
+
+        if (role == null)
+        {
+            return Failure.FromError(Error.Validation("RoleNotFound", "Role not found"));
+        }
+        
+        
         var user = UserEntity.Create(
            
                 Username: request.Username, 
                 Password: password,
                 Email: request.Email,
-                null
+                role
             );
         
         if (await _userRepository.UserExists(user.Username, user.Email)) return Failure.FromError(Error.Validation("UserAlreadyExists", "User already exists", "Username"));
@@ -161,13 +170,19 @@ public class UserService : IUserService
     {
         var hashedPassword = _passwordHasher.Generate(password);
         
-        // var roleEntity = await _roleRepository.GetRoleByIdAsync((int)RoleEnum.User);
+        var roleEntity = await _roleRepository.GetRoleByIdAsync((int)RoleEnum.User);
+
+        if (roleEntity == null)
+        {
+            return Failure.FromError(Error.Validation("RoleNotFound", "Role not found"));
+        }
+        
         
         var user = UserEntity.Create(
             userName, 
             hashedPassword, 
-            email, 
-            null);
+            email,
+            roleEntity);
 
         if (user.Id == Guid.Empty)
         {

@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using StreamingProject.Application.Interfaces.Auth;
 using StreamingProject.Domain.User;
 
-namespace StreamingProject.Infrastructure.PasswordHasher.Authentication;
+namespace StreamingProject.Repository.Authentication;
 
 public class JwtProvider : IJwtProvider
 {

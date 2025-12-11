@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using StreamingProject.Application.Service.Permission.PermissionService;
 using StreamingProject.Contracts.Permissions;
-using StreamingProject.Infrastructure.PasswordHasher.Authentication;
+using StreamingProject.Domain.Enums;
 
 namespace StreamingProject.Repository.Authentication;
 
@@ -35,9 +35,18 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
 
         var request = new GetPermissionsDto(id);
         
-        var permissions = await permissionService.GetPermissionsAsync(userId);
+        var permissions = await permissionService.GetPermissionsAsync(request, CancellationToken.None);
 
-        if (permissions.Intersect(requirement.Permissions).Any())
+        if (permissions.IsFailure)
+        {
+            return;
+        }
+        
+        var userPermissions = permissions.Value
+            .Select(p => (PermissionEnum)Enum.Parse(typeof(PermissionEnum), p.Name));
+        
+        
+        if (userPermissions.Intersect(requirement.Permissions).Any())
         {
             context.Succeed(requirement);
         }

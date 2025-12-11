@@ -13,11 +13,10 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         
         builder.HasKey(x => x.Id);
 
-        builder.HasMany(u => u.Roles)
-            .WithMany(r => r.Users)
-            .UsingEntity<UserRoleEntity>(
-                l => l.HasOne<RoleEntity>().WithMany().HasForeignKey(r => r.RoleId),
-                 r => r.HasOne<UserEntity>().WithMany().HasForeignKey(u => u.UserId));
+        builder.HasMany(u => u.UserRoles)
+            .WithOne(r => r.User)
+            .HasForeignKey(r => r.UserId);
+        
         
         builder.Property(x => x.Username)
             .IsRequired()

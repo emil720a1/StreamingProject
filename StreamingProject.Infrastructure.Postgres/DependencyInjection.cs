@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using StreamingProject.Application.Interfaces.Auth;
 using StreamingProject.Application.Service.Chat.ChatRepository;
+using StreamingProject.Application.Service.Permission.PermissionRepository;
 using StreamingProject.Application.Service.Role.RoleRepository;
 using StreamingProject.Application.Service.Stream.StreamRepository;
 using StreamingProject.Application.Service.User.UserRepository;
 using StreamingProject.Application.Service.Video;
-using StreamingProject.Infrastructure.PasswordHasher;
-using StreamingProject.Infrastructure.PasswordHasher.Authentication;
 using StreamingProject.Repository.Authentication;
 using StreamingProject.Repository.Repositories;
 using StreamingProject.Repository.Repositories.ChatRepositories;
+using StreamingProject.Repository.Repositories.PermissionRepositories;
 using StreamingProject.Repository.Repositories.RoleRepositories;
 using StreamingProject.Repository.Repositories.StreamRepositories;
 using StreamingProject.Repository.Repositories.UserRepositories;
@@ -28,6 +28,8 @@ public static class DependencyInjection
         services.AddScoped<IChatRepository, ChatRepositories>();
         services.AddScoped<IVideoRepository, VideoRepositories>();
         services.AddScoped<IRoleRepository, RoleRepositories>();
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
+        
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtProvider, JwtProvider>();
 

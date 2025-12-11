@@ -7,8 +7,8 @@ using StreamingProject.Application.Service.User.UserService;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Contracts.User;
 using StreamingProject.Contracts.User.AuthDto;
-using StreamingProject.Infrastructure.PasswordHasher.AuthorizeAttributes;
 using StreamingProject.Presenters.ResponseExtensions;
+using StreamingProject.Repository.AuthorizeAttributes;
 
 namespace StreamingProject.Presenters;
 
@@ -53,12 +53,19 @@ public class UsersController : ControllerBase
             : Ok(token.Value);
     }
 
-    [AuthorizeRead]
+    [Authorize(Policy = "Permission.Read")]
     [HttpGet("/get")]
-    public async Task<IActionResult> GetProfile(
-        [FromRoute] GetUserDto request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetProfile(CancellationToken cancellationToken)
     {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var request = new GetUserDto(userId);
+        
         var user = await _userService.GetUserByIdAsync(request, cancellationToken);
         
         return user.IsFailure ? user.Error.ToResponse() : Ok(user.Value);

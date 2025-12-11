@@ -9,31 +9,15 @@ public class UserMapper : Profile
     public UserMapper()
     {
         CreateMap<UserEntity, UserDetailsDto>()
-            .ForMember(d => d.Id,
-                opt => opt.MapFrom(s => s.Id)
-            )
 
-            .ForMember(d => d.Username,
-                opt => opt.MapFrom(s => s.Username)
-            )
-
-            .ForMember(d => d.FirstName,
-                opt => opt.MapFrom(s => s.FirstName)
-            )
-
-            .ForMember(d => d.LastName,
-                opt => opt.MapFrom(s => s.LastName)
-            )
-
-            .ForMember(d => d.Roles,
-                opt => 
-                    opt.MapFrom(s => s.Roles.Select(ur => ur.Name))
-
-            )
-
-            .ForMember(d => d.Status,
-                opt => opt.MapFrom(s => s.Status)
-            );
+            .ConstructUsing(s => new UserDetailsDto(
+                s.Id,
+                s.Username,
+                s.FirstName,
+                s.LastName,
+                s.UserRoles.Select(ur => ur.Role.Name).ToList(),
+                s.Status
+            ));
     }
     
 }

@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using StreamingProject.Application.Service;
 using StreamingProject.Application.Service.Stream.StreamService;
 using StreamingProject.Contracts.Streams;
-using StreamingProject.Infrastructure.PasswordHasher.AuthorizeAttributes;
 using StreamingProject.Presenters.ResponseExtensions;
+using StreamingProject.Repository.AuthorizeAttributes;
 
 namespace StreamingProject.Presenters;
 

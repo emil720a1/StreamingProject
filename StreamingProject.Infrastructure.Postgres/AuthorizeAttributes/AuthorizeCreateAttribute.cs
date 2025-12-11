@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace StreamingProject.Infrastructure.PasswordHasher.AuthorizeAttributes;
+namespace StreamingProject.Repository.AuthorizeAttributes;
 
 public class AuthorizeCreateAttribute : AuthorizeAttribute
 {

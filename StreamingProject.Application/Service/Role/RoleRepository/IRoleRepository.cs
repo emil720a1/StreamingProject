@@ -6,7 +6,7 @@ public interface IRoleRepository
 {
     Task<RoleEntity> GetRoleByNameAsync(string username);
     
-    Task<RoleEntity> GetRoleByIdAsync(int id);
+    Task<RoleEntity?> GetRoleByIdAsync(int id);
     
     
 }

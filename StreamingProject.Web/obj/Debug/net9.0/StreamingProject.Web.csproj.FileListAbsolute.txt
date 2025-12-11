@@ -145,7 +145,5 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Infrastructure.PasswordHasher.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.dll
-/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Infrastructure.PasswordHasher.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.pdb

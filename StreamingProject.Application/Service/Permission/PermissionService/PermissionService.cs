@@ -107,9 +107,8 @@ public class PermissionService : IPermissionService
             return validationResult.ToErrors();
         }
 
-        var permission = await _permissionRepository.GetPermissionAsync(request.UserId);
         
-        var toDeletePermissions = await _permissionRepository.RemovePermissionAsync(permission.Id, permission );
+        var toDeletePermissions = await _permissionRepository.RemovePermissionAsync(request.UserId, request.Permission);
 
         if (!toDeletePermissions)
         {
