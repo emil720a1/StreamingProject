@@ -11,7 +11,9 @@ public interface IStreamService
     /// Створення  стріму
     /// </summary>
     /// <returns></returns>
-    Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(CreateStreamDto streamDto, CancellationToken cancellationToken);
+    Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(
+        CreateStreamDto streamDto,
+        CancellationToken cancellationToken);
     
     
     
@@ -21,11 +23,15 @@ public interface IStreamService
     /// <param name="streamId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<Result<StreamDetailsDto, Failure>> JoinStreamAsync(JoinStreamDto streamDto, CancellationToken cancellationToken);
+    Task<Result<StreamDetailsDto, Failure>> JoinStreamAsync(
+        JoinStreamDto streamDto, 
+        CancellationToken cancellationToken);
     
     
     
-    Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(GetStreamByIdDto streamDto, CancellationToken cancellationToken);
+    Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(
+        GetStreamByIdDto streamDto, 
+        CancellationToken cancellationToken);
     
     
 }

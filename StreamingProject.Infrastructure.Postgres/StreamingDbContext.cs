@@ -4,6 +4,7 @@ using StreamingProject.Domain;
 using StreamingProject.Domain.Chat;
 using StreamingProject.Domain.Permission;
 using StreamingProject.Domain.Stream;
+using StreamingProject.Domain.Stream.UserStream;
 using StreamingProject.Domain.Subscription;
 using StreamingProject.Domain.User;
 using StreamingProject.Domain.User.UserRole;
@@ -37,6 +38,8 @@ public class StreamingDbContext : DbContext
     
     public DbSet<UserRoleEntity> UserRoles { get; set; }
     
+    public DbSet<UserStream> UserStreams { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new VideoConfiguration());
@@ -48,7 +51,7 @@ public class StreamingDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RolePermissionConfiguration(_authOptions.Value));
         modelBuilder.ApplyConfiguration(new PermissionConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-        
+        modelBuilder.ApplyConfiguration(new UserStreamConfiguration());
         
         base.OnModelCreating(modelBuilder);
     }

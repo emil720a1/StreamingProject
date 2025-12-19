@@ -8,6 +8,7 @@ using StreamingProject.Application.Service.Role.RoleService;
 using StreamingProject.Application.Service.Stream.StreamService;
 using StreamingProject.Application.Service.Subscription.SubscriptionService;
 using StreamingProject.Application.Service.User.UserService;
+using StreamingProject.Application.Service.Video;
 using StreamingProject.Contracts.User;
 
 namespace StreamingProject.Application;
@@ -24,7 +25,7 @@ public static class DependencyInjection
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IRoleService, RoleService>();
-        
+        services.AddScoped<IVideoService, VideoService>();
         
         return services;
     }

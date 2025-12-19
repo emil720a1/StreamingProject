@@ -160,7 +160,7 @@ public class UserService : IUserService
         
         if (streams == null) return Failure.FromError(Error.Validation("StreamsNotFound", "Streams not found", "UserId"));
         
-        var detailsDto = _mapper.Map<List<StreamDetailsDto>>(streams);
+        var detailsDto = _mapper.Map<List<StreamDetailsDto>>(streams.Streams);
         
         return Result.Success<List<StreamDetailsDto>, Failure>(detailsDto);
     }
@@ -176,7 +176,6 @@ public class UserService : IUserService
         {
             return Failure.FromError(Error.Validation("RoleNotFound", "Role not found"));
         }
-        
         
         var user = UserEntity.Create(
             userName, 

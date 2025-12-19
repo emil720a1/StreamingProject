@@ -9,8 +9,5 @@ public class CreateStreamValidator : AbstractValidator<CreateStreamDto>
     {
         RuleFor(x => x.UserId).NotEmpty();
         
-        RuleFor(x => x.Id).NotEmpty();
-        
-        RuleFor(x => x.StartDate).NotEmpty();
     }
 }

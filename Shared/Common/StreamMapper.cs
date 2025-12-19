@@ -10,19 +10,10 @@ public class StreamMapper : Profile
     public StreamMapper()
     {
         CreateMap<StreamEntity, StreamDetailsDto>()
-
-
-            .ForMember(d => d.Id,
-                opt => opt.MapFrom(s => s.Id)
-            )
-
-            .ForMember(d => d.UserId,
-                opt => opt.MapFrom(s => s.UserId)
-            )
-
-            .ForMember(d => d.StartDate,
-                opt => opt.MapFrom(s => DateTime.Now));
-
-        CreateMap<StreamDetailsDto, StreamEntity>();
+            .ConstructUsing(s => new StreamDetailsDto(
+                s.Id,
+                s.UserId,
+                s.StartTime
+            ));
     }
 }

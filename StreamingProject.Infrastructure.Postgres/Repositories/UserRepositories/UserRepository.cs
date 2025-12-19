@@ -1,3 +1,4 @@
+using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using StreamingProject.Application.Service.User.UserRepository;
 using StreamingProject.Domain;
@@ -19,19 +20,19 @@ public class UserRepository : IUserRepository
 
     public async Task<UserEntity> AddUserAsync(UserEntity user)
     {
-        var roleEntity = await _dbContext.Roles
-            .SingleOrDefaultAsync(a => a.Id == (int)RoleEnum.User)
-            ?? throw new InvalidOperationException($"Role with ID {(int)RoleEnum.User} not found.");
 
-
-        var userEntity = UserEntity.Create(
-            Username: user.Username,
-            Password: user.Password,
-            Email: user.Email,
-            Role: roleEntity
-            );
+        if (user.UserRoles != null)
+        {
+            foreach (var userRole in user.UserRoles)
+            {
+                if (userRole.Role != null)
+                {
+                    _dbContext.Entry(userRole.Role).State = EntityState.Unchanged;
+                }
+            }
+        }
         
-        await _dbContext.Users.AddAsync(userEntity);
+        await _dbContext.Users.AddAsync(user);
         await _dbContext.SaveChangesAsync();
 
         return user;

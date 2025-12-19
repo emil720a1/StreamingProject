@@ -8,6 +8,7 @@ public class SendMessageValidator : AbstractValidator<SendMessageDto>
     public SendMessageValidator()
     {
         RuleFor(x => x.StreamId).NotEmpty();
-        RuleFor(x => x.UserId).NotEmpty();
+        
+        RuleFor(x => x.Message).NotEmpty();
     }
 }

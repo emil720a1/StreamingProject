@@ -36,6 +36,9 @@ public record Error
 
     public static Error Unauthorized(string? code, string message) 
         => new(code ?? "unathorized", message, ErrorType.UNATHORIZED);
+
+    public static Error Internal(string? code, string message)
+        => new(code ?? "internal", message, ErrorType.INTERNAL);
     
     public Failure ToFailure() => this;
 }
@@ -76,5 +79,12 @@ public enum ErrorType{
     /// Ошибка авторизации
     /// </summary>
     UNATHORIZED,
+    
+    
+    
+    /// <summary
+    /// 
+    /// </summary>
+    INTERNAL
     
 }
