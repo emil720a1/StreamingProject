@@ -10,18 +10,11 @@ public class ChatMapper : Profile
     public ChatMapper()
     {
         CreateMap<ChatEntity, ChatDetailsDto>()
-            .ForMember(d => d.Id,
-                opt => opt.MapFrom(s => s.Id))
-
-            .ForMember(s => s.Message,
-                opt => opt.MapFrom(s => s.Id))
-
-            .ForMember(t => t.SentAt,
-                opt => opt.MapFrom(s => s.SentTime))
-
-            .ForMember(u => u.UserId,
-                opt => opt.MapFrom(s => s.UserId));
-        
-        CreateMap<ChatDetailsDto, ChatEntity>();
+            .ConstructUsing(src => new ChatDetailsDto(
+                src.Id,
+                src.Message,
+                src.SentTime,
+                src.UserId
+                ));
     }
 }

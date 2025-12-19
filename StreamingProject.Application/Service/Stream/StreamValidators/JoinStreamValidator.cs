@@ -7,7 +7,9 @@ public class JoinStreamValidator : AbstractValidator<JoinStreamDto>
 {
     public JoinStreamValidator()
     {
+        
         RuleFor(x => x.UserId).NotEmpty();
+        
         
         RuleFor(x => x.StreamId).NotEmpty();
     }

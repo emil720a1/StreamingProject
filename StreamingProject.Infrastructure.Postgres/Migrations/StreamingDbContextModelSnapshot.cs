@@ -129,6 +129,11 @@ namespace StreamingProject.Repository.Migrations
                         {
                             RoleId = 2,
                             PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 2
                         });
                 });
 
@@ -183,6 +188,22 @@ namespace StreamingProject.Repository.Migrations
                     b.HasIndex("StreamEntityId");
 
                     b.ToTable("StreamLikeEntity");
+                });
+
+            modelBuilder.Entity("StreamingProject.Domain.Stream.UserStream.UserStream", b =>
+                {
+                    b.Property<Guid>("StreamId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("StreamId", "UserId");
+
+                    b.ToTable("UserStreams");
                 });
 
             modelBuilder.Entity("StreamingProject.Domain.Subscription.SubscriptionEntity", b =>
@@ -295,6 +316,9 @@ namespace StreamingProject.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("FileUrl")
                         .IsRequired()
                         .HasColumnType("text");
@@ -304,6 +328,13 @@ namespace StreamingProject.Repository.Migrations
                         .HasColumnType("text");
 
                     b.Property<Guid>("StreamId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");

@@ -9,6 +9,7 @@ public class GetStreamValidator : AbstractValidator<GetStreamByIdDto>
     {
         RuleFor(x => x.streamId).NotEmpty();
         
+        RuleFor(x => x.UserId).NotEmpty();
         
     }
 }

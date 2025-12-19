@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using StreamingProject.Application.Service.Stream.StreamRepository;
 using StreamingProject.Domain;
 using StreamingProject.Domain.Stream;
+using StreamingProject.Domain.Stream.UserStream;
 
 namespace StreamingProject.Repository.Repositories.StreamRepositories;
 
@@ -14,28 +16,70 @@ public class StreamRepositories : IStreamRepository
     }
 
 
-    public Task<StreamEntity> AddStreamAsync(StreamEntity stream)
+    public async Task<StreamEntity> AddStreamAsync(StreamEntity stream)
     {
-        throw new NotImplementedException();
+        await _dbContext.Streams.AddAsync(stream);
+        await _dbContext.SaveChangesAsync();
+        
+        return stream;
     }
 
-    public Task<StreamEntity> UpdateStreamAsync(StreamEntity stream)
+    public async Task<StreamEntity> UpdateStreamAsync(StreamEntity stream)
     {
-        throw new NotImplementedException();
+        _dbContext.Streams.Update(stream);
+        await _dbContext.SaveChangesAsync();
+        
+        return stream;
     }
 
-    public Task<StreamEntity> GetStreamByIdAsync(Guid id)
+    public async Task<StreamEntity> GetStreamByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Streams
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
-    public Task<StreamEntity> GetActiveStream(Guid userId)
+    public async Task<StreamEntity> GetActiveStream(Guid userId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Streams 
+            .AsNoTracking()
+            .Where(s => s.UserId == userId && s.EndTime == null)
+            .FirstOrDefaultAsync();
     }
 
-    public Task<List<StreamEntity>> GetStreamsByUserId(Guid userId)
+    public async Task<List<StreamEntity>> GetStreamsByUserId(Guid userId)
     {
-        throw new NotImplementedException();
+        
+        return await _dbContext.Streams
+            .AsNoTracking()
+            .Where(s => s.UserId == userId)
+            .ToListAsync();
     }
+
+    public async Task<bool> HasJoinedStreamAsync(Guid StreamId, Guid UserId)
+    {
+        return await _dbContext.UserStreams
+            .AsNoTracking()
+            .AnyAsync(s => s.StreamId == StreamId && s.UserId == UserId);
+    }
+
+    public async Task<StreamEntity?> AddParticipantAsync(UserStream userStream)
+    {
+        await _dbContext.UserStreams.AddAsync(userStream);
+        await _dbContext.SaveChangesAsync();
+
+        return await GetStreamByIdAsync(userStream.StreamId);
+    }
+
+    public async Task<bool> RemoveParticipantAsync(Guid StreamId, Guid UserId)
+    {
+        
+        if (StreamId == Guid.Empty || UserId == Guid.Empty) return false;
+
+        var deletedCount =  await _dbContext.UserStreams
+            .Where(s => s.StreamId == StreamId && s.UserId == UserId)
+            .ExecuteDeleteAsync();
+
+        return deletedCount > 0;
+    }
+    
 }

@@ -15,7 +15,8 @@ public interface IUserService
 
     Task<Result<bool, Failure>> DeleteUserAsync(DeleteUserDto userDto, CancellationToken cancellationToken);
     
-    Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserId(GetUserDto userDto, CancellationToken cancellationToken);
+    Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserId(GetUserDto userDto,
+        CancellationToken cancellationToken);
 
 
     Task <Result<UserDetailsDto, Failure>> Register(string userName,string email, string PasswordHash);

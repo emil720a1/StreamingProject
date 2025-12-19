@@ -72,12 +72,18 @@ public class UsersController : ControllerBase
     }
     
     
-    [AuthorizeRead]
+    [Authorize(Policy = "Permission.Read")]
     [HttpGet("/streams")]
-    public async Task<IActionResult> GetStreamsByUserId(
-        [FromRoute] GetUserDto request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetStreamsByUserId(CancellationToken cancellationToken)
     {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+        var request = new GetUserDto(userId);
+        
         var streams = await _userService.GetStreamsByUserId(request, cancellationToken);
         
         return streams.IsFailure ? streams.Error.ToResponse() : Ok(streams.Value);

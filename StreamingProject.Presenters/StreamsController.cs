@@ -20,39 +20,62 @@ public class StreamsController : ControllerBase
         _streamService = streamService;
     }
 
-    [AuthorizeCreate]
-    [HttpPost]
+    [Authorize(Policy = "Permission.Create")]
+    [HttpPost("create")]
 
-    public async Task<IActionResult> CreateStream([FromBody] CreateStreamDto request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateStream(CancellationToken cancellationToken)
     {
+        if (!Guid.TryParse(User.Claims.FirstOrDefault(c => c.Type == "userId").Value, out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        
+        var request = new CreateStreamDto(userId);
+        
         var result = await _streamService.CreateStreamAsync(request, cancellationToken);
         
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
 
-    [AuthorizeRead]
+    [Authorize(Policy = "Permission.Read")]
     [HttpPost("join")]
 
-    public async Task<IActionResult> JoinStream([FromBody] JoinStreamDto request, CancellationToken cancellationToken)
+    public async Task<IActionResult> JoinStream(
+        [FromBody] JoinStreamDto streamDto,
+        CancellationToken cancellationToken)
     {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+            
+        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        
+        var request = new JoinStreamDto(
+            userId, 
+            streamDto.StreamId);
+        
         var result = await _streamService.JoinStreamAsync(request, cancellationToken);
         
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
 
-    [AuthorizeRead]
-    [HttpGet]
-    public async Task<IActionResult> GetStreamById([FromQuery] GetStreamByIdDto request,
+    [HttpGet("{streamId}")]
+    [Authorize(Policy = "Permission.Read")]
+    public async Task<IActionResult> GetStreamById(
+        [FromRoute] Guid streamId,  
         CancellationToken cancellationToken)
     {
+        
+        if (!Guid.TryParse(User.Claims.FirstOrDefault(c => c.Type == "userId").Value, out var userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        
+        var request =  new GetStreamByIdDto(streamId, userId);
+        
         var result = await _streamService.GetStreamByIdAsync(request, cancellationToken);
 
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
-    
-    
-    
-    
-    
-    
 }

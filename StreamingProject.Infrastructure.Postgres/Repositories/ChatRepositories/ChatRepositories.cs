@@ -12,8 +12,7 @@ public class ChatRepositories : IChatRepository
     {
         _dbContext = dbContext;
     }
-
-
+    
     public async Task<ChatEntity> SendMessageAsync(ChatEntity message)
     {
 
@@ -31,19 +30,27 @@ public class ChatRepositories : IChatRepository
 
     }
 
-    public Task<bool> LeaveChatAsync(Guid streamId)
+    public Task<ChatEntity> GetChatMessageById(Guid messageId)
     {
-        throw new NotImplementedException();
+        return _dbContext.ChatMessages.FirstOrDefaultAsync(a => a.Id == messageId);
+    }
+
+    public async Task<bool> UpdateChatMessageAsync(ChatEntity message)
+    {
+        _dbContext.ChatMessages.Update(message);
+       var result = await _dbContext.SaveChangesAsync();
+
+       return result > 0;
     }
 
     public async Task<bool> DeleteChatMessageAsync(Guid messageId)
     {
         if (messageId == Guid.Empty) return false;
 
-         await _dbContext.ChatMessages
+        var result =  await _dbContext.ChatMessages
             .Where(a => a.Id == messageId)
             .ExecuteDeleteAsync();
          
-         return true;
+         return result > 0;
     }
 }

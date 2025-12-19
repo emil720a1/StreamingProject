@@ -9,6 +9,7 @@ using StreamingProject.Contracts.Streams;
 using StreamingProject.Domain;
 using StreamingProject.Domain.Chat;
 using StreamingProject.Domain.Stream;
+using StreamingProject.Domain.Stream.UserStream;
 
 namespace StreamingProject.Application.Service.Stream.StreamService;
 
@@ -40,17 +41,7 @@ public class StreamService : IStreamService
         {
             return validationResult.ToErrors();
         }
-        var stream = new StreamEntity 
-        {
-            UserId = request.UserId,
-            Id = Guid.NewGuid(),
-            ChatId = Guid.NewGuid(),
-            LikeCount = 0,
-            
-            ChatMessages = new List<ChatEntity>(),
-            Likes = new List<StreamLikeEntity>(),
-            
-        };
+        var stream = StreamEntity.Create(request.UserId);
 
         var savedStream = await _streamRepository.AddStreamAsync(stream);
         
@@ -71,18 +62,39 @@ public class StreamService : IStreamService
         if (streamToJoin == null)
         {
             var error = Error.Validation("StreamNotFound", "Stream not found", "StreamId");
-
             return Failure.FromError(error);
         }
 
-        if (DateTime.UtcNow > streamToJoin.EndTime)
+        if (streamToJoin.EndTime.HasValue && DateTime.UtcNow > streamToJoin.EndTime)
         {
-            return Failure.FromError(Error.Validation("StreamEnded", "Stream ended", "StreamId"));            
+            return Failure.FromError(Error.Validation("StreamEnded", "Stream ended", "StreamId"));
+        }
+        
+        var alreadyJoined = await _streamRepository.HasJoinedStreamAsync(request.StreamId, request.UserId);
+
+        if (alreadyJoined)
+        {
+            return Failure.FromError(Error.Conflict("AlreadyJoined", "User already joined"));
+        }
+
+
+        var userStreams = new UserStream()
+        {
+            UserId = request.UserId,
+            StreamId = request.StreamId,
+        };
+
+        var updatedStream = await _streamRepository.AddParticipantAsync(userStreams);
+
+        if (updatedStream == null)
+        {
+            return Failure.FromError(Error.Internal("DbError", "Failed to save participant list"));
         }
         
         _logger.LogInformation("User joined stream");
         
         var detailsDto = _mapper.Map<StreamDetailsDto>(streamToJoin);
+        
         return Result.Success<StreamDetailsDto, Failure>(detailsDto);
     }
 
@@ -102,7 +114,6 @@ public class StreamService : IStreamService
 
             return Failure.FromError(error);
         }
-        
         
         var detailsDto = _mapper.Map<StreamDetailsDto>(stream);
         return Result.Success<StreamDetailsDto, Failure>(detailsDto);
