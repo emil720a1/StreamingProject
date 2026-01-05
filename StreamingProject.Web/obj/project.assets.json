@@ -57,6 +57,24 @@
           }
         }
       },
+      "Extensions.Hosting.AsyncInitialization/3.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/Extensions.Hosting.AsyncInitialization.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Extensions.Hosting.AsyncInitialization.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "FluentValidation/12.1.0": {
         "type": "package",
         "compile": {
@@ -1710,6 +1728,7 @@
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
           "BCrypt.Net-Next": "4.0.3",
+          "Extensions.Hosting.AsyncInitialization": "3.0.1",
           "Microsoft.EntityFrameworkCore": "9.0.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.1",
           "StreamingProject.Application": "1.0.0"
@@ -1818,6 +1837,21 @@
         "lib/netstandard2.0/CSharpFunctionalExtensions.dll",
         "lib/netstandard2.0/CSharpFunctionalExtensions.pdb",
         "lib/netstandard2.0/CSharpFunctionalExtensions.xml"
+      ]
+    },
+    "Extensions.Hosting.AsyncInitialization/3.0.1": {
+      "sha512": "iuSGE1NGeLtOZG0ZcuOZWy0Cs3qAHFFUNYPObqv6S/iruqBd0GpuqevDU/Q7Fe+ub0XtrJop8vOABKoKpLtD/A==",
+      "type": "package",
+      "path": "extensions.hosting.asyncinitialization/3.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "extensions.hosting.asyncinitialization.3.0.1.nupkg.sha512",
+        "extensions.hosting.asyncinitialization.nuspec",
+        "lib/net6.0/Extensions.Hosting.AsyncInitialization.dll",
+        "lib/net6.0/Extensions.Hosting.AsyncInitialization.pdb",
+        "lib/net6.0/Extensions.Hosting.AsyncInitialization.xml"
       ]
     },
     "FluentValidation/12.1.0": {

@@ -27,11 +27,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
 
         var roles = Enum
             .GetValues<RoleEnum>()
-            .Select(r => new RoleEntity
-            {
-                Id = (int)r,
-                Name = r.ToString()
-            });
+            .Select(r => RoleEntity.Create((int)r, r.ToString()));
         
         builder.HasData(roles);
 

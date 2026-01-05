@@ -369,6 +369,10 @@
               "target": "Package",
               "version": "[4.0.3, )"
             },
+            "Extensions.Hosting.AsyncInitialization": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.0, )"

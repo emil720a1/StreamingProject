@@ -49,7 +49,7 @@ public class VideoController : ControllerBase
 
 
 
-    // [Authorize(Policy = "Permission.Update")]
+    [Authorize(Policy = "Permission.Update")]
     [HttpPost("update")]
     public async Task<IActionResult> UpdateVideo(
         [FromBody] UpdateVideoDto request,
@@ -67,7 +67,7 @@ public class VideoController : ControllerBase
         return videoToUpdate.IsFailure ? videoToUpdate.Error.ToResponse() : Ok(videoToUpdate.Value);
     }
 
-    // [Authorize(Policy = "Permission.Delete")]
+    [Authorize(Policy = "Permission.Delete")]
     [HttpPost("delete")]
     public async Task<IActionResult> DeleteVideo(
         [FromBody] DeleteVideoDto request,
@@ -75,7 +75,6 @@ public class VideoController : ControllerBase
     {
         
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
         {
             return Unauthorized();

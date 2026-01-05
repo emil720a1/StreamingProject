@@ -15,6 +15,7 @@ using StreamingProject.Repository.Repositories.RoleRepositories;
 using StreamingProject.Repository.Repositories.StreamRepositories;
 using StreamingProject.Repository.Repositories.UserRepositories;
 using StreamingProject.Repository.Repositories.VideoRepositories;
+using StreamingProject.Repository.StreamingProject.Infrastructure;
 
 namespace StreamingProject.Repository;
 
@@ -32,6 +33,8 @@ public static class DependencyInjection
         
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtProvider, JwtProvider>();
+        
+        services.AddAsyncInitializer<DbInitializer>();
 
         return services;
     }

@@ -147,3 +147,4 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.pdb
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Extensions.Hosting.AsyncInitialization.dll

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bYpW4fGKLFs=",
+  "dgSpecHash": "Zt08b6qUZAs=",
   "success": true,
   "projectFilePath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Presenters/StreamingProject.Presenters.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "/Users/mcaleg2006/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/csharpfunctionalextensions/3.6.0/csharpfunctionalextensions.3.6.0.nupkg.sha512",
+    "/Users/mcaleg2006/.nuget/packages/extensions.hosting.asyncinitialization/3.0.1/extensions.hosting.asyncinitialization.3.0.1.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/fluentvalidation/12.1.0/fluentvalidation.12.1.0.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/fluentvalidation.dependencyinjectionextensions/12.1.0/fluentvalidation.dependencyinjectionextensions.12.1.0.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/microsoft.aspnetcore.authentication.abstractions/2.3.0/microsoft.aspnetcore.authentication.abstractions.2.3.0.nupkg.sha512",
