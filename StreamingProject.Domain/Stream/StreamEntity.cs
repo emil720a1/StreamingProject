@@ -30,6 +30,7 @@ public class StreamEntity
     }
     public Guid Id { get; set; }
     
+    public string StreamKey { get; set; }
     public Guid ChatId { get; set; }
     
     public Guid UserId { get; set; }

@@ -464,6 +464,22 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "LiveStreamingServerNet": {
+              "target": "Package",
+              "version": "[0.33.1, )"
+            },
+            "LiveStreamingServerNet.Rtmp": {
+              "target": "Package",
+              "version": "[0.33.1, )"
+            },
+            "LiveStreamingServerNet.Rtmp.Server": {
+              "target": "Package",
+              "version": "[0.33.1, )"
+            },
+            "LiveStreamingServerNet.StreamProcessor.AspNetCore": {
+              "target": "Package",
+              "version": "[0.33.1, )"
+            },
             "Microsoft.AspNetCore.Mvc.Core": {
               "target": "Package",
               "version": "[2.3.0, )"
@@ -539,6 +555,18 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "LiveStreamingServerNet": {
+              "target": "Package",
+              "version": "[0.33.1, )"
+            },
+            "LiveStreamingServerNet.Rtmp": {
+              "target": "Package",
+              "version": "[0.33.1, )"
+            },
+            "LiveStreamingServerNet.Rtmp.Server": {
+              "target": "Package",
+              "version": "[0.33.1, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.9, )"

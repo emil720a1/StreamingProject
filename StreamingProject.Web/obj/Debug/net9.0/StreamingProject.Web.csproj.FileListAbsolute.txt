@@ -148,3 +148,17 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/StreamingProject.Infrastructure.Postgres.pdb
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Extensions.Hosting.AsyncInitialization.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.Networking.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.Networking.Server.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.Rtmp.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.Rtmp.Server.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.StreamProcessor.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.StreamProcessor.AspNetCore.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/LiveStreamingServerNet.Utilities.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/mtanksl.ActionMessageFormat.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Nito.AsyncEx.Coordination.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Nito.AsyncEx.Tasks.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Nito.Collections.Deque.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Nito.Disposables.dll
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Open.Threading.ReadWrite.dll

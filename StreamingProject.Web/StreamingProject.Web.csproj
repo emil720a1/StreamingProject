@@ -8,6 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="LiveStreamingServerNet" Version="0.33.1" />
+        <PackageReference Include="LiveStreamingServerNet.Rtmp" Version="0.33.1" />
+        <PackageReference Include="LiveStreamingServerNet.Rtmp.Server" Version="0.33.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
           <PrivateAssets>all</PrivateAssets>

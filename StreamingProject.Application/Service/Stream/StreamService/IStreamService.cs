@@ -20,18 +20,18 @@ public interface IStreamService
     /// <summary>
     /// Приєднатися до стріму
     /// </summary>
-    /// <param name="streamId"></param>
-    /// <param name="userId"></param>
-    /// <returns></returns>
-    Task<Result<StreamDetailsDto, Failure>> JoinStreamAsync(
-        JoinStreamDto streamDto, 
-        CancellationToken cancellationToken);
+    Task<Result<StreamDetailsDto, Failure>> JoinStreamAsync(JoinStreamDto streamDto, CancellationToken cancellationToken);
     
     
     
-    Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(
-        GetStreamByIdDto streamDto, 
-        CancellationToken cancellationToken);
+    Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(GetStreamByIdDto streamDto, CancellationToken cancellationToken);
+    
+    
+    
+    /// <summary>
+    /// Перевірка ключа трансляціх перед початком стріму
+    /// </summary>
+    Task<Result<bool, Failure>> ValidateStreamKeyAsync(string streamKey, CancellationToken cancellationToken);
     
     
 }

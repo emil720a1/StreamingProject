@@ -119,4 +119,16 @@ public class StreamService : IStreamService
         return Result.Success<StreamDetailsDto, Failure>(detailsDto);
         
     }
+
+    public async Task<Result<bool, Failure>> ValidateStreamKeyAsync(string streamKey, CancellationToken cancellationToken)
+    {
+        var keyExists = await _streamRepository.CheckStreamKeyExistsAsync(streamKey);
+
+        if (!keyExists)
+        {
+            return Failure.FromError(Error.Internal("StreamKeyNotFound", "streamKey not found"));
+        }
+
+        return Result.Success<bool, Failure>(true);
+    }
 }

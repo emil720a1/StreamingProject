@@ -24,4 +24,6 @@ public interface IStreamRepository
     Task<StreamEntity?> AddParticipantAsync(UserStream userStream);
     
     Task<bool> RemoveParticipantAsync(Guid StreamId, Guid UserId);
+    
+    Task<bool> CheckStreamKeyExistsAsync(string streamKey);
 }

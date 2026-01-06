@@ -1,8 +1,13 @@
 
+using System.Net;
+using LiveStreamingServerNet;
+using LiveStreamingServerNet.Networking;
+using LiveStreamingServerNet.Rtmp.Server.Contracts;
+using LiveStreamingServerNet.Rtmp.Server.Installer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common;
-using StreamingProject.Application;
+using StreamingProject.Presenters.Handlers;
 using StreamingProject.Repository;
 using StreamingProject.Repository.Authentication;
 using StreamProject.Web;
@@ -24,9 +29,22 @@ services.AddApiAuthentication(configuration);
         options.UseNpgsql(configuration.GetConnectionString(nameof(StreamingDbContext)));
     });
 
+    builder.Services.AddSingleton<IRtmpServerStreamEventHandler, RtmpServerEventHandler>();
+
+    var serverEndPoint = new ServerEndPoint(new IPEndPoint(IPAddress.Any, 1935), false);
+
+    services.AddLiveStreamingServer(serverEndPoint, rtmp =>
+    {
+        rtmp.AddStreamEventHandler<RtmpServerEventHandler>();
+        
+     });
+
+
+
+
+services.AddLogging(logging => logging.AddConsole());
 
 services.AddAutoMapper(typeof(StreamMapper));
-
 services.AddProgramDependencies();
 
 var app = builder.Build();
@@ -59,4 +77,5 @@ app.MapControllers();
 // }
 
 
-app.Run();
+await app.RunAsync();
+

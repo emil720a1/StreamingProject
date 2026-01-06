@@ -81,5 +81,9 @@ public class StreamRepositories : IStreamRepository
 
         return deletedCount > 0;
     }
-    
+
+    public async Task<bool> CheckStreamKeyExistsAsync(string streamKey)
+    {
+        return await _dbContext.Streams.AnyAsync(s => s.StreamKey == streamKey);
+    }
 }
