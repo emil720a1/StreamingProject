@@ -72,9 +72,9 @@ public class UserService : IUserService
         
         var user = UserEntity.Create(
            
-                Username: request.Username, 
-                Password: password,
-                Email: request.Email,
+                username: request.Username, 
+                password: password,
+                email: request.Email,
                 role
             );
         
@@ -214,7 +214,7 @@ public class UserService : IUserService
             return Failure.FromError(Error.Unauthorized("UserNotFound", "User not found"));
         }
         
-        var result = _passwordHasher.Verify(password, user.Password);
+        var result = _passwordHasher.Verify(password, user.PasswordHash);
         
         if (!result) return Failure.FromError(Error.Unauthorized("InvalidCredentials", "Invalid credentials"));
         

@@ -6,11 +6,18 @@ namespace StreamingProject.Domain.User;
 public class UserEntity
 {
 
-   private UserEntity(Guid id, string username, string password, string email, UserStatus status, string firstName, string lastName)
+   private UserEntity(
+      Guid id, 
+      string username, 
+      string passwordHash, 
+      string email, 
+      UserStatus status, 
+      string firstName, 
+      string lastName)
    {
       Id = id;
       Username = username;
-      Password = password;
+      PasswordHash = passwordHash;
       Email = email;
       Status = status;
       FirstName = firstName;
@@ -27,53 +34,38 @@ public class UserEntity
       Streams = new List<StreamEntity>();
    }
    
-   public Guid Id { get; set; }
+   public Guid Id { get; private set; }
    
-   public string Username { get; set; }
+   public string Username { get; private set; }
    
-   public string Password { get; set; }
+   public string PasswordHash { get; private set; }
    
    public string FirstName { get; set; } 
    
    public string LastName { get; set; } 
    
-   public IEnumerable<StreamEntity> Streams {get; set;}
+   public ICollection<UserRoleEntity> UserRoles { get; private set; } = new List<UserRoleEntity>();
+   public ICollection<StreamEntity> Streams {get; private set;} = new List<StreamEntity>();
 
    public string Email { get; set; }
-   public ICollection<UserRoleEntity> UserRoles { get; set; } = new List<UserRoleEntity>();
    
    public UserStatus Status { get; set; }
 
 
-   public static UserEntity Create(string Username, string Password, string Email, RoleEntity Role)
+   public static UserEntity Create(string username, string passwordHash, string email, RoleEntity role)
    {
-      if (string.IsNullOrWhiteSpace(Username))
-      {
-         throw new ArgumentException("Username cannot be null or whitespace", nameof(Username));
-      }
+      if (string.IsNullOrWhiteSpace(username))
+         throw new ArgumentException("Username cannot be null or whitespace", nameof(username));
+
+      var user = UserEntity.Create(username, passwordHash, email, role);
       
-      var id = Guid.NewGuid();
-      var status = UserStatus.Active;
-
-      var user = new UserEntity(id, 
-         Username, 
-         Password, 
-         Email, 
-         status, 
-         string.Empty,
-         string.Empty
-         );
-
-
-      var userRole = new UserRoleEntity
+      user.UserRoles.Add(new UserRoleEntity
       {
          UserId = user.Id,
          User = user,
-         RoleId = Role.Id,
-         Role = Role
-      };
-      
-      user.UserRoles.Add(userRole);
+         RoleId = role.Id,
+         Role = role
+      });
       
       return user;
    }
