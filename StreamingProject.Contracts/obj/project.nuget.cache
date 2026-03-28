@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "erQx+wrXfkw=",
+  "dgSpecHash": "MsKQyDHiitM=",
   "success": true,
   "projectFilePath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Contracts/StreamingProject.Contracts.csproj",
   "expectedPackageFiles": [
-    "/Users/mcaleg2006/.nuget/packages/stylecop.analyzers/1.1.118/stylecop.analyzers.1.1.118.nupkg.sha512"
+    "/Users/mcaleg2006/.nuget/packages/stylecop.analyzers/1.1.118/stylecop.analyzers.1.1.118.nupkg.sha512",
+    "/Users/mcaleg2006/.nuget/packages/microsoft.netcore.app.ref/9.0.12/microsoft.netcore.app.ref.9.0.12.nupkg.sha512",
+    "/Users/mcaleg2006/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.12/microsoft.aspnetcore.app.ref.9.0.12.nupkg.sha512"
   ],
   "logs": []
 }

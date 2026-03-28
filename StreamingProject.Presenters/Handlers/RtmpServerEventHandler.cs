@@ -1,4 +1,5 @@
 using LiveStreamingServerNet;
+using LiveStreamingServerNet.Networking.Server.Contracts;
 using LiveStreamingServerNet.Rtmp.Server.Contracts;
 using LiveStreamingServerNet.Utilities;
 using LiveStreamingServerNet.Utilities.Contracts;
@@ -12,9 +13,9 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<RtmpServerEventHandler> _logger;
-    private readonly ILiveStreamingServer _server;
+    private readonly IServerHandle _server;
 
-    public RtmpServerEventHandler(ILogger<RtmpServerEventHandler> logger, IServiceScopeFactory scopeFactory, ILiveStreamingServer server)
+    public RtmpServerEventHandler(ILogger<RtmpServerEventHandler> logger, IServiceScopeFactory scopeFactory, IServerHandle server)
     {
         _logger = logger;
         _scopeFactory = scopeFactory;

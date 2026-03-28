@@ -1,0 +1,34 @@
+# --- .NET / C# ---
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.user
+*.suo
+*.sln.docstates
+
+# --- JetBrains Rider / IntelliJ ---
+.idea/
+*.sln.iml
+.attached_packages/
+.DS_Store
+
+# --- Visual Studio ---
+.vs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# --- Налаштування користувача та секрети ---
+appsettings.Development.json
+appsettings.Local.json
+*.usersecrets
+.env
+
+# --- macOS системні файли ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon

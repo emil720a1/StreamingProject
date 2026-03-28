@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bVUEOvAq1rI=",
+  "dgSpecHash": "Q3AznlnMcAo=",
   "success": true,
   "projectFilePath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj",
   "expectedPackageFiles": [
@@ -63,7 +63,9 @@
     "/Users/mcaleg2006/.nuget/packages/system.reflection.metadata/7.0.0/system.reflection.metadata.7.0.0.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/system.text.json/9.0.0/system.text.json.9.0.0.nupkg.sha512",
-    "/Users/mcaleg2006/.nuget/packages/system.threading.channels/7.0.0/system.threading.channels.7.0.0.nupkg.sha512"
+    "/Users/mcaleg2006/.nuget/packages/system.threading.channels/7.0.0/system.threading.channels.7.0.0.nupkg.sha512",
+    "/Users/mcaleg2006/.nuget/packages/microsoft.netcore.app.ref/9.0.12/microsoft.netcore.app.ref.9.0.12.nupkg.sha512",
+    "/Users/mcaleg2006/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.12/microsoft.aspnetcore.app.ref.9.0.12.nupkg.sha512"
   ],
   "logs": []
 }

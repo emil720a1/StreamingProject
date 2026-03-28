@@ -14,7 +14,6 @@ using StreamingProject.Domain.User;
 using StreamingProject.Domain.User.UserRole;
 
 namespace StreamingProject.Application.Service.User.UserService;
-
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;

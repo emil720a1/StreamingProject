@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StreamingProject.Contracts")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+379bba4e1099c635ae66974422425d99db64c035")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8db4a1f4b051a1c40ebcec8f78547fceb9843ba4")]
 [assembly: System.Reflection.AssemblyProductAttribute("StreamingProject.Contracts")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StreamingProject.Contracts")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

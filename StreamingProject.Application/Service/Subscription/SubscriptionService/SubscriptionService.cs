@@ -20,12 +20,20 @@ public class SubscriptionService : ISubscriptionService
     private readonly IMapper _mapper;
     private readonly ILogger<SubscriptionService> _logger;
 
-
+    public SubscriptionService(ISubscriptionRepository subscriptionRepository, IValidator<SubscriptionDto> subscribeDtoValidator, IValidator<UnSubscribeDto> unsubscribeDtoValidator, IValidator<GetSubscriptionDto> getSubscriptionDtoValidator, IMapper mapper, ILogger<SubscriptionService> logger)
+    {
+        _subscriptionRepository = subscriptionRepository;
+        _subscribeDtoValidator = subscribeDtoValidator;
+        _unsubscribeDtoValidator = unsubscribeDtoValidator;
+        _getSubscriptionDtoValidator = getSubscriptionDtoValidator;
+        _mapper = mapper;
+        _logger = logger;
+    }
+    
     public async Task<Result<SubscriptionDetailsDto, Failure>> SubscribeAsync(SubscriptionDto request,
         CancellationToken cancellationToken)
     {
         var validationResult = await _subscribeDtoValidator.ValidateAsync(request, cancellationToken);
-
         if (!validationResult.IsValid)
         {
             return validationResult.ToErrors();
@@ -40,6 +48,11 @@ public class SubscriptionService : ISubscriptionService
         };
 
         var subscribe = await _subscriptionRepository.SubscribeAsync(subscription);
+
+        if (subscribe == null)
+        {
+            return Failure.FromError(Error.Validation("SubscriptionNotFound", "Subscription not found", "SubscriptionId"));
+        }
         
         _logger.LogInformation("Subscription created");
         
@@ -67,7 +80,7 @@ public class SubscriptionService : ISubscriptionService
 
         _logger.LogInformation("Subscription deleted");
 
-        var detailsDto = _mapper.Map<SubscriptionDetailsDto>(result);
+        var detailsDto = _mapper.Map<SubscriptionDetailsDto>(null);
         
         return Result.Success<SubscriptionDetailsDto, Failure>(detailsDto);
 

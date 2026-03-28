@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "p0c215pfgq8=",
+  "dgSpecHash": "VxN/NVO4ZII=",
   "success": true,
   "projectFilePath": "/Users/mcaleg2006/RiderProjects/StreamingProject/Shared/Shared.csproj",
   "expectedPackageFiles": [
@@ -22,7 +22,9 @@
     "/Users/mcaleg2006/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/8.0.1/microsoft.identitymodel.protocols.openidconnect.8.0.1.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/microsoft.identitymodel.tokens/8.0.1/microsoft.identitymodel.tokens.8.0.1.nupkg.sha512",
     "/Users/mcaleg2006/.nuget/packages/stylecop.analyzers/1.1.118/stylecop.analyzers.1.1.118.nupkg.sha512",
-    "/Users/mcaleg2006/.nuget/packages/system.identitymodel.tokens.jwt/8.0.1/system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512"
+    "/Users/mcaleg2006/.nuget/packages/system.identitymodel.tokens.jwt/8.0.1/system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512",
+    "/Users/mcaleg2006/.nuget/packages/microsoft.netcore.app.ref/9.0.12/microsoft.netcore.app.ref.9.0.12.nupkg.sha512",
+    "/Users/mcaleg2006/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.12/microsoft.aspnetcore.app.ref.9.0.12.nupkg.sha512"
   ],
   "logs": []
 }

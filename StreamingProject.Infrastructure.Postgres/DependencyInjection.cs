@@ -5,6 +5,7 @@ using StreamingProject.Application.Service.Chat.ChatRepository;
 using StreamingProject.Application.Service.Permission.PermissionRepository;
 using StreamingProject.Application.Service.Role.RoleRepository;
 using StreamingProject.Application.Service.Stream.StreamRepository;
+using StreamingProject.Application.Service.Subscription.SubscriptionRepository;
 using StreamingProject.Application.Service.User.UserRepository;
 using StreamingProject.Application.Service.Video;
 using StreamingProject.Repository.Authentication;
@@ -13,9 +14,9 @@ using StreamingProject.Repository.Repositories.ChatRepositories;
 using StreamingProject.Repository.Repositories.PermissionRepositories;
 using StreamingProject.Repository.Repositories.RoleRepositories;
 using StreamingProject.Repository.Repositories.StreamRepositories;
+using StreamingProject.Repository.Repositories.SubscriptionRepositories;
 using StreamingProject.Repository.Repositories.UserRepositories;
 using StreamingProject.Repository.Repositories.VideoRepositories;
-using StreamingProject.Repository.StreamingProject.Infrastructure;
 
 namespace StreamingProject.Repository;
 
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IVideoRepository, VideoRepositories>();
         services.AddScoped<IRoleRepository, RoleRepositories>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepositories>();
         
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtProvider, JwtProvider>();

@@ -1,7 +1,7 @@
 using Extensions.Hosting.AsyncInitialization;
 using Microsoft.EntityFrameworkCore;
 
-namespace StreamingProject.Repository.StreamingProject.Infrastructure;
+namespace StreamingProject.Repository;
 
 public class DbInitializer(StreamingDbContext streamingDbContext) : IAsyncInitializer
 {
