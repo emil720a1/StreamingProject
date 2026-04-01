@@ -3,7 +3,7 @@ using Shared;
 using StreamingProject.Contracts.VideoDto;
 using StreamingProject.Contracts.VideoDto.Crud;
 
-namespace StreamingProject.Application.Service.Video;
+namespace StreamingProject.Application.Service.Video.VideoService;
 
 public interface IVideoService
 {

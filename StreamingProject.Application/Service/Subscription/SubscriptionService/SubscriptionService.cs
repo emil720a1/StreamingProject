@@ -15,17 +15,17 @@ public class SubscriptionService : ISubscriptionService
 {
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly IValidator<SubscriptionDto> _subscribeDtoValidator;
-    private readonly IValidator<UnSubscribeDto> _unsubscribeDtoValidator;
-    private readonly IValidator<GetSubscriptionDto> _getSubscriptionDtoValidator;
     private readonly IMapper _mapper;
     private readonly ILogger<SubscriptionService> _logger;
 
-    public SubscriptionService(ISubscriptionRepository subscriptionRepository, IValidator<SubscriptionDto> subscribeDtoValidator, IValidator<UnSubscribeDto> unsubscribeDtoValidator, IValidator<GetSubscriptionDto> getSubscriptionDtoValidator, IMapper mapper, ILogger<SubscriptionService> logger)
+    public SubscriptionService(
+        ISubscriptionRepository subscriptionRepository, 
+        IValidator<SubscriptionDto> subscribeDtoValidator, 
+        IMapper mapper,
+        ILogger<SubscriptionService> logger)
     {
         _subscriptionRepository = subscriptionRepository;
         _subscribeDtoValidator = subscribeDtoValidator;
-        _unsubscribeDtoValidator = unsubscribeDtoValidator;
-        _getSubscriptionDtoValidator = getSubscriptionDtoValidator;
         _mapper = mapper;
         _logger = logger;
     }
@@ -35,79 +35,41 @@ public class SubscriptionService : ISubscriptionService
     {
         var validationResult = await _subscribeDtoValidator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
-        {
             return validationResult.ToErrors();
-        }
 
-        var subscription = new SubscriptionEntity
+        try
         {
-            Id = request.Id,
-            FollowedId = request.FollowedId,
-            FollowerId = request.FollowerId,
-            SubscriptionAt = request.SubscriptionAt ?? DateTime.UtcNow
-        };
-
-        var subscribe = await _subscriptionRepository.SubscribeAsync(subscription);
-
-        if (subscribe == null)
-        {
-            return Failure.FromError(Error.Validation("SubscriptionNotFound", "Subscription not found", "SubscriptionId"));
+            var subscription = SubscriptionEntity.Create(request.FollowerId, request.FollowedId);
+            
+            var result = await _subscriptionRepository.SubscribeAsync(subscription, cancellationToken);
+            _logger.LogInformation("User {FollowerId} followerd {FollowedId}", request.FollowerId, request.FollowedId);
+            
+            return _mapper.Map<SubscriptionDetailsDto>(result);
         }
-        
-        _logger.LogInformation("Subscription created");
-        
-        var detailsDto = _mapper.Map<SubscriptionDetailsDto>(subscribe);
-        return Result.Success < SubscriptionDetailsDto, Failure>(detailsDto);
+        catch (InvalidOperationException ex)
+        {
+            return Failure.FromError(Error.Validation("Subscription.Self", ex.Message));
+        }
     }
 
-    public async Task<Result<SubscriptionDetailsDto, Failure>> UnsubscribeAsync(UnSubscribeDto request,
+    public async Task<Result<bool, Failure>> UnsubscribeAsync(UnSubscribeDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = await _unsubscribeDtoValidator.ValidateAsync(request, cancellationToken);
+        var deleted = await _subscriptionRepository.UnsubscribeAsync(request.FollowerId, request.FollowedId);
 
-        if (!validationResult.IsValid)
+        if (!deleted)
         {
-            return validationResult.ToErrors();
+            return Failure.FromError(Error.NotFound("Subscription.NotFound", "Subscription not found", null));
         }
-
-        var result = await _subscriptionRepository.UnsubscribeAsync(request.FollowerId, request.FollowedId);
-
-        if (result <= 0)
-        {
-            return Failure.FromError(Error.Validation("SubscriptionNotFound", "Subscription not found",
-                "SubscriptionId"));
-        }
-
-        _logger.LogInformation("Subscription deleted");
-
-        var detailsDto = _mapper.Map<SubscriptionDetailsDto>(null);
         
-        return Result.Success<SubscriptionDetailsDto, Failure>(detailsDto);
-
+        _logger.LogInformation("User {FollowerId} unfollowed {FollowedId}", request.FollowerId, request.FollowedId);
+        return true;
     }
 
-    public async Task<Result<List<SubscriptionDetailsDto>, Failure>> GetSubscriptionsAsync(GetSubscriptionDto request,
-        CancellationToken cancellationToken)
+    public async Task<Result<List<SubscriptionDetailsDto>, Failure>> GetSubscriptionsAsync(GetSubscriptionsDto request, CancellationToken cancellationToken)
     {
-        var validationResult = await _getSubscriptionDtoValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-
         var subscriptions = await _subscriptionRepository.GetSubscriptionsAsync(request.FollowerId);
-
-        if (subscriptions == null)
-        {
-            return Failure.FromError(Error.Validation("SubscriptionsNotFound", "Subscriptions not found",
-                "FollowerId"));
-        }
-
-        _logger.LogInformation("Get subscription");
-
         var detailsDto = _mapper.Map<List<SubscriptionDetailsDto>>(subscriptions);
-
         
         return Result.Success<List<SubscriptionDetailsDto>, Failure>(detailsDto);
     }

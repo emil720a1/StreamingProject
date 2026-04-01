@@ -32,3 +32,29 @@ appsettings.Local.json
 .AppleDouble
 .LSOverride
 Icon
+
+# --- NuGet / MSBuild ---
+*.lock.json
+*.nuget.props
+*.nuget.targets
+project.assets.json
+project.dgspec.json
+
+# --- Test Results ---
+TestResults/
+*.trx
+*.userprefs
+
+# --- Rider / Idea Extra ---
+.idea/.idea.*/.idea/indexLayout.xml
+.idea/.idea.*/.idea/projectSettingsUpdater.xml
+.idea/.idea.*/.idea/vcs.xml
+
+# --- OS Specific ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -9,6 +9,7 @@ using StreamingProject.Application.Service.Stream.StreamService;
 using StreamingProject.Application.Service.Subscription.SubscriptionService;
 using StreamingProject.Application.Service.User.UserService;
 using StreamingProject.Application.Service.Video;
+using StreamingProject.Application.Service.Video.VideoService;
 using StreamingProject.Contracts.User;
 
 namespace StreamingProject.Application;

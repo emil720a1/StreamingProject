@@ -6,6 +6,7 @@ namespace StreamingProject.Domain.Chat;
 public class ChatEntity
 {
 
+    private ChatEntity() { }
     private ChatEntity(
         Guid id, 
         Guid streamId, 
@@ -19,24 +20,14 @@ public class ChatEntity
         Message = message;
         SentTime = sentTime;
     }
-
-
-    private ChatEntity()
-    {
-    }
-
-    public Guid Id { get; set; }
+    public Guid Id { get; private set; }
     
-    public Guid StreamId { get; set; }
-    public StreamEntity Stream { get; set; }
-    
-    public string Message { get; set; }
-    
-    public DateTime SentTime { get; set; }
-    
-    
-    public Guid UserId { get; set; }
-    public UserEntity User { get; set; }
+    public Guid StreamId { get; private set; }
+    public Guid UserId { get; private set; }
+    public string Message { get; private set; } = string.Empty;
+    public DateTime SentTime { get; private set; }
+    public StreamEntity Stream { get; private set; }
+    public UserEntity User { get; private set; }
 
     public static ChatEntity Create(Guid streamId, Guid userId, string message)
     {
@@ -45,13 +36,23 @@ public class ChatEntity
             throw new ArgumentException("Message cannot be null or empty");
         }
 
-        var chat = new ChatEntity(
-            Guid.NewGuid(),
-            streamId,
-            userId,
-            message,
-            DateTime.UtcNow);
+        return new ChatEntity
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            StreamId = streamId,
+            Message = message,
+            SentTime = DateTime.UtcNow
+        };
+    }
+
+    public void UpdateText(string newMessage)
+    {
+        if (string.IsNullOrWhiteSpace(newMessage))
+        {
+            throw new InvalidOperationException("New message text cannot be empty.");
+        }
         
-        return chat;
+        Message = newMessage;
     }
 }

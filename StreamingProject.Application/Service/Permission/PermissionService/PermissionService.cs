@@ -16,109 +16,54 @@ namespace StreamingProject.Application.Service.Permission.PermissionService;
 public class PermissionService : IPermissionService
 {
     private readonly IPermissionRepository _permissionRepository;
-    private readonly IValidator<AddPermissionDto> _addPermissionDtoValidator;
-    private readonly IValidator<GetPermissionsDto> _getPermissionDtoValidator;
-    private readonly IValidator<UpdatePermissionDto> _updatePermissionDtoValidator;
-    private readonly IValidator<RemovePermissionDto> _removePermissionDtoValidator;
     private readonly IMapper _mapper;
     private readonly ILogger<PermissionService> _logger;
+    private readonly IValidator<AddPermissionDto> _addPermissionDtoValidator;
 
-    public PermissionService(IUserRepository usersRepository, IValidator<AddPermissionDto> addPermissionDtoValidator, IValidator<RemovePermissionDto> removePermissionDtoValidator, IValidator<GetPermissionsDto> getPermissionDtoValidator, IValidator<UpdatePermissionDto> updatePermissionDtoValidator, IMapper mapper, ILogger<PermissionService> logger, IPermissionRepository permissionRepository, IValidator<RemovePermissionDto> removePermissionDtoValidator1)
+    public PermissionService(
+        IPermissionRepository permissionRepository,
+        IMapper mapper, 
+        ILogger<PermissionService> logger,
+        IValidator<AddPermissionDto> addPermissionDtoValidator)
     {
-        _addPermissionDtoValidator = addPermissionDtoValidator;
-        _getPermissionDtoValidator = getPermissionDtoValidator;
-        _removePermissionDtoValidator = removePermissionDtoValidator1;
-        _updatePermissionDtoValidator = updatePermissionDtoValidator;
+        _permissionRepository = permissionRepository;
         _mapper = mapper;
         _logger = logger;
-        _permissionRepository = permissionRepository;
+        _addPermissionDtoValidator = addPermissionDtoValidator;
     }
 
 
     public async Task<Result<PermissionDetailsDto, Failure>> AddPermissionAsync(AddPermissionDto request, CancellationToken cancellationToken)
     {
-        var validationResult = await _addPermissionDtoValidator.ValidateAsync(request, cancellationToken);
+        var validation = await _addPermissionDtoValidator.ValidateAsync(request, cancellationToken);
+        if (!validation.IsValid) return validation.ToErrors();
 
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-
-        var permissions = new PermissionEntity
-        {
-            Id = Guid.NewGuid().ToByteArray().GetHashCode(),
-            Name = request.Name
-        };
+        var permission = PermissionEntity.Create(0, request.Name);
         
+        var savedPermission = await _permissionRepository.AddPermissionAsync(permission);
+        _logger.LogInformation("Permission {PermissionName} created",savedPermission.Name );
         
-        var savePermissions = await _permissionRepository.AddPermissionAsync(permissions.Id, permissions);
-        
-        return _mapper.Map<PermissionDetailsDto>(savePermissions);
+        var detailsDto = _mapper.Map<PermissionDetailsDto>(savedPermission);
+        return Result.Success<PermissionDetailsDto, Failure>(detailsDto);
     }
 
     
-    
-
     public async Task<Result<List<PermissionDetailsDto>, Failure>> GetPermissionsAsync(GetPermissionsDto request, CancellationToken cancellationToken)
     {
-        var validationResult = await _getPermissionDtoValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-
         var permissions = await _permissionRepository.GetPermissionsAsync(request.UserId);
 
-        var details = _mapper.Map<List<PermissionDetailsDto>>(permissions);
-        
-        return Result.Success<List<PermissionDetailsDto>, Failure>(details);
+        return _mapper.Map<List<PermissionDetailsDto>>(permissions);      
     }
 
-    public async Task<Result<bool, Failure>> UpdatePermissionAsync(UpdatePermissionDto request, CancellationToken cancellationToken)
-    {
-        var validationResult = await _updatePermissionDtoValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-
-        var permission = await _permissionRepository.GetPermissionAsync(request.UserId);
-        
-        var savePermissions = await _permissionRepository.UpdatePermissionAsync(permission.Id, permission);
-        
-        
-        var result = _mapper.Map<bool>(savePermissions);
-        
-        _logger.LogInformation("Permission updated");
-        
-        
-        return result;
-    }
     
-    
-    public async Task<Result<bool, Failure>> RemovePermissionAsync(RemovePermissionDto request, CancellationToken cancellationToken)
+    public async Task<Result<bool, Failure>> RemovePermissionAsync(Guid userId, int permissionId, CancellationToken cancellationToken)
     {
-        var validationResult = await _removePermissionDtoValidator.ValidateAsync(request, cancellationToken);
+        var success = await _permissionRepository.RemovePermissionAsync(userId, permissionId);
 
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-
+        if (!success)
+            return Failure.FromError(Error.NotFound("Permission.NotFound", "User doesn't have this permission", null));
         
-        var toDeletePermissions = await _permissionRepository.RemovePermissionAsync(request.UserId, request.Permission);
-
-        if (!toDeletePermissions)
-        {
-            return Failure.FromError(Error.Validation("MessageNotFound", "message not found", "messageId"));
-        }
-        
-        var result = Result.Success<bool, Failure>(toDeletePermissions);
-        
-        _logger.LogInformation("Permission Removed");
-        
-        return result;
+        _logger.LogInformation("Permission {PermissionId} removed from user {UserId}", permissionId, userId);
+        return true;
     }
 }

@@ -12,8 +12,23 @@ public class ChatConfiguration : IEntityTypeConfiguration<ChatEntity>
 
         builder.HasKey(x => x.Id);
         
-        builder.Property(x => x.Message).IsRequired().HasMaxLength(500);
+        builder.Property(x => x.Message)
+            .IsRequired()
+            .HasMaxLength(1000);
+        
+        builder.Property(x => x.SentTime)
+            .IsRequired();
+        
+        builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(x => x.Stream)
+            .WithMany(s => s.ChatMessages)
+            .HasForeignKey(x => x.StreamId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasIndex(x => x.StreamId);
     }
-
-   
 }

@@ -9,7 +9,7 @@ public class PermissionSeeder : ISeeder
         _context = context;
     }
     
-    public Task SeedAsync()
+    public async Task SeedAsync(StreamingDbContext context)
     {
         throw new NotImplementedException();
     }

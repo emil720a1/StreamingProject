@@ -5,9 +5,9 @@ namespace StreamingProject.Application.Service.Subscription.SubscriptionReposito
 
 public interface ISubscriptionRepository
 {
-    Task<SubscriptionEntity> SubscribeAsync(SubscriptionEntity subscription);
+    Task<SubscriptionEntity> SubscribeAsync(SubscriptionEntity subscription, CancellationToken isAny);
     
-    Task<int> UnsubscribeAsync(Guid FollowerId, Guid FollowedId);
+    Task<bool> UnsubscribeAsync(Guid FollowerId, Guid FollowedId);
 
     Task<List<SubscriptionEntity>> GetSubscriptionsAsync(Guid FollowerId);
     

@@ -8,6 +8,7 @@ using StreamingProject.Application.Service.Stream.StreamRepository;
 using StreamingProject.Application.Service.Subscription.SubscriptionRepository;
 using StreamingProject.Application.Service.User.UserRepository;
 using StreamingProject.Application.Service.Video;
+using StreamingProject.Application.Service.Video.VideoRepository;
 using StreamingProject.Repository.Authentication;
 using StreamingProject.Repository.Repositories;
 using StreamingProject.Repository.Repositories.ChatRepositories;
@@ -29,7 +30,7 @@ public static class DependencyInjection
         services.AddScoped<IStreamRepository, StreamRepositories>();
         services.AddScoped<IChatRepository, ChatRepositories>();
         services.AddScoped<IVideoRepository, VideoRepositories>();
-        services.AddScoped<IRoleRepository, RoleRepositories>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepositories>();
         

@@ -10,20 +10,32 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
 {
     public void Configure(EntityTypeBuilder<RoleEntity> builder)
     {
+        builder.ToTable("Roles");
 
         builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.Name)
+            .IsRequired()
+            .HasMaxLength(50);
+        
+        builder.HasIndex(x => x.Name).IsUnique();
 
         builder.HasMany(r => r.Permissions)
             .WithMany(p => p.Roles)
             .UsingEntity<RolePermissionEntity>(
-                l => 
-                    l.HasOne(e => e.Permission)
+                j => 
+                    j.HasOne(rp => rp.Permission)
                     .WithMany()
-                    .HasForeignKey(e => e.PermissionId),
-                r =>
-                    r.HasOne(e => e.Role)
+                    .HasForeignKey(rp => rp.PermissionId),
+                j =>
+                    j.HasOne(rp => rp.Role)
                         .WithMany()
-                        .HasForeignKey(e => e.RoleId));
+                        .HasForeignKey(rp => rp.RoleId),
+                j =>
+                {
+                    j.ToTable("RolePermissions");
+                    j.HasKey(rp => new { rp.RoleId, rp.PermissionId });
+                });
 
         var roles = Enum
             .GetValues<RoleEnum>()

@@ -9,7 +9,7 @@ public class RoleSeeder : ISeeder
         _context = context;
     }
 
-    public Task SeedAsync()
+    public Task SeedAsync(StreamingDbContext context)
     {
         throw new NotImplementedException();
     }

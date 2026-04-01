@@ -16,19 +16,22 @@ namespace StreamingProject.Application.Service.Stream.StreamService;
 public class StreamService : IStreamService
 {
     private readonly IStreamRepository _streamRepository;
-    private readonly IValidator<CreateStreamDto> _createStreamDtoValidator;
-    private readonly IValidator<JoinStreamDto> _joinStreamDtoValidator;
-    private readonly IValidator<GetStreamByIdDto> _getStreamByIdDtoValidator;
     private readonly IMapper _mapper;
     private readonly ILogger<StreamService> _logger;
+    private readonly IValidator<CreateStreamDto> _createStreamDtoValidator;
+    private readonly IValidator<JoinStreamDto> _joinStreamDtoValidator;
     
     
-    public StreamService(IStreamRepository streamRepository, ILogger<StreamService> logger, IValidator<CreateStreamDto> createStreamDtoValidator, IMapper mapper, IValidator<JoinStreamDto> joinStreamDtoValidator, IValidator<GetStreamByIdDto> getStreamByIdDtoValidator)
+    public StreamService(
+        IStreamRepository streamRepository,
+        ILogger<StreamService> logger, 
+        IValidator<CreateStreamDto> createStreamDtoValidator,
+        IMapper mapper, 
+        IValidator<JoinStreamDto> joinStreamDtoValidator)
     {
         _streamRepository = streamRepository;
         _createStreamDtoValidator = createStreamDtoValidator;
         _joinStreamDtoValidator = joinStreamDtoValidator;
-        _getStreamByIdDtoValidator = getStreamByIdDtoValidator;
         _mapper = mapper;
         _logger = logger;
     }
@@ -36,14 +39,13 @@ public class StreamService : IStreamService
     public async Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(CreateStreamDto request, CancellationToken cancellationToken)
     {
         var validationResult = await _createStreamDtoValidator.ValidateAsync(request, cancellationToken);
-
         if (!validationResult.IsValid)
-        {
             return validationResult.ToErrors();
-        }
+        
         var stream = StreamEntity.Create(request.UserId);
 
         var savedStream = await _streamRepository.AddStreamAsync(stream);
+        _logger.LogInformation("Stream {StreamId} created with key {StreamKey}", savedStream.Id, savedStream.StreamKey);
         
         return _mapper.Map<StreamDetailsDto>(savedStream);
     }
@@ -51,73 +53,40 @@ public class StreamService : IStreamService
     public async Task<Result<StreamDetailsDto, Failure>> JoinStreamAsync(JoinStreamDto request, CancellationToken cancellationToken)
     {
         var validationResult = await _joinStreamDtoValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
+        if (!validationResult.IsValid) return validationResult.ToErrors();
         
-        var streamToJoin = await _streamRepository.GetStreamByIdAsync(request.StreamId);
+        var stream = await _streamRepository.GetStreamByIdAsync(request.StreamId);
 
-        if (streamToJoin == null)
-        {
-            var error = Error.Validation("StreamNotFound", "Stream not found", "StreamId");
-            return Failure.FromError(error);
-        }
+        if (stream == null)
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
 
-        if (streamToJoin.EndTime.HasValue && DateTime.UtcNow > streamToJoin.EndTime)
-        {
-            return Failure.FromError(Error.Validation("StreamEnded", "Stream ended", "StreamId"));
-        }
+        if (stream.EndTime.HasValue)
+            return Failure.FromError(Error.Validation("Stream.EndTime", "This stream has already ended", null));
         
         var alreadyJoined = await _streamRepository.HasJoinedStreamAsync(request.StreamId, request.UserId);
 
         if (alreadyJoined)
-        {
             return Failure.FromError(Error.Conflict("AlreadyJoined", "User already joined"));
-        }
 
-
-        var userStreams = new UserStream()
-        {
-            UserId = request.UserId,
-            StreamId = request.StreamId,
-        };
-
-        var updatedStream = await _streamRepository.AddParticipantAsync(userStreams);
-
-        if (updatedStream == null)
-        {
-            return Failure.FromError(Error.Internal("DbError", "Failed to save participant list"));
-        }
+        var participant = UserStream.Create(request.UserId, request.StreamId);
         
-        _logger.LogInformation("User joined stream");
-        
-        var detailsDto = _mapper.Map<StreamDetailsDto>(streamToJoin);
-        
-        return Result.Success<StreamDetailsDto, Failure>(detailsDto);
+        var result = await _streamRepository.AddParticipantAsync(participant);
+        if (result == null)
+            return Failure.FromError(Error.Internal("Db.Error", "Failed to join stream"));
+
+        _logger.LogInformation("User {UserId} joined stream {StreamId}", request.UserId, request.StreamId);
+      
+        return _mapper.Map<StreamDetailsDto>(stream);
     }
 
     public async Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(GetStreamByIdDto request, CancellationToken cancellationToken)
     {
-        var validationResult = await _getStreamByIdDtoValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
         var stream = await _streamRepository.GetStreamByIdAsync(request.streamId);
 
         if (stream == null)
-        {
-            var error = Error.Validation("StreamNotFound", "Stream not found", "StreamId");
-
-            return Failure.FromError(error);
-        }
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
         
-        var detailsDto = _mapper.Map<StreamDetailsDto>(stream);
-        return Result.Success<StreamDetailsDto, Failure>(detailsDto);
-        
+        return _mapper.Map<StreamDetailsDto>(stream);
     }
 
     public async Task<Result<bool, Failure>> ValidateStreamKeyAsync(string streamKey, CancellationToken cancellationToken)
@@ -126,9 +95,9 @@ public class StreamService : IStreamService
 
         if (!keyExists)
         {
-            return Failure.FromError(Error.Internal("StreamKeyNotFound", "streamKey not found"));
+            _logger.LogWarning("Invalid stream key attempt: {Key}", streamKey);
+            return Failure.FromError(Error.Unauthorized("StreamKey.Invalid", "Invalid or non-existent stream key"));
         }
-
-        return Result.Success<bool, Failure>(true);
+        return true;
     }
 }

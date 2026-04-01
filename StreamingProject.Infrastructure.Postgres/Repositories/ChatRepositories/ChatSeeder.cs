@@ -10,7 +10,7 @@ public class ChatSeeder : ISeeder
     }
     
     
-    public Task SeedAsync()
+    public async Task SeedAsync(StreamingDbContext context)
     {
         throw new NotImplementedException();
     }

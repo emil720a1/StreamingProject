@@ -9,16 +9,17 @@ public class PermissionConfiguration : IEntityTypeConfiguration<PermissionEntity
 {
     public void Configure(EntityTypeBuilder<PermissionEntity> builder)
     {
+        builder.ToTable("Permissions");
         builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Name)
+            .IsRequired()
+            .HasMaxLength(100);
         
-        var permissions = Enum
-            .GetValues<PermissionEnum>()
-            .Select(p => new PermissionEntity
-        {
-            Id = (int)p,
-            Name = p.ToString()    
-        });
+        builder.HasIndex(x => x.Name).IsUnique();
+
+        var permissions = Enum.GetValues<PermissionEnum>()
+            .Select(p => PermissionEntity.Create((int)p, p.ToString()));
         
         builder.HasData(permissions);
     }

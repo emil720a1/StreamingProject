@@ -34,33 +34,29 @@ public class UserRepository : IUserRepository
         
         await _dbContext.Users.AddAsync(user);
         await _dbContext.SaveChangesAsync();
-
         return user;
     }
 
-
     public async Task<UserEntity> UpdateUserAsync(UserEntity user)
     {
-        _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync();
-
         return user;
     }
 
     public async Task<bool> DeleteUserAsync(Guid id)
     {
-        var user = await GetUserById(id);
-        if (String.IsNullOrEmpty(user?.Id.ToString())) return false;
-
-        _dbContext.Users.Remove(user);
-        await _dbContext.SaveChangesAsync();
-
-        return true;
+        var deletedCount = await _dbContext.Users
+            .Where(u => u.Id == id)
+            .ExecuteDeleteAsync();
+        
+        return deletedCount > 0;
     }
 
     public async Task<UserEntity?> GetUserById(Guid id)
     {
         return await _dbContext.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
@@ -74,35 +70,32 @@ public class UserRepository : IUserRepository
     public async Task<bool> UserExists(string username, string email)
     {
         return await _dbContext.Users
-            .FirstOrDefaultAsync(a => a.Username == username && a.Email == email) != null;
+            .AnyAsync(u => u.Username == username || u.Email == email);
     }
     
 
-    public async Task<UserEntity> GetByEmail(string email)
+    public async Task<UserEntity?> GetByEmail(string email)
     {
         return await _dbContext.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Email == email) ?? throw new Exception("User not found");
+            .FirstOrDefaultAsync(a => a.Email == email);
     }
 
     public async Task<HashSet<PermissionEnum>> GetUserPermissions(Guid userId)
     {
-        var user = await _dbContext.Users
-            .AsNoTracking()
-            .Include(a => a.UserRoles)
-               .ThenInclude(ur => ur.Role)
-                   .ThenInclude(r => r.Permissions)
-            .Where(u => u.Id == userId)
-            .FirstOrDefaultAsync();
+        var permissions = await _dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .ThenInclude(r => r.Permissions)
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.UserRoles)
+                .Select(ur => ur.Role)
+                .SelectMany(r => r.Permissions)
+                .Select(p => (PermissionEnum)p.Id)
+                .ToListAsync();
         
-        if (user == null) return new HashSet<PermissionEnum>();
-
-        return user.UserRoles
-            .Select(ur => ur.Role)
-            .Where(r => r != null)
-            .SelectMany(r => r.Permissions)
-            .Select(p => (PermissionEnum)p.Id)
-            .ToHashSet();
+        return permissions.ToHashSet();
     }
 }
 

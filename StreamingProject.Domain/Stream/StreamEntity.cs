@@ -6,8 +6,6 @@ namespace StreamingProject.Domain.Stream;
 
 public class StreamEntity
 {
-
-
     private StreamEntity()
     {
         ChatMessages = new List<ChatEntity>();
@@ -17,50 +15,61 @@ public class StreamEntity
     private StreamEntity(
         Guid id, 
         Guid userId, 
-        Guid chatId, 
-        DateTime startTime, 
-        int likeCount) : this()
+        string streamKey, 
+        Guid chatId) : this()
     {
         Id = id;
         UserId = userId;
+        StreamKey = streamKey;
         ChatId = chatId;
-        StartTime = startTime;
-        LikeCount = likeCount;
-
     }
-    public Guid Id { get; set; }
     
-    public string StreamKey { get; set; }
-    public Guid ChatId { get; set; }
+    public string Title { get; private set; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
+    public Guid Id { get; private set; }
     
-    public Guid UserId { get; set; }
+    public string StreamKey { get; private set; }
+    public Guid UserId { get; private set; }
+    public Guid ChatId { get; private set; }
     
-    public VideoEntity VideoEntity { get; set; }
     
-    public UserEntity User { get; set; }
-    
-    public ICollection<ChatEntity> ChatMessages { get; set; }
-    
-    public ICollection<StreamLikeEntity> Likes { get; set; }
-    
-    public DateTime? StartTime { get; set; }
-    
-    public DateTime? EndTime { get; set; }
-    
-    public int LikeCount { get; set; }
+    public DateTime? StartTime { get; private set; }
+    public DateTime? EndTime { get; private set; }
+    public UserEntity User { get; private set; }
+    public VideoEntity VideoEntity { get; private set; }
 
-
-
+    private readonly List<UserStream.UserStream> _participants = new();
+    public IReadOnlyList<UserStream.UserStream> Participants => _participants;
+    
+    public ICollection<ChatEntity> ChatMessages { get; private set; }
+    
+    public ICollection<StreamLikeEntity> Likes { get; private set; }
+    
     public static StreamEntity Create(Guid userId)
     {
+        
+        var key = $"sk_{Guid.NewGuid().ToString("N").Substring(0, 12)}";
         return new StreamEntity
         (
             Guid.NewGuid(),
             userId,
-            Guid.NewGuid(),
-            DateTime.UtcNow,
-            0
+            key,
+           Guid.NewGuid()
         );
     }
-    
+
+    public void UpdateMetadata(string title, string description)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new InvalidOperationException("Title cannot be empty.");
+        
+        Title = title;
+        Description = description;
+    }
+
+    public void StartStream()
+    {
+        StartTime = DateTime.Now;
+        EndTime = null;
+    }
 }

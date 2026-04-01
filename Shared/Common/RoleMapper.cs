@@ -1,5 +1,6 @@
 using AutoMapper;
 using StreamingProject.Contracts.Roles;
+using StreamingProject.Contracts.Roles.RoleDetailsDto;
 using StreamingProject.Domain.Permission;
 using StreamingProject.Domain.User;
 using StreamingProject.Domain.User.UserRole;

@@ -1,6 +1,6 @@
 using StreamingProject.Domain.Video;
 
-namespace StreamingProject.Application.Service.Video;
+namespace StreamingProject.Application.Service.Video.VideoRepository;
 
 public interface IVideoRepository
 {

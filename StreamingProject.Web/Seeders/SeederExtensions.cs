@@ -8,11 +8,13 @@ public static class SeederExtensions
     {
         using var scope = app.Services.CreateScope();
 
+        var context = scope.ServiceProvider.GetRequiredService<StreamingDbContext>();
+        
         var seeders = scope.ServiceProvider.GetServices<ISeeder>();
 
         foreach (var seeder in seeders)
         {
-            await seeder.SeedAsync();
+            await seeder.SeedAsync(context);
         }
         
         return app;
