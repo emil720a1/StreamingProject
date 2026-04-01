@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
  
  namespace StreamingProject.Repository.Repositories.RoleRepositories;
  
- public class RoleRepositories : IRoleRepository
+ public class RoleRepository : IRoleRepository
  {
      private readonly StreamingDbContext _dbContext;
  
-     public RoleRepositories(StreamingDbContext dbContext)
+     public RoleRepository(StreamingDbContext dbContext)
      {
          _dbContext = dbContext;
      }
@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
      public async Task<RoleEntity> AddRoleAsync(RoleEntity role)
      {
          await _dbContext.Roles.AddAsync(role);
-         
          await _dbContext.SaveChangesAsync();
 
          return role;
@@ -26,6 +25,7 @@ using Microsoft.EntityFrameworkCore;
      {
         return await _dbContext.Roles
             .AsNoTracking()
+            .Include(r => r.Permissions)
             .FirstOrDefaultAsync(a => a.Name == name);
      }
  
@@ -46,17 +46,10 @@ using Microsoft.EntityFrameworkCore;
 
      public async Task<bool> DeleteRoleAsync(int id)
      {
-         var role = await _dbContext.Roles.FindAsync(id);
+         var deletedCount = await _dbContext.Roles
+             .Where(r => r.Id == id)
+             .ExecuteDeleteAsync();
 
-         if (role == null)
-         {
-             return false;
-         }
-         
-         _dbContext.Roles.Remove(role);
-         
-         var result = await _dbContext.SaveChangesAsync();
-         
-         return result > 0;
+         return deletedCount > 0;
      }
  }

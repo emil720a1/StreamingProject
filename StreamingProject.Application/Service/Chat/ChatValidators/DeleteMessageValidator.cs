@@ -1,5 +1,6 @@
 using FluentValidation;
 using StreamingProject.Contracts.Chat;
+using StreamingProject.Contracts.Chat.CrudDtos;
 using StreamingProject.Contracts.User;
 
 namespace StreamingProject.Application.Service.Chat.ChatValidators;

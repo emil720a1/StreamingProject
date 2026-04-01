@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StreamingProject.Application.Service.Role.RoleService;
 using StreamingProject.Contracts.Roles;
-using StreamingProject.Contracts.VideoDto.Crud;
 using StreamingProject.Presenters.ResponseExtensions;
 
-namespace StreamingProject.Presenters;
+namespace StreamingProject.Presenters.Controllers;
 
 
 
@@ -43,7 +42,7 @@ public class RoleController : ControllerBase
         CancellationToken cancellationToken)
     {
 
-        var result = await _roleService.GetRoleByName(request, cancellationToken);
+        var result = await _roleService.GetRoleByNameAsync(request, cancellationToken);
         
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
@@ -55,14 +54,14 @@ public class RoleController : ControllerBase
         [FromQuery] GetRoleByIdDto request,
         CancellationToken cancellationToken)
     {
-        var result = await _roleService.GetRoleById(request, cancellationToken);
+        var result = await _roleService.GetRoleByIdAsync(request, cancellationToken);
 
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
 
 
     [Authorize(Policy = "Permission.Update")]
-    [HttpPost("update")]
+    [HttpPut("update")]
 
     public async Task<IActionResult> UpdateRole(
         [FromBody] UpdateRoleDto request,
@@ -74,9 +73,8 @@ public class RoleController : ControllerBase
     }
     
     
-    [AllowAnonymous]
-    // [Authorize(Policy = "Permission.Delete")]
-    [HttpPost("delete")]
+    [Authorize(Policy = "Permission.Delete")]
+    [HttpDelete("delete")]
 
     public async Task<IActionResult> DeleteRole(
         [FromBody] DeleteRoleDto request,
@@ -87,6 +85,4 @@ public class RoleController : ControllerBase
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
         
     }
-    
-    
 }

@@ -1,3 +1,3 @@
-namespace StreamingProject.Contracts.Chat;
+namespace StreamingProject.Contracts.Chat.CrudDtos;
 
 public record DeleteMessageDto(Guid Id );

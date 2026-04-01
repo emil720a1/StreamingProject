@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StreamingProject.Application.Service.Video;
+using StreamingProject.Application.Service.Video.VideoRepository;
 using StreamingProject.Domain.Video;
 
 namespace StreamingProject.Repository.Repositories.VideoRepositories;

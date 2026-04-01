@@ -1,16 +1,11 @@
-using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using StreamingProject.Application;
 using StreamingProject.Application.Service.User.UserService;
-using StreamingProject.Contracts.Streams;
 using StreamingProject.Contracts.User;
 using StreamingProject.Contracts.User.AuthDto;
 using StreamingProject.Presenters.ResponseExtensions;
-using StreamingProject.Repository.AuthorizeAttributes;
 
-namespace StreamingProject.Presenters;
+namespace StreamingProject.Presenters.Controllers;
 
 
 [ApiController]
@@ -25,36 +20,45 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
     
-    [HttpPost("/register")]
+    [HttpPost("register")]
 
     public async Task<IActionResult> Register(
       [FromBody]  RegisterUserRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _userService.Register(request.Username, request.Email, request.Password);
+        var addUserDto = new AddUserDto(
+            request.Username, 
+            request.Email, 
+            request.Password, 
+            null, 
+            null);
+        
+        var result = await _userService.RegisterAsync(addUserDto, cancellationToken);
         
         return result.IsFailure 
             ? result.Error.ToResponse() 
             : Ok(result.Value);
     }
     
-    [HttpPost("/login")]
+    [HttpPost("login")]
 
     public async Task<IActionResult> Login(
       [FromBody]  LoginUserRequest request,
         CancellationToken cancellationToken)
     {
-        var token = await _userService.Login(request.Email, request.Password);
+        var result = await _userService.LoginAsync(request.Email, request.Password);
+
+        if (result.IsFailure)
+        {
+            return result.Error.ToResponse();
+        }
         
-        HttpContext.Response.Cookies.Append("tasty-cookies", token.Value);
-        
-        return token.IsFailure 
-            ? token.Error.ToResponse() 
-            : Ok(token.Value);
+        HttpContext.Response.Cookies.Append("tasty-cookies", result.Value);
+        return Ok(result.Value);
     }
 
     [Authorize(Policy = "Permission.Read")]
-    [HttpGet("/get")]
+    [HttpGet("profile")]
     public async Task<IActionResult> GetProfile(CancellationToken cancellationToken)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -73,7 +77,7 @@ public class UsersController : ControllerBase
     
     
     [Authorize(Policy = "Permission.Read")]
-    [HttpGet("/streams")]
+    [HttpGet("streams")]
     public async Task<IActionResult> GetStreamsByUserId(CancellationToken cancellationToken)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -84,7 +88,7 @@ public class UsersController : ControllerBase
         }
         var request = new GetUserDto(userId);
         
-        var streams = await _userService.GetStreamsByUserId(request, cancellationToken);
+        var streams = await _userService.GetStreamsByUserIdAsync(request, cancellationToken);
         
         return streams.IsFailure ? streams.Error.ToResponse() : Ok(streams.Value);
     }

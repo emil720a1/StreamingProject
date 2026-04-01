@@ -6,6 +6,7 @@ using Shared;
 using Shared.Extensions;
 using StreamingProject.Application.Service.Chat.ChatRepository;
 using StreamingProject.Contracts.Chat;
+using StreamingProject.Contracts.Chat.CrudDtos;
 using StreamingProject.Domain;
 using StreamingProject.Domain.Chat;
 
@@ -14,119 +15,80 @@ namespace StreamingProject.Application.Service.Chat.CharService;
 public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRepository;
-    private readonly IValidator<SendMessageDto> _sendMessageDtoValidator;
-    private readonly IValidator<GetChatMessagesDto> _chatMessagesDtoValidator;
-    private readonly IValidator<DeleteMessageDto> _deleteMessageDtoValidator;
-    private readonly IValidator<UpdateMessageDto> _updateMessageDtoValidator;
     private readonly IMapper _mapper;
     private readonly ILogger<ChatService> _logger;
-
-    public ChatService(IChatRepository chatRepository, ILogger<ChatService> logger, IValidator<SendMessageDto> sendMessageDtoValidator, IMapper mapper, IValidator<GetChatMessagesDto> chatMessagesDtoValidator, IValidator<DeleteMessageDto> deleteMessageDtoValidator, IValidator<UpdateMessageDto> updateMessageDtoValidator)
+    private readonly IValidator<SendMessageDto> _sendMessageDtoValidator;
+    
+    public ChatService(
+        IChatRepository chatRepository, 
+        ILogger<ChatService> logger, 
+        IMapper mapper,
+        IValidator<SendMessageDto> sendMessageDtoValidator)
     {
         _chatRepository = chatRepository;
         _sendMessageDtoValidator = sendMessageDtoValidator;
-        _chatMessagesDtoValidator = chatMessagesDtoValidator;
-        _deleteMessageDtoValidator = deleteMessageDtoValidator;
-        _updateMessageDtoValidator = updateMessageDtoValidator;
         _mapper = mapper;
         _logger = logger;
     }
 
 
-    public async Task<Result<ChatDetailsDto, Failure>> SendMessageAsync(SendMessageDto request, Guid UserId, CancellationToken cancellationToken)
+    public async Task<Result<ChatDetailsDto, Failure>> SendMessageAsync(SendMessageDto request, Guid userId, CancellationToken cancellationToken)
     {
         var validationResult = await _sendMessageDtoValidator.ValidateAsync(request, cancellationToken);
-
         if (!validationResult.IsValid)
         {
             return validationResult.ToErrors();
         }
 
-        var messages = await _chatRepository.GetChatMessageById(request.StreamId);
+        var messageEntity = ChatEntity.Create(userId, request.StreamId, request.Message);
         
-        var result =  await _chatRepository.SendMessageAsync(messages); 
-        var detailsDto = _mapper.Map<ChatDetailsDto>(result);
-
-        return Result.Success < ChatDetailsDto, Failure>(detailsDto);
+        var result =  await _chatRepository.SendMessageAsync(messageEntity); 
+        
+        _logger.LogInformation("User {UserId} sent message to stream {StreamId}", userId, request.StreamId);
+        return _mapper.Map<ChatDetailsDto>(result);
     }
 
     public async Task<Result<List<ChatDetailsDto>, Failure>> GetChatMessagesAsync(GetChatMessagesDto request, CancellationToken cancellationToken)
     {
-        var validationResult = await _chatMessagesDtoValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-        
         var messages = await _chatRepository.GetChatMessagesAsync(request.StreamId);
         
-        var detailsDto = _mapper.Map<List<ChatDetailsDto>>(messages);
-        
-        return Result.Success<List<ChatDetailsDto>, Failure>(detailsDto);
+        return _mapper.Map<List<ChatDetailsDto>>(messages);
     }
 
-
-  
-
-    public async Task<Result<bool, Failure>> DeleteChatMessageAsync(DeleteMessageDto request, Guid UserId, CancellationToken cancellationToken)
+    public async Task<Result<bool, Failure>> DeleteChatMessageAsync(Guid messageId, Guid userId, CancellationToken cancellationToken)
     {
-        
-        var validationResult = await _deleteMessageDtoValidator.ValidateAsync(request, cancellationToken);
+        var message = await _chatRepository.GetChatMessageById(messageId);
 
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-
-        var toDeleteChat = await _chatRepository.DeleteChatMessageAsync(request.Id);
-
-
-        if (!toDeleteChat)
-        {
-            return Failure.FromError(Error.Validation("MessageNotFound", "Message not found", "MessageId"));
-        }
+        if (message == null)
+            return Failure.FromError(Error.NotFound("Chat.MessageNotFound", "Message not found", null));
         
+        if (message.UserId != userId)
+            return Failure.FromError(Error.Unauthorized( "Chat.Unauthorized", "You cannot delete someone else's message"));
         
-        var result = Result.Success<bool, Failure>(toDeleteChat);
+        var success = await _chatRepository.DeleteChatMessageAsync(messageId);
+        _logger.LogInformation("Message {MessageId} deleted by user {UserId}",  messageId, userId);
         
-        _logger.LogInformation("Message deleted");
-        return result;
+        return success;
     }
 
     public async Task<Result<bool, Failure>> UpdateChatMessageAsync(UpdateMessageDto request, Guid userId, CancellationToken cancellationToken)
     {
-        var validationResult = await _updateMessageDtoValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
-
-        var chatEntity = await _chatRepository.GetChatMessageById(request.streamId);
-
-        if (chatEntity is null)
-        {
-            return Failure.FromError(Error.Validation("MessageNotFound", "Message not found", "MessageId"));
-        }
-
-        if (chatEntity.UserId != userId)
-        {
-            return Failure.FromError(Error.Unauthorized("Unauthorized", "Unauthorized"));
-        }
-
-        chatEntity.Message = request.newText;
+        var message = await _chatRepository.GetChatMessageById(request.MessageId);
         
-        var toUpdateChat = await _chatRepository.UpdateChatMessageAsync(chatEntity);
+        if (message == null)
+            return Failure.FromError(Error.NotFound("Chat.MessageNotFound", "Message not found", null));
 
-        if (!toUpdateChat)
+        if (message.UserId != userId)
         {
-            return Failure.FromError(Error.Validation("MessageNotFound", "Message not found", "MessageId"));
+            _logger.LogWarning("User {UserId} tried to edit message {MessageId} owned by {OwnerId}", userId, message.Id, message.UserId);
+            return Failure.FromError(Error.Unauthorized("Chat.Unauthorized", "You cannot edit someone else's message"));
         }
         
-        var result = Result.Success<bool, Failure>(toUpdateChat);
+        message.UpdateText(request.NewText);
         
-        _logger.LogInformation("Message updated");
-        return result;
+        var success = await _chatRepository.UpdateChatMessageAsync(message);
+        _logger.LogInformation("Message {MessageId} updated by user {UserId}", message.Id, userId);
+        
+        return success;
     }
 }

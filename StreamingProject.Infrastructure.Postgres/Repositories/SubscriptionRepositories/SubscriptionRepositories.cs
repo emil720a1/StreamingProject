@@ -14,7 +14,7 @@ public class SubscriptionRepositories : ISubscriptionRepository
     }
     
 
-    public async Task<SubscriptionEntity> SubscribeAsync(SubscriptionEntity subscription)
+    public async Task<SubscriptionEntity> SubscribeAsync(SubscriptionEntity subscription, CancellationToken isAny)
     {
         await _dbContext.Subscriptions.AddAsync(subscription);
         await _dbContext.SaveChangesAsync();
@@ -22,19 +22,23 @@ public class SubscriptionRepositories : ISubscriptionRepository
         return subscription;
     }
 
-    public async Task<int> UnsubscribeAsync(Guid FollowerId, Guid FollowedId)
+    public async Task<bool> UnsubscribeAsync(Guid FollowerId, Guid FollowedId)
     {
-        if (FollowedId == Guid.Empty || FollowerId == Guid.Empty) return 0;
+        if (FollowedId == Guid.Empty || FollowerId == Guid.Empty) return false;
 
-       int count =  await _dbContext.Subscriptions
+       int deletedRows =  await _dbContext.Subscriptions
             .Where(a => a.FollowedId == FollowedId && a.FollowerId == FollowerId)
             .ExecuteDeleteAsync();
        
-       return count;
+       return deletedRows > 0;
     }
 
     public async Task<List<SubscriptionEntity>> GetSubscriptionsAsync(Guid FollowerId)
     {
-        return await _dbContext.Subscriptions.Where(a => a.FollowerId == FollowerId).ToListAsync();
+        return await _dbContext.Subscriptions
+            .AsNoTracking()
+            .Include(s => s.Followed)
+            .Where(s => s.FollowedId == FollowerId)
+            .ToListAsync();
     }
 }

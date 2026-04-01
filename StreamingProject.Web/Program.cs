@@ -10,9 +10,11 @@ using Shared.Common;
 using StreamingProject.Presenters.Handlers;
 using StreamingProject.Repository;
 using StreamingProject.Repository.Authentication;
+using StreamingProject.Repository.Repositories.UserRepositories;
 using StreamProject.Web;
 using StreamProject.Web.Extensions;
 using StreamProject.Web.Middlewares;
+using StreamProject.Web.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -29,6 +31,8 @@ services.AddApiAuthentication(configuration);
         options.UseNpgsql(configuration.GetConnectionString(nameof(StreamingDbContext)));
     });
 
+services.AddScoped<ISeeder, UserSeeder>();
+
     builder.Services.AddSingleton<IRtmpServerStreamEventHandler, RtmpServerEventHandler>();
 
     var serverEndPoint = new ServerEndPoint(new IPEndPoint(IPAddress.Any, 1935), false);
@@ -38,9 +42,6 @@ services.AddApiAuthentication(configuration);
         rtmp.AddStreamEventHandler<RtmpServerEventHandler>();
         
      });
-
-
-
 
 services.AddLogging(logging => logging.AddConsole());
 
@@ -76,6 +77,7 @@ app.MapControllers();
 //     await dbContext.Database.MigrateAsync();
 // }
 
+await app.UseSeeders();
 
 await app.RunAsync();
 

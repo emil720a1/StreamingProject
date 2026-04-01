@@ -1,3 +1,3 @@
-namespace StreamingProject.Contracts.Chat;
+namespace StreamingProject.Contracts.Chat.CrudDtos;
 
-public record UpdateMessageDto(Guid messageId, Guid streamId, Guid userId, string newText);
+public record UpdateMessageDto(Guid MessageId, string NewText);

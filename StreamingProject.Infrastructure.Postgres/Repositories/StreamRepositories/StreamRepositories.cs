@@ -26,19 +26,19 @@ public class StreamRepositories : IStreamRepository
 
     public async Task<StreamEntity> UpdateStreamAsync(StreamEntity stream)
     {
-        _dbContext.Streams.Update(stream);
         await _dbContext.SaveChangesAsync();
-        
         return stream;
     }
 
-    public async Task<StreamEntity> GetStreamByIdAsync(Guid id)
+    public async Task<StreamEntity?> GetStreamByIdAsync(Guid id)
     {
         return await _dbContext.Streams
+            .Include(s => s.User)
+            .Include(s => s.VideoEntity)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<StreamEntity> GetActiveStream(Guid userId)
+    public async Task<StreamEntity?> GetActiveStream(Guid userId)
     {
         return await _dbContext.Streams 
             .AsNoTracking()
@@ -52,14 +52,15 @@ public class StreamRepositories : IStreamRepository
         return await _dbContext.Streams
             .AsNoTracking()
             .Where(s => s.UserId == userId)
+            .OrderByDescending(s => s.StartTime)
             .ToListAsync();
     }
 
-    public async Task<bool> HasJoinedStreamAsync(Guid StreamId, Guid UserId)
+    public async Task<bool> HasJoinedStreamAsync(Guid streamId, Guid userId)
     {
         return await _dbContext.UserStreams
             .AsNoTracking()
-            .AnyAsync(s => s.StreamId == StreamId && s.UserId == UserId);
+            .AnyAsync(s => s.StreamId == streamId && s.UserId == userId);
     }
 
     public async Task<StreamEntity?> AddParticipantAsync(UserStream userStream)
@@ -70,13 +71,12 @@ public class StreamRepositories : IStreamRepository
         return await GetStreamByIdAsync(userStream.StreamId);
     }
 
-    public async Task<bool> RemoveParticipantAsync(Guid StreamId, Guid UserId)
+    public async Task<bool> RemoveParticipantAsync(Guid streamId, Guid userId)
     {
-        
-        if (StreamId == Guid.Empty || UserId == Guid.Empty) return false;
+        if (streamId == Guid.Empty || userId == Guid.Empty) return false;
 
         var deletedCount =  await _dbContext.UserStreams
-            .Where(s => s.StreamId == StreamId && s.UserId == UserId)
+            .Where(s => s.StreamId == streamId && s.UserId == userId)
             .ExecuteDeleteAsync();
 
         return deletedCount > 0;

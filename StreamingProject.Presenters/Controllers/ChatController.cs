@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StreamingProject.Application.Service.Chat.CharService;
-using StreamingProject.Contracts.Chat;
+using StreamingProject.Contracts.Chat.CrudDtos;
 using StreamingProject.Presenters.ResponseExtensions;
 
-namespace StreamingProject.Presenters;
+namespace StreamingProject.Presenters.Controllers;
 
 
 [ApiController]
@@ -19,7 +19,7 @@ public class ChatController : ControllerBase
     }
 
     [Authorize(Policy = "Permission.Read")]
-    [HttpGet("get")]
+    [HttpGet("messages")]
     public async Task<IActionResult> GetChatMessages(
         [FromQuery] GetChatMessagesDto getChatMessagesDto,
         CancellationToken cancellationToken)
@@ -34,35 +34,38 @@ public class ChatController : ControllerBase
         [FromBody] SendMessageDto sendMessageDto,
         CancellationToken cancellationToken)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+        var userId = GetUserIdFromClaims();
 
-        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
-        {
-            return Unauthorized();
-        }
+        if (userId == Guid.Empty) return Unauthorized(); 
         
         var message = await _chatService.SendMessageAsync(sendMessageDto, userId, cancellationToken);
         
         return message.IsFailure ? message.Error.ToResponse() : Ok(message.Value);
     }
 
-    // [Authorize(Policy = "Permission.Delete")] 
-    [Authorize]
-    [HttpPost("delete")]
+    [Authorize(Policy = "Permission.Delete")] 
+    [HttpDelete("message")]
     public async Task<IActionResult> DeleteChatMessages(
         [FromBody] DeleteMessageDto deleteMessageDto,
         CancellationToken cancellationToken)
     {
+
+        var userId = GetUserIdFromClaims();
+        if (userId == Guid.Empty) return Unauthorized();
         
+        var result = await _chatService.DeleteChatMessageAsync(
+            deleteMessageDto.Id,
+            userId, 
+            cancellationToken);
+
+        return result.IsFailure ? result.Error.ToResponse() : Ok (result.Value);
+    }
+
+    private Guid GetUserIdFromClaims()
+    {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-
-        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
-        {
-            return Unauthorized();
-        }
-        
-        var messageToDelete = await _chatService.DeleteChatMessageAsync(deleteMessageDto, userId, cancellationToken);
-
-        return messageToDelete.IsFailure ? messageToDelete.Error.ToResponse() : Ok (messageToDelete.Value);
+        return (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
+            ? userId
+            : Guid.Empty;
     }
 }

@@ -42,16 +42,9 @@ public class StreamingDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new VideoConfiguration());
-        modelBuilder.ApplyConfiguration(new StreamConfiguration());
-        modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new ChatConfiguration());
-        modelBuilder.ApplyConfiguration(new RoleConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StreamingDbContext).Assembly);
+        
         modelBuilder.ApplyConfiguration(new RolePermissionConfiguration(_authOptions.Value));
-        modelBuilder.ApplyConfiguration(new PermissionConfiguration());
-        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-        modelBuilder.ApplyConfiguration(new UserStreamConfiguration());
         
         base.OnModelCreating(modelBuilder);
     }

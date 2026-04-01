@@ -6,7 +6,7 @@ namespace StreamingProject.Domain.User.UserRole;
 public class RoleEntity
 {
    //EF-Core
-   private RoleEntity(){ }
+  public  RoleEntity(){ }
    
    private RoleEntity(int id, string name, ICollection<PermissionEntity> permissions)
    {

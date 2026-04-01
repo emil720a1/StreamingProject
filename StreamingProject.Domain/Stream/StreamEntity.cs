@@ -6,8 +6,6 @@ namespace StreamingProject.Domain.Stream;
 
 public class StreamEntity
 {
-
-
     private StreamEntity()
     {
         ChatMessages = new List<ChatEntity>();
@@ -25,6 +23,9 @@ public class StreamEntity
         StreamKey = streamKey;
         ChatId = chatId;
     }
+    
+    public string Title { get; private set; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
     public Guid Id { get; private set; }
     
     public string StreamKey { get; private set; }
@@ -36,7 +37,9 @@ public class StreamEntity
     public DateTime? EndTime { get; private set; }
     public UserEntity User { get; private set; }
     public VideoEntity VideoEntity { get; private set; }
-    
+
+    private readonly List<UserStream.UserStream> _participants = new();
+    public IReadOnlyList<UserStream.UserStream> Participants => _participants;
     
     public ICollection<ChatEntity> ChatMessages { get; private set; }
     
@@ -53,6 +56,15 @@ public class StreamEntity
             key,
            Guid.NewGuid()
         );
+    }
+
+    public void UpdateMetadata(string title, string description)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new InvalidOperationException("Title cannot be empty.");
+        
+        Title = title;
+        Description = description;
     }
 
     public void StartStream()

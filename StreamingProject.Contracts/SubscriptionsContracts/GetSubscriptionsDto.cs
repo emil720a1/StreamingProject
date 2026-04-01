@@ -1,3 +1,3 @@
 namespace StreamingProject.Contracts.SubscriptionsContracts;
 
-public record GetSubscriptionDto(Guid FollowerId);
+public record GetSubscriptionsDto(Guid FollowerId);

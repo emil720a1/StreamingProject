@@ -1,4 +1,6 @@
 using StreamingProject.Domain.Stream;
+using StreamingProject.Domain.Stream.UserStream;
+using StreamingProject.Domain.Subscription;
 using StreamingProject.Domain.User.UserRole;
 
 namespace StreamingProject.Domain.User;
@@ -28,7 +30,7 @@ public class UserEntity
       Streams = new List<StreamEntity>();
    }
 
-   private UserEntity()
+   public UserEntity()
    {
       UserRoles = new List<UserRoleEntity>();
       Streams = new List<StreamEntity>();
@@ -42,7 +44,16 @@ public class UserEntity
    
    public string FirstName { get; set; } 
    
-   public string LastName { get; set; } 
+   public string LastName { get; set; }
+
+   private readonly List<UserStream> _joinedStreams = new();
+   public IReadOnlyList<UserStream> JoinedStreams => _joinedStreams;
+
+   private readonly List<SubscriptionEntity> _followers = new();
+   public IReadOnlyList<SubscriptionEntity> Followers => _followers;
+   
+   private readonly List<SubscriptionEntity> _followings = new();
+   public IReadOnlyList<SubscriptionEntity> Followings => _followings;
    
    public ICollection<UserRoleEntity> UserRoles { get; private set; } = new List<UserRoleEntity>();
    public ICollection<StreamEntity> Streams {get; private set;} = new List<StreamEntity>();
@@ -52,12 +63,26 @@ public class UserEntity
    public UserStatus Status { get; set; }
 
 
-   public static UserEntity Create(string username, string passwordHash, string email, RoleEntity role)
+   public static UserEntity Create(
+      string username,
+      string passwordHash,
+      string email, 
+      RoleEntity role,
+      string firstName,
+      string lastName)
    {
       if (string.IsNullOrWhiteSpace(username))
          throw new ArgumentException("Username cannot be null or whitespace", nameof(username));
 
-      var user = UserEntity.Create(username, passwordHash, email, role);
+      var user = new UserEntity
+      {
+         Id = Guid.NewGuid(),
+         Username = username,
+         PasswordHash = passwordHash,
+         Email = email,
+         FirstName = firstName,
+         LastName = lastName
+      };
       
       user.UserRoles.Add(new UserRoleEntity
       {

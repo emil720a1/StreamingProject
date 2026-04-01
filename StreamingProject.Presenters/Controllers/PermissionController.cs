@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StreamingProject.Application.Service.Permission.PermissionService;
 using StreamingProject.Contracts.Permissions;
 using StreamingProject.Presenters.ResponseExtensions;
 
-namespace StreamingProject.Presenters;
+namespace StreamingProject.Presenters.Controllers;
 
 
 [ApiController]
@@ -17,6 +18,8 @@ public class PermissionController : ControllerBase
         _permissionService = permissionService;
     }
 
+    [Authorize(Policy = "Permission.Create")]
+    [HttpPost("add")]
     public async Task<IActionResult> AddPermission(
         [FromBody] AddPermissionDto request,
         CancellationToken cancellationToken)
@@ -26,6 +29,8 @@ public class PermissionController : ControllerBase
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
     }
 
+    [Authorize(Policy = "Permission.Read")]
+    [HttpGet("all")]
     public async Task<IActionResult> GetPermissions(
         [FromQuery] GetPermissionsDto request,
         CancellationToken cancellationToken)
@@ -33,16 +38,5 @@ public class PermissionController : ControllerBase
         var result = await _permissionService.GetPermissionsAsync(request, cancellationToken);
         
         return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
-    }
-
-    public async Task<IActionResult> UpdatePermission(
-        [FromBody] UpdatePermissionDto request,
-        CancellationToken cancellationToken)
-    {
-        var result = await _permissionService.UpdatePermissionAsync(request, cancellationToken);
-
-        return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
-        
-        
     }
 }

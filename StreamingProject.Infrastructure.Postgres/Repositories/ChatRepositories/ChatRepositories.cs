@@ -15,7 +15,6 @@ public class ChatRepositories : IChatRepository
     
     public async Task<ChatEntity> SendMessageAsync(ChatEntity message)
     {
-
         await _dbContext.ChatMessages.AddAsync(message);
         await _dbContext.SaveChangesAsync();
 
@@ -25,19 +24,21 @@ public class ChatRepositories : IChatRepository
     public async Task<List<ChatEntity>> GetChatMessagesAsync(Guid streamId)
     {
         return await _dbContext.ChatMessages
-            .Where(a => a.StreamId == streamId)
+            .AsNoTracking()
+            .Include(m => m.User)
+            .Where(m => m.StreamId == streamId)
+            .OrderBy(m => m.SentTime)
             .ToListAsync();
-
     }
 
-    public Task<ChatEntity> GetChatMessageById(Guid messageId)
+    public async Task<ChatEntity?> GetChatMessageById(Guid messageId)
     {
-        return _dbContext.ChatMessages.FirstOrDefaultAsync(a => a.Id == messageId);
+        return await _dbContext.ChatMessages
+            .FirstOrDefaultAsync(a => a.Id == messageId);
     }
 
     public async Task<bool> UpdateChatMessageAsync(ChatEntity message)
     {
-        _dbContext.ChatMessages.Update(message);
        var result = await _dbContext.SaveChangesAsync();
 
        return result > 0;
@@ -47,10 +48,10 @@ public class ChatRepositories : IChatRepository
     {
         if (messageId == Guid.Empty) return false;
 
-        var result =  await _dbContext.ChatMessages
+        var deletedCount =  await _dbContext.ChatMessages
             .Where(a => a.Id == messageId)
             .ExecuteDeleteAsync();
          
-         return result > 0;
+         return deletedCount > 0;
     }
 }

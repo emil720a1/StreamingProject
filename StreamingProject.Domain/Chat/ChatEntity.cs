@@ -36,13 +36,23 @@ public class ChatEntity
             throw new ArgumentException("Message cannot be null or empty");
         }
 
-        var chat = new ChatEntity(
-            Guid.NewGuid(),
-            streamId,
-            userId,
-            message,
-            DateTime.UtcNow);
+        return new ChatEntity
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            StreamId = streamId,
+            Message = message,
+            SentTime = DateTime.UtcNow
+        };
+    }
+
+    public void UpdateText(string newMessage)
+    {
+        if (string.IsNullOrWhiteSpace(newMessage))
+        {
+            throw new InvalidOperationException("New message text cannot be empty.");
+        }
         
-        return chat;
+        Message = newMessage;
     }
 }
