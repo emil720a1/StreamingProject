@@ -163,3 +163,4 @@
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Nito.Disposables.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Open.Threading.ReadWrite.dll
 /Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/obj/Debug/net9.0/swae.build.ex.cache
+/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Web/bin/Debug/net9.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll

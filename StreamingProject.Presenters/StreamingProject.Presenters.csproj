@@ -9,7 +9,6 @@
     <ItemGroup>
       <ProjectReference Include="..\StreamingProject.Application\StreamingProject.Application.csproj" />
       <ProjectReference Include="..\StreamingProject.Domain\StreamingProject.Domain.csproj" />
-      <ProjectReference Include="..\StreamingProject.Infrastructure.Postgres\StreamingProject.Infrastructure.Postgres.csproj" />
     </ItemGroup>
 
     <ItemGroup>

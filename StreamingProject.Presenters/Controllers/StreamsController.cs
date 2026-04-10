@@ -1,53 +1,50 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StreamingProject.Application.Interfaces.Auth;
 using StreamingProject.Application.Service.Stream.StreamService;
 using StreamingProject.Contracts.Streams;
-using StreamingProject.Presenters.ResponseExtensions;
 
 namespace StreamingProject.Presenters.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
-public class StreamsController : ControllerBase
+public class StreamsController(
+    IStreamService streamService, 
+    ICurrentUser currentUser,
+    Application.Interfaces.Hls.IHlsTranscoderService hlsTranscoderService) : ApiControllerBase
 {
-    private readonly IStreamService _streamService;
-
-    public StreamsController(IStreamService streamService)
+    [Authorize(Policy = "Permission.Create")]
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateStream(CancellationToken cancellationToken)
     {
-        _streamService = streamService;
+        var request = new CreateStreamDto(currentUser.Id);
+        var result = await streamService.CreateStreamAsync(request, cancellationToken);
+        
+        return HandleResult(result);
     }
 
     [Authorize(Policy = "Permission.Create")]
-    [HttpPost("create")]
-
-    public async Task<IActionResult> CreateStream(CancellationToken cancellationToken)
+    [HttpPost("{streamId:guid}/end")]
+    public async Task<IActionResult> EndStream(
+        [FromRoute] Guid streamId,
+        CancellationToken cancellationToken)
     {
-        var userId = GetUsetId();
-        if (userId == Guid.Empty) return Unauthorized("User ID not found in token.");
+        var request = new EndStreamDto(streamId, currentUser.Id);
+        var result = await streamService.EndStreamAsync(request, cancellationToken);
         
-        var request = new CreateStreamDto(userId);
-        var result = await _streamService.CreateStreamAsync(request, cancellationToken);
-        
-        return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
+        return HandleResult(result);
     }
 
     [Authorize(Policy = "Permission.Read")]
     [HttpPost("join")]
-
     public async Task<IActionResult> JoinStream(
         [FromBody] Guid streamId,
         CancellationToken cancellationToken)
     {
-        var userId = GetUsetId();
+        var request = new JoinStreamDto(currentUser.Id, streamId);
+        var result = await streamService.JoinStreamAsync(request, cancellationToken);
         
-        if (userId == Guid.Empty) return Unauthorized("User ID not found in token.");
-        
-        var request = new JoinStreamDto(userId, streamId);
-        
-        var result = await _streamService.JoinStreamAsync(request, cancellationToken);
-        
-        return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
+        return HandleResult(result);
     }
 
     [Authorize(Policy = "Permission.Read")]
@@ -56,22 +53,18 @@ public class StreamsController : ControllerBase
         [FromRoute] Guid streamId,  
         CancellationToken cancellationToken)
     {
+        var request = new GetStreamByIdDto(streamId, currentUser.Id);
+        var result = await streamService.GetStreamByIdAsync(request, cancellationToken);
 
-        var userId = GetUsetId();
-        if (userId == Guid.Empty) return Unauthorized("User ID not found in token.");
-        
-        var request =  new GetStreamByIdDto(streamId, userId);
-        
-        var result = await _streamService.GetStreamByIdAsync(request, cancellationToken);
-
-        return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
+        return HandleResult(result);
     }
 
-    public Guid GetUsetId()
+    [HttpGet("{streamId:guid}/hls")]
+    public async Task<IActionResult> GetHlsUrl(
+        [FromRoute] Guid streamId,
+        CancellationToken cancellationToken)
     {
-        var claim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-        return (claim != null && Guid.TryParse(claim.Value, out var userId))
-            ? userId
-            : Guid.Empty;
+        var result = await hlsTranscoderService.GetHlsPlaylistUrlAsync(streamId.ToString(), cancellationToken);
+        return HandleResult(result);
     }
 }

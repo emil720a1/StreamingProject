@@ -26,6 +26,7 @@ public class StreamEntity
     
     public string Title { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
+    public string? ThumbnailUrl { get; set; }
     public Guid Id { get; private set; }
     
     public string StreamKey { get; private set; }
@@ -69,7 +70,12 @@ public class StreamEntity
 
     public void StartStream()
     {
-        StartTime = DateTime.Now;
+        StartTime = DateTime.UtcNow;
         EndTime = null;
+    }
+
+    public void EndStream()
+    {
+        EndTime = DateTime.UtcNow;
     }
 }

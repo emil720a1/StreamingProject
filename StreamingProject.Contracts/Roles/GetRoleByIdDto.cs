@@ -1,3 +1,3 @@
 namespace StreamingProject.Contracts.Roles;
 
-public record GetRoleByIdDto(int Id);
+public record GetRoleByIdDto(Guid Id);

@@ -1,11 +1,9 @@
-    namespace StreamingProject.Domain.User.UserRole;
+using Microsoft.AspNetCore.Identity;
 
-    public class UserRoleEntity
-    {
-        public Guid UserId { get; set; }
-        public UserEntity User { get; set; }
-        
-        
-        public int RoleId { get; set; }
-        public virtual RoleEntity Role { get; set; }
-    }
+namespace StreamingProject.Domain.User.UserRole;
+
+public class UserRoleEntity : IdentityUserRole<Guid>
+{
+    public virtual UserEntity User { get; set; } = null!;
+    public virtual RoleEntity Role { get; set; } = null!;
+}

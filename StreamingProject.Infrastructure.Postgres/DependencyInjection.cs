@@ -37,6 +37,9 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtProvider, JwtProvider>();
         
+        services.AddScoped<StreamingProject.Application.Interfaces.Storage.IStorageService, StreamingProject.Infrastructure.Postgres.Storage.LocalStorageService>();
+        services.AddSingleton<StreamingProject.Application.Interfaces.Hls.IHlsTranscoderService, StreamingProject.Infrastructure.Postgres.Hls.LocalHlsTranscoderService>();
+        
         services.AddAsyncInitializer<DbInitializer>();
 
         return services;

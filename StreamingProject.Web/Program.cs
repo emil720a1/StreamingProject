@@ -79,5 +79,9 @@ app.MapControllers();
 
 await app.UseSeeders();
 
+app.UseStaticFiles();
+
+app.MapHub<StreamingProject.Presenters.Hubs.ChatHub>("/chatHub");
+
 await app.RunAsync();
 

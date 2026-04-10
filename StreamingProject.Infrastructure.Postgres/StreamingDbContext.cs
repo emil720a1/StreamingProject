@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using StreamingProject.Domain;
 using StreamingProject.Domain.Chat;
 using StreamingProject.Domain.Permission;
 using StreamingProject.Domain.Stream;
@@ -13,7 +14,7 @@ using StreamingProject.Repository.Configuration;
 
 namespace StreamingProject.Repository;
 
-public class StreamingDbContext : DbContext
+public class StreamingDbContext : IdentityDbContext<UserEntity, RoleEntity, Guid, IdentityUserClaim<Guid>, UserRoleEntity, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
     private readonly IOptions<AuthorizationOptions> _authOptions;
     public StreamingDbContext(DbContextOptions<StreamingDbContext> options, IOptions<AuthorizationOptions> authOptions) : base(options)
@@ -21,10 +22,7 @@ public class StreamingDbContext : DbContext
         _authOptions = authOptions;
     }
     
-    public DbSet<UserEntity> Users { get; set; }
-    
     public DbSet<VideoEntity> Videos { get; set; }
-
 
     public DbSet<StreamEntity> Streams { get; set; }
     
@@ -32,20 +30,18 @@ public class StreamingDbContext : DbContext
     
     public DbSet<ChatEntity> ChatMessages { get; set; }
     
-    public DbSet<RoleEntity> Roles { get; set; }
-    
     public DbSet<PermissionEntity> Permissions { get; set; }
     
-    public DbSet<UserRoleEntity> UserRoles { get; set; }
-    
     public DbSet<UserStream> UserStreams { get; set; }
+
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(StreamingDbContext).Assembly);
         
         modelBuilder.ApplyConfiguration(new RolePermissionConfiguration(_authOptions.Value));
-        
-        base.OnModelCreating(modelBuilder);
     }
 }

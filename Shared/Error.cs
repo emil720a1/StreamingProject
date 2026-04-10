@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Shared;
 
@@ -35,7 +35,7 @@ public record Error
         => new(code ?? "failure", message, ErrorType.FAILURE);
 
     public static Error Unauthorized(string? code, string message) 
-        => new(code ?? "unathorized", message, ErrorType.UNATHORIZED);
+        => new(code ?? "unauthorized", message, ErrorType.UNAUTHORIZED);
 
     public static Error Internal(string? code, string message)
         => new(code ?? "internal", message, ErrorType.INTERNAL);
@@ -78,7 +78,7 @@ public enum ErrorType{
     /// <summary
     /// Ошибка авторизации
     /// </summary>
-    UNATHORIZED,
+    UNAUTHORIZED,
     
     
     

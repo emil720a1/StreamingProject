@@ -1,31 +1,23 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StreamingProject.Application.Interfaces.Auth;
 using StreamingProject.Application.Service.Chat.CharService;
 using StreamingProject.Contracts.Chat.CrudDtos;
-using StreamingProject.Presenters.ResponseExtensions;
 
 namespace StreamingProject.Presenters.Controllers;
 
-
 [ApiController]
 [Route("api/[controller]")]
-public class ChatController : ControllerBase
+public class ChatController(IChatService chatService, ICurrentUser currentUser) : ApiControllerBase
 {
-    private readonly IChatService _chatService;
-
-    public ChatController(IChatService chatService)
-    {
-        _chatService = chatService;
-    }
-
     [Authorize(Policy = "Permission.Read")]
     [HttpGet("messages")]
     public async Task<IActionResult> GetChatMessages(
         [FromQuery] GetChatMessagesDto getChatMessagesDto,
         CancellationToken cancellationToken)
     {
-       var messages =  await _chatService.GetChatMessagesAsync(getChatMessagesDto, cancellationToken);
-       return messages.IsFailure ? messages.Error.ToResponse() : Ok(messages.Value);
+        var messages = await chatService.GetChatMessagesAsync(getChatMessagesDto, cancellationToken);
+        return HandleResult(messages);
     }
 
     [Authorize(Policy = "Permission.Create")]
@@ -34,13 +26,8 @@ public class ChatController : ControllerBase
         [FromBody] SendMessageDto sendMessageDto,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserIdFromClaims();
-
-        if (userId == Guid.Empty) return Unauthorized(); 
-        
-        var message = await _chatService.SendMessageAsync(sendMessageDto, userId, cancellationToken);
-        
-        return message.IsFailure ? message.Error.ToResponse() : Ok(message.Value);
+        var message = await chatService.SendMessageAsync(sendMessageDto, currentUser.Id, cancellationToken);
+        return HandleResult(message);
     }
 
     [Authorize(Policy = "Permission.Delete")] 
@@ -49,23 +36,11 @@ public class ChatController : ControllerBase
         [FromBody] DeleteMessageDto deleteMessageDto,
         CancellationToken cancellationToken)
     {
-
-        var userId = GetUserIdFromClaims();
-        if (userId == Guid.Empty) return Unauthorized();
-        
-        var result = await _chatService.DeleteChatMessageAsync(
+        var result = await chatService.DeleteChatMessageAsync(
             deleteMessageDto.Id,
-            userId, 
+            currentUser.Id, 
             cancellationToken);
 
-        return result.IsFailure ? result.Error.ToResponse() : Ok (result.Value);
-    }
-
-    private Guid GetUserIdFromClaims()
-    {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-        return (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
-            ? userId
-            : Guid.Empty;
+        return HandleResult(result);
     }
 }

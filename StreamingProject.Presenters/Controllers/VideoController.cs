@@ -1,34 +1,23 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StreamingProject.Application.Interfaces.Auth;
 using StreamingProject.Application.Service.Video.VideoService;
 using StreamingProject.Contracts.VideoDto.Crud;
-using StreamingProject.Presenters.ResponseExtensions;
 
 namespace StreamingProject.Presenters.Controllers;
 
-
 [ApiController]
 [Route("api/[controller]")]
-public class VideoController : ControllerBase
+public class VideoController(IVideoService videoService, ICurrentUser currentUser) : ApiControllerBase
 {
-    private readonly IVideoService _videoService;
-
-    public VideoController(IVideoService videoService)
-    {
-        _videoService = videoService;
-    }
-
     [Authorize(Policy = "Permission.Create")]
     [HttpPost("create")]
     public async Task<IActionResult> CreateVideo(
         [FromBody] CreateVideoDto request,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
-        
-        var video = await _videoService.CreateVideoAsync(request, userId, cancellationToken);
-        return video.IsFailure ? video.Error.ToResponse() : Ok(video.Value);
+        var video = await videoService.CreateVideoAsync(request, currentUser.Id, cancellationToken);
+        return HandleResult(video);
     }
 
     [Authorize(Policy = "Permission.Read")]
@@ -37,8 +26,8 @@ public class VideoController : ControllerBase
         [FromQuery] GetVideoDto request,
         CancellationToken cancellationToken)
     {
-        var video = await _videoService.GetVideoAsync(request, cancellationToken);
-        return video.IsFailure ? video.Error.ToResponse() : Ok(video.Value);
+        var video = await videoService.GetVideoAsync(request, cancellationToken);
+        return HandleResult(video);
     }
 
     [Authorize(Policy = "Permission.Update")]
@@ -47,11 +36,8 @@ public class VideoController : ControllerBase
         [FromBody] UpdateVideoDto request,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
-        
-        var videoToUpdate = await _videoService.UpdateVideoAsync(request, userId, cancellationToken);
-        return videoToUpdate.IsFailure ? videoToUpdate.Error.ToResponse() : Ok(videoToUpdate.Value);
+        var videoToUpdate = await videoService.UpdateVideoAsync(request, currentUser.Id, cancellationToken);
+        return HandleResult(videoToUpdate);
     }
 
     [Authorize(Policy = "Permission.Delete")]
@@ -60,19 +46,7 @@ public class VideoController : ControllerBase
         [FromBody] DeleteVideoDto request,
         CancellationToken cancellationToken)
     {
-        
-        var userId = GetUserId();
-        if (userId == Guid.Empty) return Unauthorized();
-        
-        var videoToDelete = await _videoService.DeleteVideoAsync(request, userId, cancellationToken);
-        return videoToDelete.IsFailure ? videoToDelete.Error.ToResponse() : Ok(videoToDelete.Value);
-    }
-
-    private Guid GetUserId()
-    {
-        var claim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-        return (claim != null && Guid.TryParse(claim.Value, out var userId))
-            ? userId
-            : Guid.Empty;
+        var videoToDelete = await videoService.DeleteVideoAsync(request, currentUser.Id, cancellationToken);
+        return HandleResult(videoToDelete);
     }
 }

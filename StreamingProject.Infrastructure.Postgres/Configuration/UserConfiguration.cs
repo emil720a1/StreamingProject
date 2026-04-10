@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StreamingProject.Domain;
 using StreamingProject.Domain.User;
-using StreamingProject.Domain.User.UserRole;
 
 namespace StreamingProject.Repository.Configuration;
 
@@ -14,14 +12,10 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         
         builder.HasKey(x => x.Id);
 
-        builder.HasMany(u => u.UserRoles)
-            .WithOne(r => r.User)
-            .HasForeignKey(r => r.UserId);
-        
-        builder.Property(x => x.Username)
+        builder.Property(x => x.UserName)
             .IsRequired()
             .HasMaxLength(50);
-        builder.HasIndex(x => x.Username).IsUnique();
+        builder.HasIndex(x => x.UserName).IsUnique();
 
         builder.Property(x => x.Email)
             .IsRequired()
@@ -29,13 +23,12 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.HasIndex(x => x.Email).IsUnique();
         
         builder.Property(x => x.PasswordHash)
-            .IsRequired()
-            .HasMaxLength(255);
+            .IsRequired();
         
         builder.HasMany(u => u.UserRoles)
             .WithOne(r => r.User)
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .IsRequired();
         
         builder.HasMany(u => u.Streams)
             .WithOne(s => s.User)

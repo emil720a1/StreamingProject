@@ -21,7 +21,7 @@ public interface IStreamRepository
     Task<bool> HasJoinedStreamAsync(Guid StreamId, Guid UserId);
 
 
-    Task<StreamEntity?> AddParticipantAsync(UserStream userStream);
+    Task<bool> AddParticipantAsync(UserStream userStream);
     
     Task<bool> RemoveParticipantAsync(Guid StreamId, Guid UserId);
     
