@@ -33,6 +33,7 @@ public class StreamRepositories : IStreamRepository
     public async Task<StreamEntity?> GetStreamByIdAsync(Guid id)
     {
         return await _dbContext.Streams
+            .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.VideoEntity)
             .FirstOrDefaultAsync(s => s.Id == id);
@@ -63,12 +64,12 @@ public class StreamRepositories : IStreamRepository
             .AnyAsync(s => s.StreamId == streamId && s.UserId == userId);
     }
 
-    public async Task<StreamEntity?> AddParticipantAsync(UserStream userStream)
+    public async Task<bool> AddParticipantAsync(UserStream userStream)
     {
         await _dbContext.UserStreams.AddAsync(userStream);
         await _dbContext.SaveChangesAsync();
 
-        return await GetStreamByIdAsync(userStream.StreamId);
+        return true;
     }
 
     public async Task<bool> RemoveParticipantAsync(Guid streamId, Guid userId)

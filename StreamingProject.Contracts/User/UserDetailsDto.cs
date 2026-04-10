@@ -9,4 +9,4 @@ public record UserDetailsDto(
     string FirstName, 
     string LastName, 
     ICollection<string> Roles, 
-    UserStatus Status);
+    Enum Status);

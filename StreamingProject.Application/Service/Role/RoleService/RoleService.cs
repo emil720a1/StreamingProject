@@ -1,6 +1,7 @@
 using AutoMapper;
 using CSharpFunctionalExtensions;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Extensions;
@@ -13,12 +14,10 @@ namespace StreamingProject.Application.Service.Role.RoleService;
 
 public class RoleService : IRoleService
 {
-
     private readonly IRoleRepository _roleRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<RoleService> _logger;
     private readonly IValidator<AddRoleDto> _addRoleDtoValidator;
-
 
     public RoleService(
         IRoleRepository roleRepository, 
@@ -31,6 +30,7 @@ public class RoleService : IRoleService
         _mapper = mapper;
         _logger = logger;
     }
+
     public async Task<Result<RoleDetailsDto, Failure>> AddRoleAsync(AddRoleDto request, CancellationToken cancellationToken)
     {
         var validationResult = await _addRoleDtoValidator.ValidateAsync(request, cancellationToken);
@@ -44,11 +44,10 @@ public class RoleService : IRoleService
         var role = RoleEntity.Create(request.Id, request.Name);
         
         var result = await _roleRepository.AddRoleAsync(role);
-        _logger.LogInformation("Role {RoleName} (ID: {RoleId} created",result.Name, result.Id);
+        _logger.LogInformation("Role {RoleName} (ID: {RoleId}) created", result.Name, result.Id);
         
         return _mapper.Map<RoleDetailsDto>(result);
     }
-
 
     public async Task<Result<RoleDetailsDto, Failure>> GetRoleByIdAsync(GetRoleByIdDto request, CancellationToken cancellationToken)
     {
@@ -62,7 +61,7 @@ public class RoleService : IRoleService
 
     public async Task<Result<RoleDetailsDto, Failure>> GetRoleByNameAsync(GetRoleByNameDto request, CancellationToken cancellationToken)
     {
-        var role = _roleRepository.GetRoleByNameAsync(request.Name).Result;
+        var role = await _roleRepository.GetRoleByNameAsync(request.Name);
         if (role == null)
             return Failure.FromError(Error.Validation("Role.NotFound", $"Role was not found", "RoleId"));
         

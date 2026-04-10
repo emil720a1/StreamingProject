@@ -7,34 +7,24 @@ namespace StreamingProject.Repository.Repositories.UserRepositories;
 
 public class UserSeeder : ISeeder
 {
-    private readonly StreamingDbContext _context;
+    private static readonly Guid AdminRoleId = new Guid("00000000-0000-0000-0000-000000000001");
 
-    public UserSeeder(StreamingDbContext context)
-    {
-        _context = context;
-    }
-    
     public async Task SeedAsync(StreamingDbContext context)
     {
         if (await context.Users.AnyAsync()) return;
         
-        var adminRoleId = (int)RoleEnum.Admin;
-        var adminRole = await _context.Roles.FindAsync(adminRoleId);
+        var adminRole = await context.Roles.FindAsync(AdminRoleId);
 
         if (adminRole == null)
         {
-            adminRole = new RoleEntity
-            {
-                Id = adminRoleId,
-                Name = "Admin"
-            };
-            await _context.Roles.AddAsync(adminRole);
-            await _context.SaveChangesAsync();
+            adminRole = RoleEntity.Create(AdminRoleId, RoleEnum.Admin.ToString());
+            await context.Roles.AddAsync(adminRole);
+            await context.SaveChangesAsync();
         }
 
         var admin = UserEntity.Create(
             "admin",
-            "hashed_password_here",
+            "AQAAAAIAAYagAAAAEG1m8...",
             "admin@stream.com",
             adminRole,
             "AdminFirstName",

@@ -26,7 +26,10 @@ public interface IStreamService
     
     Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(GetStreamByIdDto streamDto, CancellationToken cancellationToken);
     
-    
+    /// <summary>
+    /// Завершити стріми
+    /// </summary>
+    Task<Result<bool, Failure>> EndStreamAsync(EndStreamDto request, CancellationToken cancellationToken);
     
     /// <summary>
     /// Перевірка ключа трансляціх перед початком стріму

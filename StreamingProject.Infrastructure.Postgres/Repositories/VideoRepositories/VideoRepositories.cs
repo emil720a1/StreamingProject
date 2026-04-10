@@ -25,12 +25,15 @@ public class VideoRepositories : IVideoRepository
 
     public async Task<VideoEntity> GetVideoByIdAsync(Guid id)
     {
-        return await _dbContext.Videos.FirstOrDefaultAsync(a => a.Id == id);
+        return await _dbContext.Videos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == id);
     }
 
     public async Task<List<VideoEntity>> GetVideosByUserIdAsync(Guid userId)
     {
         return await _dbContext.Videos
+            .AsNoTracking()
             .Where(a => a.UserId == userId)
             .OrderByDescending(v => v.CreatedAt)
             .ToListAsync();
@@ -39,6 +42,7 @@ public class VideoRepositories : IVideoRepository
     public async Task<VideoEntity> GetVideoByStreamIdAsync(Guid streamId)
     {
         return await _dbContext.Videos
+            .AsNoTracking()
             .FirstOrDefaultAsync(a => a.StreamId == streamId);
     }
 

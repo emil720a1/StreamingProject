@@ -8,6 +8,9 @@ namespace StreamingProject.Repository.Configuration;
 
 public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
 {
+    private static readonly Guid AdminRoleId = new Guid("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid UserRoleId = new Guid("00000000-0000-0000-0000-000000000002");
+
     public void Configure(EntityTypeBuilder<RoleEntity> builder)
     {
         builder.ToTable("Roles");
@@ -37,11 +40,9 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
                     j.HasKey(rp => new { rp.RoleId, rp.PermissionId });
                 });
 
-        var roles = Enum
-            .GetValues<RoleEnum>()
-            .Select(r => RoleEntity.Create((int)r, r.ToString()));
-        
-        builder.HasData(roles);
-
+        builder.HasData(
+            RoleEntity.Create(AdminRoleId, RoleEnum.Admin.ToString()),
+            RoleEntity.Create(UserRoleId, RoleEnum.User.ToString())
+        );
     }
 }

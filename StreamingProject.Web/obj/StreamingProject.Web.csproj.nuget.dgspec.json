@@ -67,9 +67,13 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Microsoft.Extensions.Configuration.Abstractions": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.0, )"
             },
             "StyleCop.Analyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -324,6 +328,14 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.9, )"
+            },
+            "Microsoft.Extensions.Identity.Stores": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "StyleCop.Analyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -413,6 +425,10 @@
               "target": "Package",
               "version": "[3.0.1, )"
             },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.0, )"
@@ -491,9 +507,6 @@
               },
               "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/StreamingProject.Domain.csproj": {
                 "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Domain/StreamingProject.Domain.csproj"
-              },
-              "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj": {
-                "projectPath": "/Users/mcaleg2006/RiderProjects/StreamingProject/StreamingProject.Infrastructure.Postgres/StreamingProject.Infrastructure.Postgres.csproj"
               }
             }
           }
@@ -626,6 +639,10 @@
             "LiveStreamingServerNet.Rtmp.Server": {
               "target": "Package",
               "version": "[0.33.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",

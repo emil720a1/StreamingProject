@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using StreamingProject.Domain.Stream;
 using StreamingProject.Domain.Stream.UserStream;
 using StreamingProject.Domain.Subscription;
@@ -5,9 +6,8 @@ using StreamingProject.Domain.User.UserRole;
 
 namespace StreamingProject.Domain.User;
 
-public class UserEntity
+public class UserEntity : IdentityUser<Guid>
 {
-
    private UserEntity(
       Guid id, 
       string username, 
@@ -18,13 +18,12 @@ public class UserEntity
       string lastName)
    {
       Id = id;
-      Username = username;
+      UserName = username;
       PasswordHash = passwordHash;
       Email = email;
       Status = status;
       FirstName = firstName;
       LastName = lastName;
-      
       
       UserRoles = new List<UserRoleEntity>();
       Streams = new List<StreamEntity>();
@@ -36,15 +35,11 @@ public class UserEntity
       Streams = new List<StreamEntity>();
    }
    
-   public Guid Id { get; private set; }
+   public string FirstName { get; set; } = string.Empty;
    
-   public string Username { get; private set; }
-   
-   public string PasswordHash { get; private set; }
-   
-   public string FirstName { get; set; } 
-   
-   public string LastName { get; set; }
+   public string LastName { get; set; } = string.Empty;
+
+   public string? AvatarUrl { get; set; }
 
    private readonly List<UserStream> _joinedStreams = new();
    public IReadOnlyList<UserStream> JoinedStreams => _joinedStreams;
@@ -57,11 +52,8 @@ public class UserEntity
    
    public ICollection<UserRoleEntity> UserRoles { get; private set; } = new List<UserRoleEntity>();
    public ICollection<StreamEntity> Streams {get; private set;} = new List<StreamEntity>();
-
-   public string Email { get; set; }
    
    public UserStatus Status { get; set; }
-
 
    public static UserEntity Create(
       string username,
@@ -77,11 +69,12 @@ public class UserEntity
       var user = new UserEntity
       {
          Id = Guid.NewGuid(),
-         Username = username,
+         UserName = username,
          PasswordHash = passwordHash,
          Email = email,
          FirstName = firstName,
-         LastName = lastName
+         LastName = lastName,
+         Status = UserStatus.Active
       };
       
       user.UserRoles.Add(new UserRoleEntity

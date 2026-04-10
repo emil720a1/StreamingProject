@@ -1,35 +1,26 @@
-using System.Reflection.Metadata.Ecma335;
+using Microsoft.AspNetCore.Identity;
 using StreamingProject.Domain.Permission;
 
 namespace StreamingProject.Domain.User.UserRole;
 
-public class RoleEntity
+public class RoleEntity : IdentityRole<Guid>
 {
    //EF-Core
-  public  RoleEntity(){ }
+   public RoleEntity() : base() { }
    
-   private RoleEntity(int id, string name, ICollection<PermissionEntity> permissions)
+   private RoleEntity(Guid id, string name) : base(name)
    {
-      Name = name;
       Id = id;
-      Permissions = permissions;
+      Name = name;
    }
    
-   public int Id { get; set; } 
-   
-   public string Name { get; set; } = string.Empty;
-
    public ICollection<PermissionEntity> Permissions { get; set; } = new List<PermissionEntity>();
    
    public ICollection<UserRoleEntity> UserRoles { get; set; } = new List<UserRoleEntity>();
 
-
-
-   public static RoleEntity Create(int id, string name)
+   public static RoleEntity Create(Guid id, string name)
    {
       if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be null or empty");
-
-      if (id <= 0) throw new ArgumentException("Id must be greater than 0");
       
       return new RoleEntity
       {

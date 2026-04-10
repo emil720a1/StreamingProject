@@ -21,6 +21,7 @@ public class PermissionRepository : IPermissionRepository
     public async Task<List<PermissionEntity>> GetPermissionsAsync(Guid userId)
     {
         return await _dbContext.Users
+            .AsNoTracking()
             .Where(u => u.Id == userId)
             .SelectMany(u => u.UserRoles)
             .Select(ur => ur.Role)

@@ -9,6 +9,7 @@ using StreamingProject.Contracts.Chat;
 using StreamingProject.Contracts.Chat.CrudDtos;
 using StreamingProject.Domain;
 using StreamingProject.Domain.Chat;
+using StreamingProject.Application.Interfaces.Chat;
 
 namespace StreamingProject.Application.Service.Chat.CharService;
 
@@ -18,17 +19,20 @@ public class ChatService : IChatService
     private readonly IMapper _mapper;
     private readonly ILogger<ChatService> _logger;
     private readonly IValidator<SendMessageDto> _sendMessageDtoValidator;
+    private readonly IChatNotificationService _chatNotificationService;
     
     public ChatService(
         IChatRepository chatRepository, 
         ILogger<ChatService> logger, 
         IMapper mapper,
-        IValidator<SendMessageDto> sendMessageDtoValidator)
+        IValidator<SendMessageDto> sendMessageDtoValidator,
+        IChatNotificationService chatNotificationService)
     {
         _chatRepository = chatRepository;
         _sendMessageDtoValidator = sendMessageDtoValidator;
         _mapper = mapper;
         _logger = logger;
+        _chatNotificationService = chatNotificationService;
     }
 
 
@@ -45,7 +49,11 @@ public class ChatService : IChatService
         var result =  await _chatRepository.SendMessageAsync(messageEntity); 
         
         _logger.LogInformation("User {UserId} sent message to stream {StreamId}", userId, request.StreamId);
-        return _mapper.Map<ChatDetailsDto>(result);
+        
+        var chatDetailsDto = _mapper.Map<ChatDetailsDto>(result);
+        await _chatNotificationService.BroadcastMessageAsync(request.StreamId.ToString(), chatDetailsDto, cancellationToken);
+        
+        return chatDetailsDto;
     }
 
     public async Task<Result<List<ChatDetailsDto>, Failure>> GetChatMessagesAsync(GetChatMessagesDto request, CancellationToken cancellationToken)
@@ -68,6 +76,11 @@ public class ChatService : IChatService
         var success = await _chatRepository.DeleteChatMessageAsync(messageId);
         _logger.LogInformation("Message {MessageId} deleted by user {UserId}",  messageId, userId);
         
+        if (success)
+        {
+            await _chatNotificationService.NotifyMessageDeletedAsync(message.StreamId.ToString(), messageId, cancellationToken);
+        }
+        
         return success;
     }
 
@@ -88,6 +101,12 @@ public class ChatService : IChatService
         
         var success = await _chatRepository.UpdateChatMessageAsync(message);
         _logger.LogInformation("Message {MessageId} updated by user {UserId}", message.Id, userId);
+        
+        if (success)
+        {
+            var chatDetailsDto = _mapper.Map<ChatDetailsDto>(message);
+            await _chatNotificationService.NotifyMessageUpdatedAsync(message.StreamId.ToString(), chatDetailsDto, cancellationToken);
+        }
         
         return success;
     }

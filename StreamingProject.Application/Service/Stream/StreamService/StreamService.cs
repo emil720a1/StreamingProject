@@ -20,6 +20,7 @@ public class StreamService : IStreamService
     private readonly ILogger<StreamService> _logger;
     private readonly IValidator<CreateStreamDto> _createStreamDtoValidator;
     private readonly IValidator<JoinStreamDto> _joinStreamDtoValidator;
+    private readonly Application.Interfaces.Hls.IHlsTranscoderService _hlsTranscoderService;
     
     
     public StreamService(
@@ -27,13 +28,15 @@ public class StreamService : IStreamService
         ILogger<StreamService> logger, 
         IValidator<CreateStreamDto> createStreamDtoValidator,
         IMapper mapper, 
-        IValidator<JoinStreamDto> joinStreamDtoValidator)
+        IValidator<JoinStreamDto> joinStreamDtoValidator,
+        Application.Interfaces.Hls.IHlsTranscoderService hlsTranscoderService)
     {
         _streamRepository = streamRepository;
         _createStreamDtoValidator = createStreamDtoValidator;
         _joinStreamDtoValidator = joinStreamDtoValidator;
         _mapper = mapper;
         _logger = logger;
+        _hlsTranscoderService = hlsTranscoderService;
     }
 
     public async Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(CreateStreamDto request, CancellationToken cancellationToken)
@@ -46,6 +49,9 @@ public class StreamService : IStreamService
 
         var savedStream = await _streamRepository.AddStreamAsync(stream);
         _logger.LogInformation("Stream {StreamId} created with key {StreamKey}", savedStream.Id, savedStream.StreamKey);
+        
+        var outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "hls", savedStream.Id.ToString());
+        await _hlsTranscoderService.StartTranscodingAsync(savedStream.StreamKey, outputDirectory, cancellationToken);
         
         return _mapper.Map<StreamDetailsDto>(savedStream);
     }
@@ -98,6 +104,25 @@ public class StreamService : IStreamService
             _logger.LogWarning("Invalid stream key attempt: {Key}", streamKey);
             return Failure.FromError(Error.Unauthorized("StreamKey.Invalid", "Invalid or non-existent stream key"));
         }
+        
+        return true;
+    }
+
+    public async Task<Result<bool, Failure>> EndStreamAsync(EndStreamDto request, CancellationToken cancellationToken)
+    {
+        var stream = await _streamRepository.GetStreamByIdAsync(request.StreamId);
+
+        if (stream == null)
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+            
+        if (stream.UserId != request.UserId)
+            return Failure.FromError(Error.Unauthorized("Stream.Unauthorized", "Cannot end someone else's stream"));
+            
+        stream.EndStream();
+        await _streamRepository.UpdateStreamAsync(stream);
+        
+        await _hlsTranscoderService.StopTranscodingAsync(stream.StreamKey, cancellationToken);
+        
         return true;
     }
 }
