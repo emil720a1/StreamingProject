@@ -1,0 +1,132 @@
+# StreamingProject
+
+StreamingProject is a streaming platform built with ASP.NET Core, Entity Framework Core and PostgreSQL.
+
+## Main Features
+
+- user registration and authentication;
+- JWT access tokens and refresh tokens;
+- live streams;
+- stream participants;
+- SignalR chat;
+- recorded videos and HLS playback;
+- user subscriptions;
+- roles and permissions.
+
+## Solution Structure
+
+| Project | Responsibility |
+|---|---|
+| `StreamingProject.Domain` | Domain entities, enums and business rules |
+| `StreamingProject.Contracts` | API request and response DTOs |
+| `StreamingProject.Application` | Application services and use cases |
+| `StreamingProject.Infrastructure.Postgres` | EF Core, PostgreSQL, repositories and infrastructure services |
+| `StreamingProject.Presenters` | API controllers and SignalR hubs |
+| `StreamingProject.Web` | Application startup and HTTP pipeline |
+| `Shared` | Shared failures, exceptions, mappers and utilities |
+
+## Prerequisites
+
+Install the following tools before starting the project:
+
+- .NET SDK required by `global.json`;
+- PostgreSQL;
+- Rider or another .NET-compatible IDE;
+- Git.
+
+## Local Setup
+
+Clone the repository and move into its directory:
+
+```bash
+git clone https://github.com/emil720a1/StreamingProject.git
+cd StreamingProject
+```
+
+Restore dependencies:
+
+```bash
+dotnet restore
+```
+
+Configure the local database connection and authentication settings using the project configuration files or environment variables used by the current environment.
+
+Build the solution:
+
+```bash
+dotnet build
+```
+
+Run the web application:
+
+```bash
+dotnet run --project StreamingProject.Web
+```
+
+The exact HTTP and HTTPS ports are defined by the web project's launch settings and environment configuration.
+
+## Database
+
+The backend uses Entity Framework Core with PostgreSQL.
+
+The database contains data for:
+
+- users;
+- streams;
+- chat messages;
+- videos;
+- subscriptions;
+- participants;
+- roles and permissions;
+- refresh tokens.
+
+Apply migrations according to the configured database connection:
+
+```bash
+dotnet ef database update --project StreamingProject.Infrastructure.Postgres --startup-project StreamingProject.Web
+```
+
+## Authentication
+
+The API uses JWT access tokens for authenticated requests. Refresh tokens are used to obtain new access tokens after the access token expires.
+
+The authentication flow is documented in [docs/flows.md](docs/flows.md).
+
+## Streaming and Chat
+
+Live streams are received through the RTMP pipeline and converted to HLS for playback. Chat communication uses SignalR, while chat messages are persisted in PostgreSQL.
+
+See [docs/flows.md](docs/flows.md) for the detailed streaming and chat flows.
+
+## Architecture Documentation
+
+- [Architecture map](docs/architecture.md)
+- [Application flows](docs/flows.md)
+
+The architecture document describes backend projects, entities, relationships, foreign keys and known technical issues.
+
+## Testing
+
+Run all tests with:
+
+```bash
+dotnet test
+```
+
+## Development Guidelines
+
+- keep domain rules inside the domain or application layer;
+- keep database access inside repositories and infrastructure;
+- use contracts instead of exposing domain entities through the API;
+- add tests for new application behavior;
+- update the documentation when architecture or startup instructions change;
+- do not commit secrets, local configuration files or generated build artifacts.
+
+## Known Issues and Follow-up Work
+
+- verify the complete local startup flow;
+- document all environment variables and ports;
+- verify refresh-token persistence configuration;
+- add explicit EF Core configuration for stream likes;
+- review cascade delete behavior before production deployment;
+- document and validate the frontend application separately.
