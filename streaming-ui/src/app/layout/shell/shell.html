@@ -1,1 +1,25 @@
-<p>shell works!</p>
+<div class="app-shell">
+  <header class="app-header">
+    <a routerLink="/dashboard" class="logo">
+      StreamingProject
+    </a>
+
+    <nav class="header-nav">
+      <a routerLink="/streams">Streams</a>
+      <a routerLink="/profile">Profile</a>
+    </nav>
+  </header>
+
+  <div class="app-body">
+    <aside class="sidebar">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/streams">Streams</a>
+      <a routerLink="/chat">Chat</a>
+      <a routerLink="/profile">Profile</a>
+    </aside>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

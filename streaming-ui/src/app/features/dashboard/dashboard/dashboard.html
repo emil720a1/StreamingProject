@@ -1,1 +1,57 @@
-<p>dashboard works!</p>
+<section class="dashboard">
+  <div class="dashboard-header">
+    <div>
+      <p class="eyebrow">Overview</p>
+      <h1>Discover live streams</h1>
+      <p class="subtitle">
+        Find something interesting to watch today.
+      </p>
+    </div>
+
+    <a routerLink="/streams" class="primary-button">
+      View all streams
+    </a>
+  </div>
+
+  <section class="stats">
+    <article class="stat-card">
+      <span>Live streams</span>
+      <strong>{{ streams.length }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <span>Total viewers</span>
+      <strong>{{ getTotalViewers() }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <span>Categories</span>
+      <strong>{{ getCategoryCount() }}</strong>
+    </article>
+  </section>
+
+  <section class="stream-section">
+    <div class="section-header">
+      <h2>Recommended streams</h2>
+      <a routerLink="/streams">See all</a>
+    </div>
+
+    <div class="stream-grid">
+      @for (stream of streams; track stream.id) {
+        <article class="stream-card">
+          <div class="stream-preview">
+            <span class="live-badge">
+              {{ stream.isLive ? 'LIVE' : 'OFFLINE' }}
+            </span>
+          </div>
+
+          <div class="stream-info">
+            <h3>{{ stream.title }}</h3>
+            <p>{{ stream.author }}</p>
+            <span>{{ stream.category }} · {{ stream.viewers }} viewers</span>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</section>
