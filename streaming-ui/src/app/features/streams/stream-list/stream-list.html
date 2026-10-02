@@ -7,8 +7,20 @@
     </div>
   </div>
 
+  <div class="category-filters">
+    @for (category of categories; track category) {
+      <button
+        type="button"
+        [class.active]="selectedCategory === category"
+        (click)="selectCategory(category)"
+      >
+        {{ category }}
+      </button>
+    }
+  </div>
+
   <div class="stream-grid">
-    @for (stream of streams; track stream.id) {
+    @for (stream of filteredStreams; track stream.id) {
       <article class="stream-card">
         <div class="stream-preview">
           <span [class.live]="stream.isLive">
