@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Stream } from '../../../shared/models/stream';
+import { StreamService } from '../../../core/services/stream';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,32 +10,11 @@ import { RouterLink } from '@angular/router';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
-  streams = [
-    {
-      id: 1,
-      title: 'Gaming Live',
-      author: 'Alex',
-      viewers: 1240,
-      category: 'Gaming',
-      isLive: true,
-    },
-    {
-      id: 2,
-      title: 'Music Session',
-      author: 'Maria',
-      viewers: 532,
-      category: 'Music',
-      isLive: true,
-    },
-    {
-      id: 3,
-      title: 'Tech Talk',
-      author: 'John',
-      viewers: 0,
-      category: 'Technology',
-      isLive: false,
-    },
-  ];
+  streams: Stream[];
+
+  constructor(private readonly streamService: StreamService) {
+    this.streams = this.streamService.getStreams();
+  }
 
   getTotalViewers(): number {
     return this.streams.reduce(
