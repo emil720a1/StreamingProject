@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { StreamList } from './stream-list';
 
 describe('StreamList', () => {
@@ -8,6 +9,7 @@ describe('StreamList', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [StreamList],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(StreamList);
