@@ -17,7 +17,30 @@ describe('StreamList', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should return all categories', () => {
+    expect(component.categories).toEqual([
+      'All',
+      'Gaming',
+      'Music',
+      'Technology',
+    ]);
+  });
+
+  it('should show all streams by default', () => {
+    expect(component.filteredStreams.length).toBe(3);
+  });
+
+  it('should filter streams by category', () => {
+    component.selectCategory('Gaming');
+
+    expect(component.filteredStreams.length).toBe(1);
+    expect(component.filteredStreams[0].title).toBe('Gaming Live');
+  });
+
+  it('should show all streams after selecting All', () => {
+    component.selectCategory('Gaming');
+    component.selectCategory('All');
+
+    expect(component.filteredStreams.length).toBe(3);
   });
 });
