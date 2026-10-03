@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-shell',
@@ -7,4 +8,14 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './shell.scss',
   templateUrl: './shell.html',
 })
-export class Shell {}
+export class Shell {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+}
