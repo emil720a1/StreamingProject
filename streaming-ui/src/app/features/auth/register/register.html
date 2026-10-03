@@ -55,8 +55,11 @@
         </p>
       }
 
-      <button type="submit">
-        Create account
+      <button
+        type="submit"
+        [disabled]="isSubmitting"
+      >
+        {{ isSubmitting ? 'Creating account...' : 'Create account' }}
       </button>
     </form>
 

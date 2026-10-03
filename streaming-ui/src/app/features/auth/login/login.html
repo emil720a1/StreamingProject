@@ -35,8 +35,11 @@
         </p>
       }
 
-      <button type="submit">
-        Sign in
+      <button
+        type="submit"
+        [disabled]="isSubmitting"
+      >
+        {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
       </button>
     </form>
 

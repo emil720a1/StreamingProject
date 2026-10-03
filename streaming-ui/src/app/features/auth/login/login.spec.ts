@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
+
+import { AuthService } from '../../../core/services/auth';
 import { Login } from './login';
 
 describe('Login', () => {
@@ -9,11 +12,33 @@ describe('Login', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Login],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([
+          {
+            path: 'dashboard',
+            children: [],
+          },
+          {
+            path: 'register',
+            children: [],
+          },
+        ]),
+        {
+          provide: AuthService,
+          useValue: {
+            login: () =>
+              of({
+                token: 'fake-token',
+                refreshToken: 'fake-refresh-token',
+              }),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
+
     await fixture.whenStable();
   });
 
@@ -31,13 +56,13 @@ describe('Login', () => {
   });
 
   it('should show error when password is empty', () => {
-    component.email = 'user@gmail.com'
+    component.email = 'user@gmail.com';
     component.password = '';
 
     component.submit();
 
     expect(component.errorMessage).toBe('Password is required');
-  })
+  });
 
   it('should accept valid credentials', () => {
     component.email = 'user@gmail.com';
@@ -46,5 +71,6 @@ describe('Login', () => {
     component.submit();
 
     expect(component.errorMessage).toBe('');
-  })
+    expect(component.isSubmitting).toBe(false);
+  });
 });

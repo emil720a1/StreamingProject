@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-register',
@@ -14,6 +16,12 @@ export class Register {
   password = '';
   confirmPassword = '';
   errorMessage = '';
+  isSubmitting = false;
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router,
+  ) {}
 
   submit(): void {
     this.errorMessage = '';
@@ -38,10 +46,23 @@ export class Register {
       return;
     }
 
-    console.log('Registration submitted', {
-      username: this.username,
-      email: this.email,
-      password: this.password,
-    })
+    this.isSubmitting = true;
+
+    this.authService
+      .register({
+        username: this.username,
+        email: this.email,
+        password: this.password,
+      })
+      .subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.router.navigate(['/login']);
+        },
+        error: () => {
+          this.isSubmitting = false;
+          this.errorMessage = 'Registration failed';
+        },
+      });
   }
 }
