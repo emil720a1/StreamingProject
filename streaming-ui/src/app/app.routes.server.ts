@@ -2,11 +2,19 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
-    path: 'streams/:id',
+    path: '',
     renderMode: RenderMode.Client,
   },
   {
     path: 'dashboard',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'streams',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'streams/:id',
     renderMode: RenderMode.Client,
   },
   {
@@ -18,7 +26,15 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
-    path: '**',
+    path: 'login',
     renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'register',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: '**',
+    renderMode: RenderMode.Client,
   },
 ];
