@@ -21,25 +21,7 @@
 
   <div class="stream-grid">
     @for (stream of filteredStreams; track stream.id) {
-      <article class="stream-card">
-        <div class="stream-preview">
-          <span [class.live]="stream.isLive">
-            {{ stream.isLive ? 'LIVE' : 'OFFLINE' }}
-          </span>
-        </div>
-
-        <div class="stream-info">
-          <h2>{{ stream.title }}</h2>
-          <p>{{ stream.author }}</p>
-          <span>
-            {{ stream.category }} · {{ stream.viewers }} viewers
-          </span>
-
-          <a [routerLink]="['/streams', stream.id]">
-            Open stream
-          </a>
-        </div>
-      </article>
+      <app-stream-card [stream]="stream" />
     }
   </div>
 </section>

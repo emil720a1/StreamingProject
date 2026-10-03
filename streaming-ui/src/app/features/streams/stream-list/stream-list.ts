@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { Stream } from '../../../shared/models/stream';
 import { StreamService } from '../../../core/services/stream';
+import { StreamCard } from '../../../shared/components/stream-card/stream-card';
 
 @Component({
   selector: 'app-stream-list',
-  imports: [RouterLink],
+  imports: [StreamCard],
   templateUrl: './stream-list.html',
   styleUrl: './stream-list.scss',
 })
