@@ -9,7 +9,7 @@ namespace StreamingProject.Presenters.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class StreamsController(
-    IStreamService streamService, 
+    IStreamService streamService,
     ICurrentUser currentUser,
     Application.Interfaces.Hls.IHlsTranscoderService hlsTranscoderService) : ApiControllerBase
 {
@@ -19,7 +19,7 @@ public class StreamsController(
     {
         var request = new CreateStreamDto(currentUser.Id);
         var result = await streamService.CreateStreamAsync(request, cancellationToken);
-        
+
         return HandleResult(result);
     }
 
@@ -31,7 +31,7 @@ public class StreamsController(
     {
         var request = new EndStreamDto(streamId, currentUser.Id);
         var result = await streamService.EndStreamAsync(request, cancellationToken);
-        
+
         return HandleResult(result);
     }
 
@@ -43,14 +43,14 @@ public class StreamsController(
     {
         var request = new JoinStreamDto(currentUser.Id, streamId);
         var result = await streamService.JoinStreamAsync(request, cancellationToken);
-        
+
         return HandleResult(result);
     }
 
     [Authorize(Policy = "Permission.Read")]
     [HttpGet("{streamId:guid}")]
     public async Task<IActionResult> GetStreamById(
-        [FromRoute] Guid streamId,  
+        [FromRoute] Guid streamId,
         CancellationToken cancellationToken)
     {
         var request = new GetStreamByIdDto(streamId, currentUser.Id);
@@ -65,6 +65,16 @@ public class StreamsController(
         CancellationToken cancellationToken)
     {
         var result = await hlsTranscoderService.GetHlsPlaylistUrlAsync(streamId.ToString(), cancellationToken);
+        return HandleResult(result);
+    }
+
+    [Authorize(Policy = "Permission.Read")]
+    [HttpGet]
+    public async Task<IActionResult> GetAvailableStreams(
+        CancellationToken cancellationToken)
+    {
+        var result = await streamService.GetAvailableStreamsAsync(cancellationToken);
+
         return HandleResult(result);
     }
 }
