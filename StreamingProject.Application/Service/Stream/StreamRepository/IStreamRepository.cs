@@ -8,22 +8,21 @@ namespace StreamingProject.Application.Service.Stream.StreamRepository;
 
 public interface IStreamRepository
 {
-
+    // Stream persistence
     Task<StreamEntity> AddStreamAsync(StreamEntity stream);
-    
     Task<StreamEntity> UpdateStreamAsync(StreamEntity stream);
-    
+
+    // Stream queries
     Task<StreamEntity?> GetStreamByIdAsync(Guid id);
-
     Task<StreamEntity?> GetActiveStream(Guid userId);
-    
+    Task<List<StreamEntity>> GetAvailableStreamsAsync();
     Task<List<StreamEntity>> GetStreamsByUserId(Guid userId);
-    Task<bool> HasJoinedStreamAsync(Guid StreamId, Guid UserId);
 
-
+    // Participants
+    Task<bool> HasJoinedStreamAsync(Guid streamId, Guid userId);
     Task<bool> AddParticipantAsync(UserStream userStream);
-    
-    Task<bool> RemoveParticipantAsync(Guid StreamId, Guid UserId);
-    
+    Task<bool> RemoveParticipantAsync(Guid streamId, Guid userId);
+
+    // Validation
     Task<bool> CheckStreamKeyExistsAsync(string streamKey);
 }

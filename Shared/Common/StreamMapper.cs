@@ -19,5 +19,16 @@ public class StreamMapper : Profile
                 s.StartTime,
                 s.EndTime
             ));
+
+
+        CreateMap<StreamEntity, StreamListItemDto>()
+            .ConstructUsing(s => new StreamListItemDto(
+                s.Id,
+                s.UserId,
+                s.User != null ? s.User.UserName : null,
+                s.Title,
+                s.Description,
+                s.StartTime
+                ));
     }
 }

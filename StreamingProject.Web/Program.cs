@@ -77,7 +77,10 @@ app.UseCookiePolicy(new CookiePolicyOptions
     Secure = CookieSecurePolicy.Always
 });
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -90,10 +93,17 @@ app.MapControllers();
 //     await dbContext.Database.MigrateAsync();
 // }
 
-await app.UseSeeders();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await app.UseSeeders();
+}
 
 app.UseStaticFiles();
 
 app.MapHub<StreamingProject.Presenters.Hubs.ChatHub>("/chatHub");
 
 await app.RunAsync();
+
+public partial class Program
+{
+}
