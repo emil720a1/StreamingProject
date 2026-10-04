@@ -40,7 +40,7 @@ services.AddScoped<ISeeder, UserSeeder>();
     services.AddLiveStreamingServer(serverEndPoint, rtmp =>
     {
         rtmp.AddStreamEventHandler<RtmpServerEventHandler>();
-        
+
      });
 
 services.AddLogging(logging => logging.AddConsole());
@@ -65,7 +65,11 @@ app.UseCookiePolicy(new CookiePolicyOptions
     Secure = CookieSecurePolicy.Always
 });
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -77,11 +81,18 @@ app.MapControllers();
 //     await dbContext.Database.MigrateAsync();
 // }
 
-await app.UseSeeders();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await app.UseSeeders();
+}
 
 app.UseStaticFiles();
 
 app.MapHub<StreamingProject.Presenters.Hubs.ChatHub>("/chatHub");
 
 await app.RunAsync();
+
+public partial class Program
+{
+}
 
