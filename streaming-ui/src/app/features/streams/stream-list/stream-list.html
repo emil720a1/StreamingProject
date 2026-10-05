@@ -1,0 +1,23 @@
+<section class="streams-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Browse</p>
+      <h1>Live streams</h1>
+      <p>Discover available live streams.</p>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <p>Loading streams...</p>
+  } @else if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  } @else if (streams.length === 0) {
+    <p>No live streams available.</p>
+  } @else {
+    <div class="stream-grid">
+      @for (stream of streams; track stream.id) {
+        <app-stream-card [stream]="stream" />
+      }
+    </div>
+  }
+</section>

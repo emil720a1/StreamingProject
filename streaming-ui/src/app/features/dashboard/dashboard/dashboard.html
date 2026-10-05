@@ -1,0 +1,43 @@
+<section class="dashboard">
+  <div class="dashboard-header">
+    <div>
+      <p class="eyebrow">Overview</p>
+      <h1>Discover live streams</h1>
+      <p class="subtitle">
+        Find something interesting to watch today.
+      </p>
+    </div>
+
+    <a routerLink="/streams" class="primary-button">
+      View all streams
+    </a>
+  </div>
+
+  <section class="stats">
+    <article class="stat-card">
+      <span>Available live streams</span>
+      <strong>{{ streams.length }}</strong>
+    </article>
+  </section>
+
+  @if (isLoading) {
+    <p>Loading streams...</p>
+  } @else if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  } @else if (streams.length === 0) {
+    <p>No live streams available.</p>
+  } @else {
+    <section class="stream-section">
+      <div class="section-header">
+        <h2>Recommended streams</h2>
+        <a routerLink="/streams">See all</a>
+      </div>
+
+      <div class="stream-grid">
+        @for (stream of streams; track stream.id) {
+          <app-stream-card [stream]="stream" />
+        }
+      </div>
+    </section>
+  }
+</section>

@@ -1,0 +1,27 @@
+<article class="stream-card">
+  <div class="stream-preview">
+    <span class="live">LIVE</span>
+  </div>
+
+  <div class="stream-info">
+    <h2>{{ stream.title }}</h2>
+
+    <p>
+      {{ stream.streamerUsername ?? 'Unknown streamer' }}
+    </p>
+
+    <span>
+      {{ stream.description }}
+    </span>
+
+    @if (stream.startTime) {
+      <time [attr.datetime]="stream.startTime">
+        Started: {{ stream.startTime }}
+      </time>
+    }
+
+    <a [routerLink]="['/streams', stream.id]">
+      Open stream
+    </a>
+  </div>
+</article>

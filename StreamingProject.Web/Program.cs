@@ -11,6 +11,7 @@ using StreamingProject.Presenters.Handlers;
 using StreamingProject.Repository;
 using StreamingProject.Repository.Authentication;
 using StreamingProject.Repository.Repositories.UserRepositories;
+using StreamingProject.Repository.Repositories.RoleRepositories;
 using StreamProject.Web;
 using StreamProject.Web.Extensions;
 using StreamProject.Web.Middlewares;
@@ -20,6 +21,16 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 services.AddApiAuthentication(configuration);
 
@@ -31,6 +42,7 @@ services.AddApiAuthentication(configuration);
         options.UseNpgsql(configuration.GetConnectionString(nameof(StreamingDbContext)));
     });
 
+services.AddScoped<ISeeder, RoleSeeder>();
 services.AddScoped<ISeeder, UserSeeder>();
 
     builder.Services.AddSingleton<IRtmpServerStreamEventHandler, RtmpServerEventHandler>();
@@ -69,7 +81,7 @@ if (!app.Environment.IsEnvironment("Testing"))
 {
     app.UseHttpsRedirection();
 }
-
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -95,4 +107,3 @@ await app.RunAsync();
 public partial class Program
 {
 }
-

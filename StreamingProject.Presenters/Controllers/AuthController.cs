@@ -18,8 +18,8 @@ public class AuthController(IUserService userService) : ApiControllerBase
     {
         var addUserDto = new AddUserDto(
             request.Username, 
-            request.Email, 
             request.Password, 
+            request.Email,
             null, 
             null);
         
