@@ -15,43 +15,29 @@
 
   <section class="stats">
     <article class="stat-card">
-      <span>Live streams</span>
+      <span>Available live streams</span>
       <strong>{{ streams.length }}</strong>
     </article>
-
-    <article class="stat-card">
-      <span>Total viewers</span>
-      <strong>{{ getTotalViewers() }}</strong>
-    </article>
-
-    <article class="stat-card">
-      <span>Categories</span>
-      <strong>{{ getCategoryCount() }}</strong>
-    </article>
   </section>
 
-  <section class="stream-section">
-    <div class="section-header">
-      <h2>Recommended streams</h2>
-      <a routerLink="/streams">See all</a>
-    </div>
+  @if (isLoading) {
+    <p>Loading streams...</p>
+  } @else if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  } @else if (streams.length === 0) {
+    <p>No live streams available.</p>
+  } @else {
+    <section class="stream-section">
+      <div class="section-header">
+        <h2>Recommended streams</h2>
+        <a routerLink="/streams">See all</a>
+      </div>
 
-    <div class="stream-grid">
-      @for (stream of streams; track stream.id) {
-        <article class="stream-card">
-          <div class="stream-preview">
-            <span class="live-badge">
-              {{ stream.isLive ? 'LIVE' : 'OFFLINE' }}
-            </span>
-          </div>
-
-          <div class="stream-info">
-            <h3>{{ stream.title }}</h3>
-            <p>{{ stream.author }}</p>
-            <span>{{ stream.category }} · {{ stream.viewers }} viewers</span>
-          </div>
-        </article>
-      }
-    </div>
-  </section>
+      <div class="stream-grid">
+        @for (stream of streams; track stream.id) {
+          <app-stream-card [stream]="stream" />
+        }
+      </div>
+    </section>
+  }
 </section>

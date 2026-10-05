@@ -1,8 +1,9 @@
 export interface Stream {
-  id: number;
+  id: string;
+  userId: string;
+  streamerUsername: string | null;
   title: string;
-  author: string;
-  viewers: number;
-  category: string;
-  isLive: boolean;
+  description: string;
+  startTime: string | null;
+  endTime?: string | null;
 }

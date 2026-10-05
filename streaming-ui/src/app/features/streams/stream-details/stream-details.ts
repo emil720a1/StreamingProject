@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+
 import { Stream } from '../../../shared/models/stream';
 import { StreamService } from '../../../core/services/stream';
 
@@ -11,15 +12,35 @@ import { StreamService } from '../../../core/services/stream';
 })
 export class StreamDetails {
   stream?: Stream;
+  isLoading = true;
+  errorMessage = '';
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly streamService: StreamService,
-  ){
-    const id = Number(
-      this.route.snapshot.paramMap.get('id'),
-    );
+  ) {
+    this.loadStream();
+  }
 
-    this.stream = this.streamService.getStreamById(id);
+  private loadStream(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (!id) {
+      this.errorMessage = 'Stream id is missing';
+      this.isLoading = false;
+      return;
+    }
+
+    this.streamService.getStreamById(id).subscribe({
+      next: (stream) => {
+        this.stream = stream;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Failed to load stream', error);
+        this.errorMessage = 'Stream not found';
+        this.isLoading = false;
+      },
+    });
   }
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { Stream } from '../../../shared/models/stream';
+
 import { StreamService } from '../../../core/services/stream';
+import { Stream } from '../../../shared/models/stream';
 import { StreamCard } from '../../../shared/components/stream-card/stream-card';
 
 @Component({
@@ -10,33 +11,26 @@ import { StreamCard } from '../../../shared/components/stream-card/stream-card';
   styleUrl: './stream-list.scss',
 })
 export class StreamList {
-  streams: Stream[];
-  selectedCategory = 'All';
+  streams: Stream[] = [];
+  isLoading = true;
+  errorMessage = '';
 
   constructor(private readonly streamService: StreamService) {
-    this.streams = this.streamService.getStreams();
+    this.loadStreams();
   }
 
-  get categories(): string[] {
-    return [
-      'All',
-      ...new Set(
-        this.streams.map((stream) => stream.category),
-      ),
-    ];
+  private loadStreams(): void {
+    this.streamService.getStreams().subscribe({
+      next: (streams) => {
+        this.streams = streams;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Failed to load streams', error);
+        this.errorMessage = 'Failed to load streams';
+        this.isLoading = false;
+      },
+    });
   }
 
-  get filteredStreams(): Stream[] {
-    if (this.selectedCategory === 'All') {
-      return this.streams;
-    }
-
-    return this.streams.filter(
-      (stream) => stream.category === this.selectedCategory,
-    );
-  }
-
-  selectCategory(category: string): void {
-    this.selectedCategory = category;
-  }
 }
