@@ -11,6 +11,7 @@ using StreamingProject.Presenters.Handlers;
 using StreamingProject.Repository;
 using StreamingProject.Repository.Authentication;
 using StreamingProject.Repository.Repositories.UserRepositories;
+using StreamingProject.Repository.Repositories.RoleRepositories;
 using StreamProject.Web;
 using StreamProject.Web.Extensions;
 using StreamProject.Web.Middlewares;
@@ -20,6 +21,16 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 services.AddApiAuthentication(configuration);
 
@@ -31,6 +42,7 @@ services.AddApiAuthentication(configuration);
         options.UseNpgsql(configuration.GetConnectionString(nameof(StreamingDbContext)));
     });
 
+services.AddScoped<ISeeder, RoleSeeder>();
 services.AddScoped<ISeeder, UserSeeder>();
 
     builder.Services.AddSingleton<IRtmpServerStreamEventHandler, RtmpServerEventHandler>();
@@ -40,7 +52,7 @@ services.AddScoped<ISeeder, UserSeeder>();
     services.AddLiveStreamingServer(serverEndPoint, rtmp =>
     {
         rtmp.AddStreamEventHandler<RtmpServerEventHandler>();
-        
+
      });
 
 services.AddLogging(logging => logging.AddConsole());
@@ -66,6 +78,7 @@ app.UseCookiePolicy(new CookiePolicyOptions
 });
 
 app.UseHttpsRedirection();
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -84,4 +97,3 @@ app.UseStaticFiles();
 app.MapHub<StreamingProject.Presenters.Hubs.ChatHub>("/chatHub");
 
 await app.RunAsync();
-
