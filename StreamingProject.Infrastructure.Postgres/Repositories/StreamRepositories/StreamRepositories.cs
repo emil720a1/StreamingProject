@@ -20,7 +20,7 @@ public class StreamRepositories : IStreamRepository
     {
         await _dbContext.Streams.AddAsync(stream);
         await _dbContext.SaveChangesAsync();
-        
+
         return stream;
     }
 
@@ -41,15 +41,25 @@ public class StreamRepositories : IStreamRepository
 
     public async Task<StreamEntity?> GetActiveStream(Guid userId)
     {
-        return await _dbContext.Streams 
+        return await _dbContext.Streams
             .AsNoTracking()
             .Where(s => s.UserId == userId && s.EndTime == null)
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<StreamEntity>> GetAvailableStreamsAsync()
+    {
+        return await _dbContext.Streams
+            .AsNoTracking()
+            .Include(s => s.User)
+            .Where(stream => stream.EndTime == null)
+            .OrderByDescending(s => s.StartTime)
+            .ToListAsync();
+    }
+
     public async Task<List<StreamEntity>> GetStreamsByUserId(Guid userId)
     {
-        
+
         return await _dbContext.Streams
             .AsNoTracking()
             .Where(s => s.UserId == userId)

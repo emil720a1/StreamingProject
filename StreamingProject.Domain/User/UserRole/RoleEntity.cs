@@ -26,6 +26,7 @@ public class RoleEntity : IdentityRole<Guid>
       {
          Id = id,
          Name = name,
+         NormalizedName = name.ToUpperInvariant(),
          Permissions = new List<PermissionEntity>()
       };
    }

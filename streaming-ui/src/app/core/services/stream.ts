@@ -1,42 +1,23 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
 import { Stream } from '../../shared/models/stream';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StreamService {
-  private readonly streams: Stream[] = [
-    {
-      id: 1,
-      title: 'Gaming Live',
-      author: 'Alex',
-      viewers: 1240,
-      category: 'Gaming',
-      isLive: true,
-    },
-    {
-      id: 2,
-      title: 'Music Session',
-      author: 'Maria',
-      viewers: 532,
-      category: 'Music',
-      isLive: true,
-    },
-    {
-      id: 3,
-      title: 'Tech Talk',
-      author: 'John',
-      viewers: 0,
-      category: 'Technology',
-      isLive: false,
-    },
-  ];
+  private readonly apiUrl = `${environment.apiUrl}/Streams`;
 
-  getStreams(): Stream[] {
-    return this.streams;
+  constructor(private readonly http: HttpClient) {}
+
+  getStreams(): Observable<Stream[]> {
+    return this.http.get<Stream[]>(this.apiUrl);
   }
 
-  getStreamById(id: number): Stream | undefined {
-    return this.streams.find((stream) => stream.id === id);
+  getStreamById(id: string): Observable<Stream>{
+    return this.http.get<Stream>(`${this.apiUrl}/${id}`)
   }
 }

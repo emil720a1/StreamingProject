@@ -1,6 +1,18 @@
 <section class="stream-details">
-  @if (stream; as currentStream) {
-    <a routerLink="/streams" class="back-link">← Back to streams</a>
+  @if (isLoading) {
+    <p>Loading stream...</p>
+  } @else if (errorMessage) {
+    <div class="not-found">
+      <p class="eyebrow">Error</p>
+      <h1>{{ errorMessage }}</h1>
+      <a routerLink="/streams" class="watch-button">
+        Back to streams
+      </a>
+    </div>
+  } @else if (stream; as currentStream) {
+    <a routerLink="/streams" class="back-link">
+      ← Back to streams
+    </a>
 
     <div class="stream-preview">
       <div class="preview-placeholder">
@@ -8,22 +20,25 @@
         <span>Stream preview</span>
       </div>
 
-      <span class="status-badge" [class.live]="currentStream.isLive">
-        {{ currentStream.isLive ? 'LIVE' : 'OFFLINE' }}
+      <span
+        class="status-badge"
+        [class.live]="!currentStream.endTime"
+      >
+        {{ currentStream.endTime ? 'OFFLINE' : 'LIVE' }}
       </span>
     </div>
 
     <div class="stream-content">
       <div class="stream-heading">
         <div>
-          <p class="eyebrow">{{ currentStream.category }}</p>
-          <h1>{{ currentStream.title }}</h1>
-          <p class="author">Hosted by {{ currentStream.author }}</p>
-        </div>
+          <p class="eyebrow">Live stream</p>
 
-        <div class="viewers">
-          <strong>{{ currentStream.viewers }}</strong>
-          <span>viewers</span>
+          <h1>{{ currentStream.title }}</h1>
+
+          <p class="author">
+            Hosted by
+            {{ currentStream.streamerUsername ?? 'Unknown streamer' }}
+          </p>
         </div>
       </div>
 
@@ -31,9 +46,9 @@
         <button
           type="button"
           class="watch-button"
-          [disabled]="!currentStream.isLive"
+          [disabled]="!!currentStream.endTime"
         >
-          {{ currentStream.isLive ? 'Start watching' : 'Stream is offline' }}
+          {{ currentStream.endTime ? 'Stream is offline' : 'Start watching' }}
         </button>
 
         <button type="button" class="secondary-button">
@@ -45,14 +60,18 @@
     <div class="details-grid">
       <article class="info-card">
         <h2>About this stream</h2>
+
         <p>
-          Watch the latest content from {{ currentStream.author }}.
+          {{ currentStream.description }}
         </p>
       </article>
 
       <article class="info-card chat-preview">
         <h2>Live chat</h2>
-        <p>Chat will be available when the stream starts.</p>
+
+        <p>
+          Chat will be available when the stream starts.
+        </p>
       </article>
     </div>
   } @else {
@@ -60,7 +79,10 @@
       <p class="eyebrow">404</p>
       <h1>Stream not found</h1>
       <p>The requested stream does not exist.</p>
-      <a routerLink="/streams" class="watch-button">Back to streams</a>
+
+      <a routerLink="/streams" class="watch-button">
+        Back to streams
+      </a>
     </div>
   }
 </section>

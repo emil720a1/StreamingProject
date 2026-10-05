@@ -1,31 +1,36 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Stream } from '../../../shared/models/stream';
+
 import { StreamService } from '../../../core/services/stream';
+import { Stream } from '../../../shared/models/stream';
+import { StreamCard } from '../../../shared/components/stream-card/stream-card';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, StreamCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
-  streams: Stream[];
+  streams: Stream[] = [];
+  isLoading = true;
+  errorMessage = '';
 
   constructor(private readonly streamService: StreamService) {
-    this.streams = this.streamService.getStreams();
+    this.loadStreams();
   }
 
-  getTotalViewers(): number {
-    return this.streams.reduce(
-      (total, stream) => total + stream.viewers,
-      0,
-    );
-  }
-
-  getCategoryCount(): number {
-    return new Set(
-      this.streams.map((stream) => stream.category),
-    ).size;
+  private loadStreams(): void {
+    this.streamService.getStreams().subscribe({
+      next: (streams) => {
+        this.streams = streams;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Failed to load streams', error);
+        this.errorMessage = 'Failed to load streams';
+        this.isLoading = false;
+      },
+    });
   }
 }

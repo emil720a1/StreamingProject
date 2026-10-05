@@ -14,27 +14,30 @@ public interface IStreamService
     Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(
         CreateStreamDto streamDto,
         CancellationToken cancellationToken);
-    
-    
-    
+
+
+
     /// <summary>
     /// Приєднатися до стріму
     /// </summary>
     Task<Result<StreamDetailsDto, Failure>> JoinStreamAsync(JoinStreamDto streamDto, CancellationToken cancellationToken);
-    
-    
-    
+
+
+
     Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(GetStreamByIdDto streamDto, CancellationToken cancellationToken);
-    
+
+
+    Task<Result<List<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(CancellationToken cancellationToken);
+
     /// <summary>
     /// Завершити стріми
     /// </summary>
     Task<Result<bool, Failure>> EndStreamAsync(EndStreamDto request, CancellationToken cancellationToken);
-    
+
     /// <summary>
     /// Перевірка ключа трансляціх перед початком стріму
     /// </summary>
     Task<Result<bool, Failure>> ValidateStreamKeyAsync(string streamKey, CancellationToken cancellationToken);
-    
-    
+
+
 }

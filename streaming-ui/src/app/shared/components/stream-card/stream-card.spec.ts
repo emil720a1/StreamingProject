@@ -15,12 +15,12 @@ describe('StreamCard', () => {
     fixture = TestBed.createComponent(StreamCard);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('stream', {
-      id: 1,
+      id: 'stream-1',
+      userId: 'user-1',
+      streamerUsername: 'Alex',
       title: 'Gaming Live',
-      author: 'Alex',
-      viewers: 1240,
-      category: 'Gaming',
-      isLive: true,
+      description: 'Gaming stream',
+      startTime: '2026-10-05T18:00:00Z',
     });
     await fixture.whenStable();
   });
