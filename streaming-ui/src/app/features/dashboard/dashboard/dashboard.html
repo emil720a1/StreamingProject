@@ -24,6 +24,10 @@
     <p>Loading streams...</p>
   } @else if (errorMessage) {
     <p class="error-message">{{ errorMessage }}</p>
+
+    <button type="button" (click)="loadStreams()">
+      Retry
+    </button>
   } @else if (streams.length === 0) {
     <p>No live streams available.</p>
   } @else {
