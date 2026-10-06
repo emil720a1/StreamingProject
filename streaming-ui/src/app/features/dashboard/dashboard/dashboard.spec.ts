@@ -109,4 +109,31 @@ describe('Dashboard', () => {
     expect(fixture.nativeElement.textContent)
       .toContain('Loading streams...');
   });
+
+  it('should clear stale streams when reload fails', () => {
+    const streams: Stream[] = [
+      {
+        id: "stream-1",
+        userId: 'user-1',
+        streamerUsername: 'Alex',
+        title: 'Gaming Live',
+        description: 'Gaming stream',
+        startTime: '2026-10-05T18:00:00Z',
+      },
+    ];
+
+    streamsResponse = of(streams);
+
+    fixture = TestBed.createComponent(Dashboard);
+
+    expect(fixture.componentInstance.streams).toEqual(streams);
+
+    streamsResponse = throwError(() => new Error('Network error'));
+
+    fixture.componentInstance.loadStreams();
+
+    expect(fixture.componentInstance.streams).toEqual([]);
+    expect(fixture.componentInstance.errorMessage)
+      .toBe('Failed to load streams');
+  });
 });
