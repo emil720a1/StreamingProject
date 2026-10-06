@@ -20,7 +20,11 @@ export class Dashboard {
     this.loadStreams();
   }
 
-  private loadStreams(): void {
+  loadStreams(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.streams = [];
+
     this.streamService.getStreams().subscribe({
       next: (streams) => {
         this.streams = streams;
