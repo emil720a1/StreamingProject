@@ -113,7 +113,7 @@ describe('Dashboard', () => {
   it('should clear stale streams when reload fails', () => {
     const streams: Stream[] = [
       {
-        id: "stream-1",
+        id: 'stream-1',
         userId: 'user-1',
         streamerUsername: 'Alex',
         title: 'Gaming Live',
