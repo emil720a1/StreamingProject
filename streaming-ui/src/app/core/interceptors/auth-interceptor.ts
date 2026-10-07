@@ -2,11 +2,41 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import {
   catchError,
+  finalize,
+  Observable,
+  shareReplay,
   switchMap,
   throwError,
 } from 'rxjs';
 
 import { AuthService } from '../services/auth';
+import { AuthResponse } from '../../shared/models/auth';
+
+let refreshRequest$: Observable<AuthResponse> | null = null;
+
+const getRefreshRequest = (
+  authService: AuthService,
+): Observable<AuthResponse> => {
+  if (!refreshRequest$) {
+    const refreshToken = authService.getRefreshToken();
+
+    if (!refreshToken) {
+      return throwError(() => new Error('Refresh token is missing'));
+    }
+
+    refreshRequest$ = authService.refreshToken(refreshToken).pipe(
+      finalize(() => {
+        refreshRequest$ = null;
+      }),
+      shareReplay({
+        bufferSize: 1,
+        refCount: false,
+      }),
+    );
+  }
+
+  return refreshRequest$;
+};
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const authService = inject(AuthService);
@@ -31,14 +61,12 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
         return throwError(() => error);
       }
 
-      const refreshToken = authService.getRefreshToken();
-
-      if (!refreshToken) {
+      if (!authService.getRefreshToken()) {
         authService.logout();
         return throwError(() => error);
       }
 
-      return authService.refreshToken(refreshToken).pipe(
+      return getRefreshRequest(authService).pipe(
         switchMap((response) => {
           const retryRequest = request.clone({
             setHeaders: {
