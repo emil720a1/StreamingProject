@@ -59,12 +59,12 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
             UseShellExecute = false,
         });
         
-        _logger.LogInformation("Стрім опубліковано! Клієнт: {ClientId}, Шлях: {StreamPath}", clientId, streamPath);
+        _logger.LogInformation("Стрім опубліковано! Клієнт: {ClientId}", clientId);
     }
 
     public ValueTask OnRtmpStreamUnpublishedAsync(IEventContext context, uint clientId, string streamPath)
     {
-        _logger.LogInformation("Стрім зупинено. Клієнт: {ClientId}, Шлях: {StreamPath}", clientId, streamPath);
+        _logger.LogInformation("Стрім зупинено. Клієнт: {ClientId}", clientId);
         return ValueTask.CompletedTask;
     }
 

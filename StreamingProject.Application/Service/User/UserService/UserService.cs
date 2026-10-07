@@ -96,19 +96,19 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserIdAsync(GetUserDto request, CancellationToken cancellationToken)
+    public async Task<Result<List<StreamListItemDto>, Failure>> GetStreamsByUserIdAsync(GetUserDto request, CancellationToken cancellationToken)
     {
         var streams = await _streamRepository.GetStreamsByUserId(request.UserId);
 
         if (streams == null || !streams.Any())
         {
-            return Result.Failure<List<StreamDetailsDto>, Failure>(
+            return Result.Failure<List<StreamListItemDto>, Failure>(
                 Failure.FromError(Error.NotFound("Streams.NotFound", "No streams found for this user", null)));
         }
         
-        var streamDto = _mapper.Map<List<StreamDetailsDto>>(streams);
+        var streamDto = _mapper.Map<List<StreamListItemDto>>(streams);
         
-        return Result.Success<List<StreamDetailsDto>, Failure>(streamDto);
+        return Result.Success<List<StreamListItemDto>, Failure>(streamDto);
     }
 
     public async Task<Result<UserDetailsDto, Failure>> GetUserByIdAsync(GetUserDto request, CancellationToken cancellationToken)

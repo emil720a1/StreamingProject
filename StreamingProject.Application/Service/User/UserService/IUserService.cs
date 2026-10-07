@@ -12,6 +12,6 @@ public interface IUserService
     Task<Result<TokenResponse, Failure>> LoginAsync(string email, string password);
     
     Task<Result<TokenResponse, Failure>> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
-    Task<Result<List<StreamDetailsDto>, Failure>> GetStreamsByUserIdAsync(GetUserDto request, CancellationToken cancellationToken);
+    Task<Result<List<StreamListItemDto>, Failure>> GetStreamsByUserIdAsync(GetUserDto request, CancellationToken cancellationToken);
     Task<Result<UserDetailsDto, Failure>> GetUserByIdAsync(GetUserDto request, CancellationToken cancellationToken);
 }

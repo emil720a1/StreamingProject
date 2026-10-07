@@ -25,7 +25,7 @@ public sealed class TestStreamService : IStreamService
             Result.Success<List<StreamListItemDto>, Failure>(streams));
     }
 
-    public Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(
+    public Task<Result<CreateStreamResponseDto, Failure>> CreateStreamAsync(
         CreateStreamDto streamDto,
         CancellationToken cancellationToken) =>
         throw new NotSupportedException();

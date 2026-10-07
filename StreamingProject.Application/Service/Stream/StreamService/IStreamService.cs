@@ -11,7 +11,7 @@ public interface IStreamService
     /// Створення  стріму
     /// </summary>
     /// <returns></returns>
-    Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(
+    Task<Result<CreateStreamResponseDto, Failure>> CreateStreamAsync(
         CreateStreamDto streamDto,
         CancellationToken cancellationToken);
 
