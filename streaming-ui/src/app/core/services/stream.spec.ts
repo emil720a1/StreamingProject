@@ -113,17 +113,13 @@ describe('StreamService', () => {
   })
 
   it('should create a stream through the API', () => {
-    const expectedStreams = {
+    const expectedStream = {
       id: 'stream-1',
-      userId: 'user-1',
-      streamerUsername: 'Alex',
-      title: 'Gaming Live',
-      description: 'Gaming stream',
-      startTime: '2026-10-05T18:00:00Z',
+      streamKey: 'stream-key-1',
     };
 
     service.createStream().subscribe((stream) => {
-      expect(stream).toEqual(expectedStreams);
+      expect(stream).toEqual(expectedStream);
     });
 
     const request = httpTesting.expectOne(
@@ -132,7 +128,7 @@ describe('StreamService', () => {
 
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({});
-    request.flush(expectedStreams);
+    request.flush(expectedStream);
   });
 
   it('should end a stream through the API', () => {
