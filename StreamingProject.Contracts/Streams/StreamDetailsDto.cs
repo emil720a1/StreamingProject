@@ -6,6 +6,5 @@ public record StreamDetailsDto(
     string? StreamerUsername,
     string Title,
     string Description,
-    string StreamKey,
     DateTime? StartTime,
     DateTime? EndTime);

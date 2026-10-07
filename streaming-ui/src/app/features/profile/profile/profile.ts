@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { StreamService } from '../../../core/services/stream';
-import { Stream } from '../../../shared/models/stream';
+import { StreamListItem } from '../../../shared/models/stream-list-item';
 
 @Component({
   imports: [],
@@ -10,7 +10,7 @@ import { Stream } from '../../../shared/models/stream';
   templateUrl: './profile.html',
 })
 export class Profile {
-  streams: Stream[] = [];
+  streams: StreamListItem[] = [];
   isLoading = true;
   errorMessage = '';
 

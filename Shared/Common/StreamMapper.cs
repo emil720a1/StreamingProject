@@ -15,9 +15,14 @@ public class StreamMapper : Profile
                 s.User != null ? s.User.UserName : null,
                 s.Title,
                 s.Description,
-                s.StreamKey,
                 s.StartTime,
                 s.EndTime
+            ));
+
+        CreateMap<StreamEntity, CreateStreamResponseDto>()
+            .ConstructUsing(s => new CreateStreamResponseDto(
+                s.Id,
+                s.StreamKey
             ));
 
 

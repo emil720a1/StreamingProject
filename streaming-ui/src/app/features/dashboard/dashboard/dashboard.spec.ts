@@ -2,14 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NEVER, Observable, of, throwError } from 'rxjs';
 import { provideRouter } from '@angular/router';
 
-import { Stream } from '../../../shared/models/stream';
+import { StreamListItem } from '../../../shared/models/stream-list-item';
 import { StreamService } from '../../../core/services/stream';
 import { Dashboard } from './dashboard';
 
 describe('Dashboard', () => {
   let component: Dashboard;
   let fixture: ComponentFixture<Dashboard>;
-  let streamsResponse: Observable<Stream[]>;
+  let streamsResponse: Observable<StreamListItem[]>;
 
   beforeEach(async () => {
     streamsResponse = of([]);
@@ -67,7 +67,7 @@ describe('Dashboard', () => {
   });
 
   it('should load streams successfully', () => {
-    const streams: Stream[] = [
+    const streams: StreamListItem[] = [
       {
         id: 'stream-1',
         userId: 'user-1',
@@ -111,7 +111,7 @@ describe('Dashboard', () => {
   });
 
   it('should clear stale streams when reload fails', () => {
-    const streams: Stream[] = [
+    const streams: StreamListItem[] = [
       {
         id: 'stream-1',
         userId: 'user-1',

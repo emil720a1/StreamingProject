@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { Stream } from '../../../shared/models/stream';
+import { StreamDetails as StreamDetailsModel } from '../../../shared/models/stream-details';
 import { StreamService } from '../../../core/services/stream';
 
 @Component({
@@ -11,7 +11,7 @@ import { StreamService } from '../../../core/services/stream';
   templateUrl: './stream-details.html',
 })
 export class StreamDetails {
-  stream?: Stream;
+  stream?: StreamDetailsModel;
   isLoading = true;
   errorMessage = '';
 

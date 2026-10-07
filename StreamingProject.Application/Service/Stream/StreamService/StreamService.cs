@@ -39,7 +39,7 @@ public class StreamService : IStreamService
         _hlsTranscoderService = hlsTranscoderService;
     }
 
-    public async Task<Result<StreamDetailsDto, Failure>> CreateStreamAsync(CreateStreamDto request, CancellationToken cancellationToken)
+    public async Task<Result<CreateStreamResponseDto, Failure>> CreateStreamAsync(CreateStreamDto request, CancellationToken cancellationToken)
     {
         var validationResult = await _createStreamDtoValidator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
@@ -48,12 +48,12 @@ public class StreamService : IStreamService
         var stream = StreamEntity.Create(request.UserId);
 
         var savedStream = await _streamRepository.AddStreamAsync(stream);
-        _logger.LogInformation("Stream {StreamId} created with key {StreamKey}", savedStream.Id, savedStream.StreamKey);
+        _logger.LogInformation("Stream {StreamId} created", savedStream.Id);
 
         var outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "hls", savedStream.Id.ToString());
         await _hlsTranscoderService.StartTranscodingAsync(savedStream.StreamKey, outputDirectory, cancellationToken);
 
-        return _mapper.Map<StreamDetailsDto>(savedStream);
+        return _mapper.Map<CreateStreamResponseDto>(savedStream);
     }
 
     public async Task<Result<StreamDetailsDto, Failure>> JoinStreamAsync(JoinStreamDto request, CancellationToken cancellationToken)
@@ -110,7 +110,7 @@ public class StreamService : IStreamService
 
         if (!keyExists)
         {
-            _logger.LogWarning("Invalid stream key attempt: {Key}", streamKey);
+            _logger.LogWarning("Invalid stream key attempt");
             return Failure.FromError(Error.Unauthorized("StreamKey.Invalid", "Invalid or non-existent stream key"));
         }
 

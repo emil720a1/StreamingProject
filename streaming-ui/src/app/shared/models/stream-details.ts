@@ -1,5 +1,5 @@
-import { Stream } from './stream';
+import { StreamListItem } from './stream-list-item';
 
-export interface StreamDetails extends Stream {
-  streamKey: string;
+export interface StreamDetails extends StreamListItem {
+  endTime: string | null;
 }

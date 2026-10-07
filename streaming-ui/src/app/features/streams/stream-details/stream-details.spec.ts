@@ -3,25 +3,26 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 
 import { StreamService } from '../../../core/services/stream';
-import { Stream } from '../../../shared/models/stream';
+import { StreamDetails as StreamDetailsModel } from '../../../shared/models/stream-details';
 import { StreamDetails } from './stream-details';
 
 describe('StreamDetails', () => {
   let component: StreamDetails;
   let fixture: ComponentFixture<StreamDetails>;
 
-  const stream: Stream = {
+  const stream: StreamDetailsModel = {
     id: 'stream-1',
     userId: 'user-1',
     streamerUsername: 'Alex',
     title: 'Gaming Live',
     description: 'Gaming stream',
     startTime: '2026-10-05T18:00:00Z',
+    endTime: null,
   };
 
   async function configureTest(
     routeId: string,
-    getStreamById: () => Observable<Stream>,
+    getStreamById: () => Observable<StreamDetailsModel>,
   ): Promise<void> {
     await TestBed.configureTestingModule({
       imports: [StreamDetails],

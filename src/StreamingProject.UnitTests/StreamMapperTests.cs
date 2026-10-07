@@ -38,4 +38,15 @@ public class StreamMapperTests
         result.Description.Should().Be(stream.Description);
         result.StartTime.Should().Be(stream.StartTime);
     }
+
+    [Test]
+    public void ShouldMapStreamEntityToCreateStreamResponseDtoWithStreamKey()
+    {
+        var stream = StreamEntity.Create(Guid.NewGuid());
+
+        var result = _mapper.Map<CreateStreamResponseDto>(stream);
+
+        result.Id.Should().Be(stream.Id);
+        result.StreamKey.Should().Be(stream.StreamKey);
+    }
 }

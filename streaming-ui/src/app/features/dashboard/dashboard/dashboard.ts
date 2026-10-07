@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { StreamService } from '../../../core/services/stream';
-import { Stream } from '../../../shared/models/stream';
+import { StreamListItem } from '../../../shared/models/stream-list-item';
 import { StreamCard } from '../../../shared/components/stream-card/stream-card';
 
 @Component({
@@ -12,7 +12,7 @@ import { StreamCard } from '../../../shared/components/stream-card/stream-card';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
-  streams: Stream[] = [];
+  streams: StreamListItem[] = [];
   isLoading = true;
   errorMessage = '';
 
