@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { StreamDetails } from '../../shared/models/stream-details';
 
 import { environment } from '../../../environments/environment';
 import { Stream } from '../../shared/models/stream';
@@ -17,8 +18,8 @@ export class StreamService {
     return this.http.get<Stream[]>(this.apiUrl);
   }
 
-  getStreamById(id: string): Observable<Stream>{
-    return this.http.get<Stream>(`${this.apiUrl}/${id}`)
+  getStreamById(id: string): Observable<StreamDetails>{
+    return this.http.get<StreamDetails>(`${this.apiUrl}/${id}`)
   }
 
   getCurrentUserStreams(): Observable<Stream[]> {
@@ -33,8 +34,8 @@ export class StreamService {
     );
   }
 
-  createStream(): Observable<Stream>{
-    return this.http.post<Stream>(
+  createStream(): Observable<StreamDetails>{
+    return this.http.post<StreamDetails>(
       `${this.apiUrl}/create`,
       {},
     );
@@ -47,8 +48,8 @@ export class StreamService {
     );
   }
 
-  joinStream(id: string): Observable<Stream> {
-    return this.http.post<Stream>(
+  joinStream(id: string): Observable<StreamDetails> {
+    return this.http.post<StreamDetails>(
       `${this.apiUrl}/join`,
       id,
     );
