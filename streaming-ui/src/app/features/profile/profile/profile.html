@@ -1,1 +1,19 @@
-<p>profile works!</p>
+<h2>My streams</h2>
+
+@if (isLoading) {
+  <p>Loading your streams...</p>
+} @else if (errorMessage) {
+  <p>{{ errorMessage }}</p>
+} @else if (streams.length === 0) {
+  <p>You have no streams yet.</p>
+} @else {
+  @for (stream of streams; track stream.id) {
+    <article>
+      <h3>{{ stream.title }}</h3>
+      <p>{{ stream.description }}</p>
+      <small>
+        Started: {{ stream.startTime || 'Not started' }}
+      </small>
+    </article>
+  }
+}
