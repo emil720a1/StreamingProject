@@ -51,8 +51,8 @@ public sealed class StreamServiceTests
 
         var entities = new List<StreamEntity>
         {
-            StreamEntity.Create(userId),
-            StreamEntity.Create(userId),
+            StreamEntity.Create(userId, "Gaming Live", "Gaming stream", "Gaming", null),
+            StreamEntity.Create(userId, "Music Session", "Music stream", "Music", null),
         };
 
         var expectedDtos = new List<StreamListItemDto>

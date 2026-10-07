@@ -27,7 +27,12 @@ public class StreamMapperTests
     public void ShouldMapStreamEntityToStreamListItemDto()
     {
         var userId = Guid.NewGuid();
-        var stream = StreamEntity.Create(userId);
+        var stream = StreamEntity.Create(
+            userId,
+            "Test stream",
+            "Test description",
+            "Gaming",
+            null);
 
         var result = _mapper.Map<StreamListItemDto>(stream);
 
@@ -42,7 +47,12 @@ public class StreamMapperTests
     [Test]
     public void ShouldMapStreamEntityToCreateStreamResponseDtoWithStreamKey()
     {
-        var stream = StreamEntity.Create(Guid.NewGuid());
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Test stream",
+            "Test description",
+            "Gaming",
+            null);
 
         var result = _mapper.Map<CreateStreamResponseDto>(stream);
 

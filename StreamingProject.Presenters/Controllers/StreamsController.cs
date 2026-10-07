@@ -15,10 +15,21 @@ public class StreamsController(
 {
     [Authorize(Policy = "Permission.Create")]
     [HttpPost("create")]
-    public async Task<IActionResult> CreateStream(CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateStream(
+        [FromBody] CreateStreamRequestDto body,
+        CancellationToken cancellationToken)
     {
-        var request = new CreateStreamDto(currentUser.Id);
-        var result = await streamService.CreateStreamAsync(request, cancellationToken);
+        var request = new CreateStreamDto(
+            currentUser.Id,
+            body.Title,
+            body.Description,
+            body.Category,
+            body.ThumbnailUrl);
+
+
+        var result = await streamService.CreateStreamAsync(
+            request,
+            cancellationToken);
 
         return HandleResult(result);
     }

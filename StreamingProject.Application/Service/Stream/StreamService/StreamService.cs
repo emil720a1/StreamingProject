@@ -45,7 +45,12 @@ public class StreamService : IStreamService
         if (!validationResult.IsValid)
             return validationResult.ToErrors();
 
-        var stream = StreamEntity.Create(request.UserId);
+        var stream = StreamEntity.Create(
+            request.UserId,
+            request.Title,
+            request.Description,
+            request.Category,
+            request.ThumbnailUrl);
 
         var savedStream = await _streamRepository.AddStreamAsync(stream);
         _logger.LogInformation("Stream {StreamId} created", savedStream.Id);
