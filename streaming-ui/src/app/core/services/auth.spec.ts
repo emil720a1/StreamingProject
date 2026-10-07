@@ -28,6 +28,7 @@ describe('AuthService', () => {
 
   afterEach(() => {
     http.verify();
+    localStorage.clear();
   });
 
   it('should be created', () => {
@@ -46,6 +47,35 @@ describe('AuthService', () => {
     expect(testRequest.request.method).toBe('POST');
     expect(testRequest.request.body).toEqual(request);
     testRequest.flush({ token: 'token', refreshToken: 'refresh-token' });
+  });
+
+  it('should refresh tokens and store new ones', () => {
+    const oldRefreshToken = 'old-refresh-token';
+    const response = {
+      token: 'new-access-token',
+      refreshToken: 'new-refresh-token',
+    };
+
+    service.refreshToken(oldRefreshToken).subscribe((result) => {
+      expect(result).toEqual(response);
+    });
+
+    const testRequest = http.expectOne(
+      'http://localhost:5228/api/Auth/refresh-token',
+    );
+
+    expect(testRequest.request.method).toBe('POST');
+    expect(testRequest.request.body).toEqual({
+      refreshToken: oldRefreshToken,
+    });
+
+    testRequest.flush(response);
+
+    expect(localStorage.getItem('access_token'))
+      .toBe('new-access-token');
+
+    expect(localStorage.getItem('refresh_token'))
+      .toBe('new-refresh-token');
   });
 
   it('should send registration data to the API', () => {

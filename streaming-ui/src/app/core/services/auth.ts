@@ -41,10 +41,20 @@ export class AuthService {
   }
 
   refreshToken(refreshToken: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(
+    return this.http
+      .post<AuthResponse>(
       `${this.apiUrl}/refresh-token`,
       { refreshToken },
-    );
+    )
+      .pipe(
+        tap((response) => {
+          localStorage.setItem(this.tokenKey, response.token);
+          localStorage.setItem(
+            this.refreshTokenKey,
+            response.refreshToken,
+          );
+        }),
+      );
   }
 
   getToken(): string | null {
