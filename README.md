@@ -70,6 +70,50 @@ dotnet run --project StreamingProject.Web
 
 The exact HTTP and HTTPS ports are defined by the web project's launch settings and environment configuration.
 
+## Docker Compose
+
+Docker Compose provides a reproducible local environment with the Angular frontend,
+ASP.NET Core backend and PostgreSQL database.
+
+Create the local environment file from the safe template:
+
+```bash
+cp .env.example .env
+```
+
+Start all services:
+
+```bash
+docker compose up --build
+```
+
+The services are available at:
+
+- frontend: `http://localhost:4200`;
+- backend and Swagger: `http://localhost:5228/swagger/index.html`;
+- PostgreSQL: `localhost:5432`;
+- RTMP server: `localhost:1935`.
+
+The PostgreSQL data is stored in the `postgres-data` Docker volume and survives
+container restarts. Stop the services with:
+
+```bash
+docker compose down
+```
+
+To remove the database volume as well, use the following only when local data can
+be discarded:
+
+```bash
+docker compose down -v
+```
+
+View service logs with:
+
+```bash
+docker compose logs -f backend
+```
+
 ## Database
 
 The backend uses Entity Framework Core with PostgreSQL.

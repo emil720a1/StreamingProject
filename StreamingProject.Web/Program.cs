@@ -1,5 +1,6 @@
 
 using System.Net;
+using Extensions.Hosting.AsyncInitialization;
 using LiveStreamingServerNet;
 using LiveStreamingServerNet.Networking;
 using LiveStreamingServerNet.Rtmp.Server.Contracts;
@@ -95,6 +96,7 @@ app.MapControllers();
 
 if (!app.Environment.IsEnvironment("Testing"))
 {
+    await app.InitAsync();
     await app.UseSeeders();
 }
 
