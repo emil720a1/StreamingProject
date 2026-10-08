@@ -55,9 +55,6 @@ public class StreamService : IStreamService
         var savedStream = await _streamRepository.AddStreamAsync(stream);
         _logger.LogInformation("Stream {StreamId} created", savedStream.Id);
 
-        var outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "hls", savedStream.Id.ToString());
-        await _hlsTranscoderService.StartTranscodingAsync(savedStream.StreamKey, outputDirectory, cancellationToken);
-
         return _mapper.Map<CreateStreamResponseDto>(savedStream);
     }
 
@@ -138,9 +135,30 @@ public class StreamService : IStreamService
         var stream = await _streamRepository.GetStreamByKeyAsync(streamKey);
 
         if (stream == null)
-            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+            return Failure.FromError(
+                Error.NotFound(
+                "Stream.NotFound",
+                "Stream not found",
+                null));
+
+        var outputDirectory = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "hls",
+            stream.Id.ToString());
+
+        var hlsResult = await _hlsTranscoderService.StartTranscodingAsync(
+            stream.StreamKey,
+            outputDirectory,
+            cancellationToken);
+
+        if (hlsResult.IsFailure)
+        {
+            return hlsResult.Error;
+        }
 
         stream.StartStream();
+
         await _streamRepository.UpdateStreamAsync(stream);
 
         return true;

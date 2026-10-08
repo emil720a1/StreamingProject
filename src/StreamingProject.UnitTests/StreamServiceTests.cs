@@ -236,6 +236,12 @@ public sealed class StreamServiceTests
         _repositoryMock
             .Setup(repository => repository.UpdateStreamAsync(stream))
             .ReturnsAsync(stream);
+        _hlsServiceMock
+            .Setup(service => service.StartTranscodingAsync(
+                stream.StreamKey,
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         var result = await _sut.StartStreamByKeyAsync(
             stream.StreamKey,
@@ -246,6 +252,13 @@ public sealed class StreamServiceTests
         stream.EndTime.Should().BeNull();
         _repositoryMock.Verify(
             repository => repository.UpdateStreamAsync(stream),
+            Times.Once);
+        _hlsServiceMock.Verify(
+            service => service.StartTranscodingAsync(
+                stream.StreamKey,
+                It.Is<string>(path => path.EndsWith(
+                    Path.Combine("wwwroot", "hls", stream.Id.ToString()))),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 

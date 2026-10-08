@@ -32,7 +32,7 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
         var streamKey = streamPath.Replace("/live/", "");
 
         using var scope = _scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetService<IStreamService>();
+        var service = scope.ServiceProvider.GetRequiredService<IStreamService>();
 
         var result = await service.ValidateStreamKeyAsync(streamKey, default);
 
@@ -56,20 +56,6 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
 
             return;
         }
-
-        var outputDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "live", streamKey);
-        Directory.CreateDirectory(outputDir);
-
-        var ffmpegArgs =
-            $"-i rtmp://localhost:1935/live/{streamKey} -c:v copy -c:a copy -f hls -hls_time 2 -hls_list_size 3 -hls_flags delete_segments {outputDir}/index.m3u8";
-
-        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        {
-            FileName = "ffmpeg",
-            Arguments = ffmpegArgs,
-            CreateNoWindow = true,
-            UseShellExecute = false,
-        });
 
         _logger.LogInformation("Стрім опубліковано! Клієнт: {ClientId}", clientId);
     }
