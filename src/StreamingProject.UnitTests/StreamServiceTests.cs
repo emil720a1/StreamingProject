@@ -301,4 +301,69 @@ public sealed class StreamServiceTests
             Times.Once);
     }
 
+    [Test]
+    public async Task EndStreamByKeyAsync_ShouldReturnFailureAndNotPersist_WhenTranscodingCannotStop()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+        _hlsServiceMock
+            .Setup(service => service.StopTranscodingAsync(
+                stream.StreamKey,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Failure.FromError(
+                Error.Failure("Hls.StopFailed", "Unable to stop transcoding")));
+
+        var result = await _sut.EndStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        stream.EndTime.Should().BeNull();
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task EndStreamAsync_ShouldReturnFailureAndNotPersist_WhenTranscodingCannotStop()
+    {
+        var userId = Guid.NewGuid();
+        var stream = StreamEntity.Create(
+            userId,
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByIdAsync(stream.Id))
+            .ReturnsAsync(stream);
+        _hlsServiceMock
+            .Setup(service => service.StopTranscodingAsync(
+                stream.StreamKey,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Failure.FromError(
+                Error.Failure("Hls.StopFailed", "Unable to stop transcoding")));
+
+        var result = await _sut.EndStreamAsync(
+            new EndStreamDto(stream.Id, userId),
+            CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        stream.EndTime.Should().BeNull();
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
+            Times.Never);
+    }
+
 }

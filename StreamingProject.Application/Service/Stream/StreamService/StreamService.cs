@@ -173,12 +173,21 @@ public class StreamService : IStreamService
         if (stream == null)
             return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
 
-        stream.EndStream();
-        await _streamRepository.UpdateStreamAsync(stream);
-
-        await _hlsTranscoderService.StopTranscodingAsync(
+        var hlsResult = await _hlsTranscoderService.StopTranscodingAsync(
             streamKey,
             cancellationToken);
+
+        if (hlsResult.IsFailure)
+        {
+            _logger.LogError(
+                "Failed to stop HLS transcoding for stream {StreamKey}",
+                streamKey);
+
+            return hlsResult.Error;
+        }
+
+        stream.EndStream();
+        await _streamRepository.UpdateStreamAsync(stream);
 
         return true;
     }
@@ -206,10 +215,21 @@ public class StreamService : IStreamService
         if (stream.UserId != request.UserId)
             return Failure.FromError(Error.Unauthorized("Stream.Unauthorized", "Cannot end someone else's stream"));
 
+        var hlsResult = await _hlsTranscoderService.StopTranscodingAsync(
+            stream.StreamKey,
+            cancellationToken);
+
+        if (hlsResult.IsFailure)
+        {
+            _logger.LogError(
+                "Failed to stop HLS transcoding for stream {StreamKey}",
+                stream.StreamKey);
+
+            return hlsResult.Error;
+        }
+
         stream.EndStream();
         await _streamRepository.UpdateStreamAsync(stream);
-
-        await _hlsTranscoderService.StopTranscodingAsync(stream.StreamKey, cancellationToken);
 
         return true;
     }

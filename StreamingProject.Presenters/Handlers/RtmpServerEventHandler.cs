@@ -70,9 +70,18 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
         var service = scope.ServiceProvider
             .GetRequiredService<IStreamService>();
 
-        await service.EndStreamByKeyAsync(
+        var result = await service.EndStreamByKeyAsync(
             streamKey,
             CancellationToken.None);
+
+        if (result.IsFailure)
+        {
+            _logger.LogError(
+                "Failed to stop stream lifecycle for key {StreamKey}",
+                streamKey);
+
+            return;
+        }
 
         _logger.LogInformation(
             "Стрім зупинено. Клієнт: {ClientId}",
