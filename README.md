@@ -49,7 +49,12 @@ Restore dependencies:
 dotnet restore
 ```
 
-Configure the local database connection and authentication settings using the project configuration files or environment variables used by the current environment.
+Configure the local database connection and authentication settings using environment variables or a local, untracked `StreamingProject.Web/appsettings.Local.json` file. Safe templates are available in:
+
+- `StreamingProject.Web/appsettings.example.json`;
+- `.env.example`.
+
+Never commit passwords, JWT signing keys, or other environment-specific secrets.
 
 Build the solution:
 
