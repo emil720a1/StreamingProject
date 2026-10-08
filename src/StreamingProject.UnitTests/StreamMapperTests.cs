@@ -41,6 +41,10 @@ public class StreamMapperTests
         result.UserId.Should().Be(stream.UserId);
         result.Title.Should().Be(stream.Title);
         result.Description.Should().Be(stream.Description);
+        stream.Title.Should().Be("Test stream");
+        stream.Description.Should().Be("Test description");
+        stream.Category.Should().Be("Gaming");
+        stream.ThumbnailUrl.Should().BeNull();
         result.StartTime.Should().Be(stream.StartTime);
     }
 

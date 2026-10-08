@@ -118,7 +118,14 @@ describe('StreamService', () => {
       streamKey: 'stream-key-1',
     };
 
-    service.createStream().subscribe((stream) => {
+    const createRequest = {
+      title: 'Gaming Live',
+      description: 'Gaming stream',
+      category: 'Gaming',
+      thumbnailUrl: null,
+    };
+
+    service.createStream(createRequest).subscribe((stream) => {
       expect(stream).toEqual(expectedStream);
     });
 
@@ -127,7 +134,7 @@ describe('StreamService', () => {
     );
 
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({});
+    expect(request.request.body).toEqual(createRequest);
     request.flush(expectedStream);
   });
 

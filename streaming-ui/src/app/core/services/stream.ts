@@ -6,6 +6,7 @@ import { StreamCreated } from '../../shared/models/stream-created';
 import { StreamListItem } from '../../shared/models/stream-list-item';
 
 import { environment } from '../../../environments/environment';
+import { CreateStreamRequest } from '../../shared/models/create-stream-request';
 
 @Injectable({
   providedIn: 'root',
@@ -35,10 +36,12 @@ export class StreamService {
     );
   }
 
-  createStream(): Observable<StreamCreated>{
+  createStream(
+    request: CreateStreamRequest,
+  ): Observable<StreamCreated>{
     return this.http.post<StreamCreated>(
       `${this.apiUrl}/create`,
-      {},
+      request,
     );
   }
 

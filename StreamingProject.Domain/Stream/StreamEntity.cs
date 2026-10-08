@@ -16,17 +16,29 @@ public class StreamEntity
         Guid id,
         Guid userId,
         string streamKey,
-        Guid chatId) : this()
+        Guid chatId,
+        string title,
+        string description,
+        string category,
+        string? thumbnailUrl) : this()
     {
         Id = id;
         UserId = userId;
         StreamKey = streamKey;
         ChatId = chatId;
+        Title = title;
+        Description = description;
+        Category = category;
+        ThumbnailUrl = thumbnailUrl;
     }
 
     public string Title { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
+
+    public string Category { get; private set; } = string.Empty;
+
     public string? ThumbnailUrl { get; set; }
+
     public Guid Id { get; private set; }
 
     public string StreamKey { get; private set; }
@@ -60,7 +72,11 @@ public class StreamEntity
             Guid.NewGuid(),
             userId,
             key,
-           Guid.NewGuid()
+           Guid.NewGuid(),
+            title,
+            description,
+            category,
+            thumbnailUrl
         );
     }
 
