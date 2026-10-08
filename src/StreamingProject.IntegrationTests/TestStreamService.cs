@@ -55,4 +55,14 @@ public sealed class TestStreamService : IStreamService
         string streamKey,
         CancellationToken cancellationToken) =>
         throw new NotSupportedException();
+
+    public Task<Result<bool, Failure>> StartStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<Result<bool, Failure>> EndStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
 }

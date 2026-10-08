@@ -131,6 +131,40 @@ public class StreamService : IStreamService
         return new StreamStatusDto(stream.Id, status);
     }
 
+    public async Task<Result<bool, Failure>> StartStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken)
+    {
+        var stream = await _streamRepository.GetStreamByKeyAsync(streamKey);
+
+        if (stream == null)
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+
+        stream.StartStream();
+        await _streamRepository.UpdateStreamAsync(stream);
+
+        return true;
+    }
+
+    public async Task<Result<bool, Failure>> EndStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken)
+    {
+        var stream = await _streamRepository.GetStreamByKeyAsync(streamKey);
+
+        if (stream == null)
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+
+        stream.EndStream();
+        await _streamRepository.UpdateStreamAsync(stream);
+
+        await _hlsTranscoderService.StopTranscodingAsync(
+            streamKey,
+            cancellationToken);
+
+        return true;
+    }
+
     public async Task<Result<bool, Failure>> ValidateStreamKeyAsync(string streamKey, CancellationToken cancellationToken)
     {
         var keyExists = await _streamRepository.CheckStreamKeyExistsAsync(streamKey);

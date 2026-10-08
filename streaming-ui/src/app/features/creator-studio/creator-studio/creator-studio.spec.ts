@@ -283,6 +283,7 @@ describe('CreatorStudio', () => {
 
     expect(streamServiceMock.endStream).toHaveBeenCalledWith('stream-1');
     expect(component.isEnding).toBe(false);
+    expect(component.status).toBe('Ended');
     expect(component.endMessage).toBe('Stream ended successfully');
   });
 

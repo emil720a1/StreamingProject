@@ -24,13 +24,13 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
 
 
     public async ValueTask OnRtmpStreamPublishedAsync(
-        IEventContext context, 
-        uint clientId, 
+        IEventContext context,
+        uint clientId,
         string streamPath,
         IReadOnlyDictionary<string, string> streamArguments)
     {
         var streamKey = streamPath.Replace("/live/", "");
-        
+
         using var scope = _scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetService<IStreamService>();
 
@@ -40,11 +40,23 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
         {
             var client = _server.Clients.FirstOrDefault(c => c.Id == clientId);
             client?.Disconnect();
-            
+
             _logger.LogWarning("Клієнта відключено через невірний ключ");
             return;
         }
-        
+
+        var startResult = await service.StartStreamByKeyAsync(
+            streamKey,
+            CancellationToken.None);
+
+        if (startResult.IsFailure)
+        {
+            _logger.LogError("Failed to start stream lifecycle for key {StreamKey}",
+                streamKey);
+
+            return;
+        }
+
         var outputDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "live", streamKey);
         Directory.CreateDirectory(outputDir);
 
@@ -58,28 +70,47 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
             CreateNoWindow = true,
             UseShellExecute = false,
         });
-        
+
         _logger.LogInformation("Стрім опубліковано! Клієнт: {ClientId}", clientId);
     }
-
-    public ValueTask OnRtmpStreamUnpublishedAsync(IEventContext context, uint clientId, string streamPath)
+    public async ValueTask OnRtmpStreamUnpublishedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath)
     {
-        _logger.LogInformation("Стрім зупинено. Клієнт: {ClientId}", clientId);
-        return ValueTask.CompletedTask;
+        var streamKey = streamPath.Replace("/live/", "");
+
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider
+            .GetRequiredService<IStreamService>();
+
+        await service.EndStreamByKeyAsync(
+            streamKey,
+            CancellationToken.None);
+
+        _logger.LogInformation(
+            "Стрім зупинено. Клієнт: {ClientId}",
+            clientId);
     }
 
-    public ValueTask OnRtmpStreamSubscribedAsync(IEventContext context, uint clientId, string streamPath, 
-        IReadOnlyDictionary<string, string> streamArguments) => ValueTask.CompletedTask;
+    public ValueTask OnRtmpStreamSubscribedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath,
+        IReadOnlyDictionary<string, string> streamArguments)
+        => ValueTask.CompletedTask;
 
-    public ValueTask OnRtmpStreamUnsubscribedAsync(IEventContext context, uint clientId, string streamPath) => ValueTask.CompletedTask;
+    public ValueTask OnRtmpStreamUnsubscribedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath)
+        => ValueTask.CompletedTask;
 
-    public ValueTask OnRtmpStreamMetaDataReceivedAsync(IEventContext context, uint clientId, string streamPath,
-        IReadOnlyDictionary<string, object> metaData) => ValueTask.CompletedTask;
-    
-    
-    
-    
-    
-    
-    
+    public ValueTask OnRtmpStreamMetaDataReceivedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath,
+        IReadOnlyDictionary<string, object> metaData)
+        => ValueTask.CompletedTask;
+
 }

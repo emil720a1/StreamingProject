@@ -34,6 +34,14 @@ public interface IStreamService
         Guid userId,
         CancellationToken cancellationToken);
 
+    Task<Result<bool, Failure>> StartStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken);
+
+    Task<Result<bool, Failure>> EndStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken);
+
     /// <summary>
     /// Завершити стріми
     /// </summary>

@@ -67,6 +67,12 @@ public class StreamRepositories : IStreamRepository
             .ToListAsync();
     }
 
+    public async Task<StreamEntity?> GetStreamByKeyAsync(string streamKey)
+    {
+        return await _dbContext.Streams
+            .FirstOrDefaultAsync(s => s.StreamKey == streamKey);
+    }
+
     public async Task<bool> HasJoinedStreamAsync(Guid streamId, Guid userId)
     {
         return await _dbContext.UserStreams

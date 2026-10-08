@@ -220,4 +220,72 @@ public sealed class StreamServiceTests
         result.IsSuccess.Should().BeFalse();
     }
 
+    [Test]
+    public async Task StartStreamByKeyAsync_ShouldStartAndPersistStream()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+        _repositoryMock
+            .Setup(repository => repository.UpdateStreamAsync(stream))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.StartStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        stream.StartTime.Should().NotBeNull();
+        stream.EndTime.Should().BeNull();
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(stream),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task EndStreamByKeyAsync_ShouldEndPersistAndStopTranscoding()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+        _repositoryMock
+            .Setup(repository => repository.UpdateStreamAsync(stream))
+            .ReturnsAsync(stream);
+        _hlsServiceMock
+            .Setup(service => service.StopTranscodingAsync(
+                stream.StreamKey,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var result = await _sut.EndStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        stream.EndTime.Should().NotBeNull();
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(stream),
+            Times.Once);
+        _hlsServiceMock.Verify(
+            service => service.StopTranscodingAsync(
+                stream.StreamKey,
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
 }

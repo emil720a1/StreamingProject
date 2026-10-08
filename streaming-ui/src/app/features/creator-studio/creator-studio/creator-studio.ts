@@ -102,6 +102,7 @@ export class CreatorStudio {
     this.streamService.endStream(streamId).subscribe({
       next: () => {
         this.isEnding = false;
+        this.status = 'Ended';
         this.endMessage = 'Stream ended successfully';
       },
       error: () => {

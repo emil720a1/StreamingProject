@@ -18,6 +18,8 @@ public interface IStreamRepository
     Task<List<StreamEntity>> GetAvailableStreamsAsync();
     Task<List<StreamEntity>> GetStreamsByUserId(Guid userId);
 
+    Task<StreamEntity?> GetStreamByKeyAsync(string streamKey);
+
     // Participants
     Task<bool> HasJoinedStreamAsync(Guid streamId, Guid userId);
     Task<bool> AddParticipantAsync(UserStream userStream);
