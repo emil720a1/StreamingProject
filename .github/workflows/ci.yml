@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore StreamingProject.sln
+
+      - name: Build backend
+        run: dotnet build StreamingProject.sln --no-restore
+
+      - name: Test backend
+        run: dotnet test StreamingProject.sln --no-build
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.3'
+          cache: npm
+          cache-dependency-path: streaming-ui/package-lock.json
+
+      - name: Install dependencies
+        working-directory: streaming-ui
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: streaming-ui
+        run: npm test -- --watch=false
+
+      - name: Build frontend
+        working-directory: streaming-ui
+        run: npm run build
+        
