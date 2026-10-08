@@ -10,6 +10,8 @@ obj/
 
 # --- JetBrains Rider / IntelliJ ---
 .idea/
+.vscode/
+.fleet/
 *.sln.iml
 .attached_packages/
 .DS_Store
@@ -22,10 +24,14 @@ x64/
 x86/
 
 # --- Налаштування користувача та секрети ---
-appsettings.Development.json
-appsettings.Local.json
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/appsettings.*.json
+!**/appsettings.example.json
 *.usersecrets
 .env
+.env.*
+!.env.example
 
 # --- macOS системні файли ---
 .DS_Store
@@ -62,3 +68,4 @@ Thumbs.db
 node_modules/
 .angular/
 dist/
+coverage/
