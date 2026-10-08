@@ -45,13 +45,15 @@ public class StreamService : IStreamService
         if (!validationResult.IsValid)
             return validationResult.ToErrors();
 
-        var stream = StreamEntity.Create(request.UserId);
+        var stream = StreamEntity.Create(
+            request.UserId,
+            request.Title,
+            request.Description,
+            request.Category,
+            request.ThumbnailUrl);
 
         var savedStream = await _streamRepository.AddStreamAsync(stream);
         _logger.LogInformation("Stream {StreamId} created", savedStream.Id);
-
-        var outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "hls", savedStream.Id.ToString());
-        await _hlsTranscoderService.StartTranscodingAsync(savedStream.StreamKey, outputDirectory, cancellationToken);
 
         return _mapper.Map<CreateStreamResponseDto>(savedStream);
     }
@@ -104,6 +106,92 @@ public class StreamService : IStreamService
         return Result.Success<List<StreamListItemDto>, Failure>(streamDtos);
     }
 
+    public async Task<Result<StreamStatusDto, Failure>> GetStreamStatusAsync(
+        Guid streamId,
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var stream = await _streamRepository.GetStreamByIdAsync(streamId);
+
+        if (stream == null)
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+
+        if (stream.UserId != userId)
+            return Failure.FromError(Error.Unauthorized("Stream.Unauthorized", "Cannot view another user's stream status"));
+
+        var status = stream.EndTime.HasValue
+            ? "Ended"
+            : stream.StartTime.HasValue
+                ? "Live"
+                : "Preparing";
+
+        return new StreamStatusDto(stream.Id, status);
+    }
+
+    public async Task<Result<bool, Failure>> StartStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken)
+    {
+        var stream = await _streamRepository.GetStreamByKeyAsync(streamKey);
+
+        if (stream == null)
+            return Failure.FromError(
+                Error.NotFound(
+                "Stream.NotFound",
+                "Stream not found",
+                null));
+
+        var outputDirectory = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "hls",
+            stream.Id.ToString());
+
+        var hlsResult = await _hlsTranscoderService.StartTranscodingAsync(
+            stream.StreamKey,
+            outputDirectory,
+            cancellationToken);
+
+        if (hlsResult.IsFailure)
+        {
+            return hlsResult.Error;
+        }
+
+        stream.StartStream();
+
+        await _streamRepository.UpdateStreamAsync(stream);
+
+        return true;
+    }
+
+    public async Task<Result<bool, Failure>> EndStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken)
+    {
+        var stream = await _streamRepository.GetStreamByKeyAsync(streamKey);
+
+        if (stream == null)
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+
+        var hlsResult = await _hlsTranscoderService.StopTranscodingAsync(
+            streamKey,
+            cancellationToken);
+
+        if (hlsResult.IsFailure)
+        {
+            _logger.LogError(
+                "Failed to stop HLS transcoding for stream {StreamKey}",
+                streamKey);
+
+            return hlsResult.Error;
+        }
+
+        stream.EndStream();
+        await _streamRepository.UpdateStreamAsync(stream);
+
+        return true;
+    }
+
     public async Task<Result<bool, Failure>> ValidateStreamKeyAsync(string streamKey, CancellationToken cancellationToken)
     {
         var keyExists = await _streamRepository.CheckStreamKeyExistsAsync(streamKey);
@@ -127,10 +215,21 @@ public class StreamService : IStreamService
         if (stream.UserId != request.UserId)
             return Failure.FromError(Error.Unauthorized("Stream.Unauthorized", "Cannot end someone else's stream"));
 
+        var hlsResult = await _hlsTranscoderService.StopTranscodingAsync(
+            stream.StreamKey,
+            cancellationToken);
+
+        if (hlsResult.IsFailure)
+        {
+            _logger.LogError(
+                "Failed to stop HLS transcoding for stream {StreamKey}",
+                stream.StreamKey);
+
+            return hlsResult.Error;
+        }
+
         stream.EndStream();
         await _streamRepository.UpdateStreamAsync(stream);
-
-        await _hlsTranscoderService.StopTranscodingAsync(stream.StreamKey, cancellationToken);
 
         return true;
     }

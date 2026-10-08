@@ -13,27 +13,39 @@ public class StreamEntity
     }
 
     private StreamEntity(
-        Guid id, 
-        Guid userId, 
-        string streamKey, 
-        Guid chatId) : this()
+        Guid id,
+        Guid userId,
+        string streamKey,
+        Guid chatId,
+        string title,
+        string description,
+        string category,
+        string? thumbnailUrl) : this()
     {
         Id = id;
         UserId = userId;
         StreamKey = streamKey;
         ChatId = chatId;
+        Title = title;
+        Description = description;
+        Category = category;
+        ThumbnailUrl = thumbnailUrl;
     }
-    
+
     public string Title { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
+
+    public string Category { get; private set; } = string.Empty;
+
     public string? ThumbnailUrl { get; set; }
+
     public Guid Id { get; private set; }
-    
+
     public string StreamKey { get; private set; }
     public Guid UserId { get; private set; }
     public Guid ChatId { get; private set; }
-    
-    
+
+
     public DateTime? StartTime { get; private set; }
     public DateTime? EndTime { get; private set; }
     public UserEntity User { get; private set; }
@@ -41,21 +53,30 @@ public class StreamEntity
 
     private readonly List<UserStream.UserStream> _participants = new();
     public IReadOnlyList<UserStream.UserStream> Participants => _participants;
-    
+
     public ICollection<ChatEntity> ChatMessages { get; private set; }
-    
+
     public ICollection<StreamLikeEntity> Likes { get; private set; }
-    
-    public static StreamEntity Create(Guid userId)
+
+    public static StreamEntity Create(
+        Guid userId,
+        string title,
+        string description,
+        string category,
+        string? thumbnailUrl)
     {
-        
+
         var key = $"sk_{Guid.NewGuid().ToString("N").Substring(0, 12)}";
         return new StreamEntity
         (
             Guid.NewGuid(),
             userId,
             key,
-           Guid.NewGuid()
+           Guid.NewGuid(),
+            title,
+            description,
+            category,
+            thumbnailUrl
         );
     }
 
@@ -63,7 +84,7 @@ public class StreamEntity
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new InvalidOperationException("Title cannot be empty.");
-        
+
         Title = title;
         Description = description;
     }

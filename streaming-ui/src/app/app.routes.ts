@@ -42,6 +42,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'creator-studio',
+        loadComponent: () =>
+          import(
+            './features/creator-studio/creator-studio/creator-studio'
+            ).then((component) => component.CreatorStudio),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./features/profile/profile/profile').then(

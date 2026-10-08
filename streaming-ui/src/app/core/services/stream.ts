@@ -4,8 +4,10 @@ import { Observable } from 'rxjs';
 import { StreamDetails } from '../../shared/models/stream-details';
 import { StreamCreated } from '../../shared/models/stream-created';
 import { StreamListItem } from '../../shared/models/stream-list-item';
+import { StreamStatus } from '../../shared/models/stream-status';
 
 import { environment } from '../../../environments/environment';
+import { CreateStreamRequest } from '../../shared/models/create-stream-request';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +25,12 @@ export class StreamService {
     return this.http.get<StreamDetails>(`${this.apiUrl}/${id}`)
   }
 
+  getStreamStatus(id: string): Observable<StreamStatus> {
+    return this.http.get<StreamStatus>(
+      `${this.apiUrl}/${id}/status`,
+    );
+  }
+
   getCurrentUserStreams(): Observable<StreamListItem[]> {
     return this.http.get<StreamListItem[]>(
       `${environment.apiUrl}/Users/streams`,
@@ -35,10 +43,12 @@ export class StreamService {
     );
   }
 
-  createStream(): Observable<StreamCreated>{
+  createStream(
+    request: CreateStreamRequest,
+  ): Observable<StreamCreated>{
     return this.http.post<StreamCreated>(
       `${this.apiUrl}/create`,
-      {},
+      request,
     );
   }
 

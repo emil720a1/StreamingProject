@@ -15,10 +15,21 @@ public class StreamsController(
 {
     [Authorize(Policy = "Permission.Create")]
     [HttpPost("create")]
-    public async Task<IActionResult> CreateStream(CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateStream(
+        [FromBody] CreateStreamRequestDto body,
+        CancellationToken cancellationToken)
     {
-        var request = new CreateStreamDto(currentUser.Id);
-        var result = await streamService.CreateStreamAsync(request, cancellationToken);
+        var request = new CreateStreamDto(
+            currentUser.Id,
+            body.Title,
+            body.Description,
+            body.Category,
+            body.ThumbnailUrl);
+
+
+        var result = await streamService.CreateStreamAsync(
+            request,
+            cancellationToken);
 
         return HandleResult(result);
     }
@@ -55,6 +66,20 @@ public class StreamsController(
     {
         var request = new GetStreamByIdDto(streamId, currentUser.Id);
         var result = await streamService.GetStreamByIdAsync(request, cancellationToken);
+
+        return HandleResult(result);
+    }
+
+    [Authorize(Policy = "Permission.Read")]
+    [HttpGet("{streamId:guid}/status")]
+    public async Task<IActionResult> GetStreamStatus(
+        [FromRoute] Guid streamId,
+        CancellationToken cancellationToken)
+    {
+        var result = await streamService.GetStreamStatusAsync(
+            streamId,
+            currentUser.Id,
+            cancellationToken);
 
         return HandleResult(result);
     }

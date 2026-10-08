@@ -118,7 +118,14 @@ describe('StreamService', () => {
       streamKey: 'stream-key-1',
     };
 
-    service.createStream().subscribe((stream) => {
+    const createRequest = {
+      title: 'Gaming Live',
+      description: 'Gaming stream',
+      category: 'Gaming',
+      thumbnailUrl: null,
+    };
+
+    service.createStream(createRequest).subscribe((stream) => {
       expect(stream).toEqual(expectedStream);
     });
 
@@ -127,7 +134,7 @@ describe('StreamService', () => {
     );
 
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({});
+    expect(request.request.body).toEqual(createRequest);
     request.flush(expectedStream);
   });
 
@@ -166,4 +173,21 @@ describe('StreamService', () => {
       startTime: '2026-10-05T18:00:00Z',
     });
   });
+
+  it('should request stream through the API', () => {
+    service.getStreamStatus('stream-1').subscribe((result) => {
+      expect(result.status).toBe('Preparing');
+    });
+
+    const request = httpTesting.expectOne(
+      `${environment.apiUrl}/Streams/stream-1/status`,
+    );
+
+    expect(request.request.method).toBe('GET');
+
+    request.flush({
+      streamId: 'stream-1',
+      status: 'Preparing',
+    });
+  })
 });

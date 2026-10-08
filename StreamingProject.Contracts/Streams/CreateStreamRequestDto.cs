@@ -1,9 +1,6 @@
-using StreamingProject.Domain;
-
 namespace StreamingProject.Contracts.Streams;
 
-public record CreateStreamDto(
-    Guid UserId,
+public record CreateStreamRequestDto(
     string Title,
     string Description,
     string Category,

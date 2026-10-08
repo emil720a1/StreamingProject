@@ -24,15 +24,15 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
 
 
     public async ValueTask OnRtmpStreamPublishedAsync(
-        IEventContext context, 
-        uint clientId, 
+        IEventContext context,
+        uint clientId,
         string streamPath,
         IReadOnlyDictionary<string, string> streamArguments)
     {
         var streamKey = streamPath.Replace("/live/", "");
-        
+
         using var scope = _scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetService<IStreamService>();
+        var service = scope.ServiceProvider.GetRequiredService<IStreamService>();
 
         var result = await service.ValidateStreamKeyAsync(streamKey, default);
 
@@ -40,46 +40,72 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
         {
             var client = _server.Clients.FirstOrDefault(c => c.Id == clientId);
             client?.Disconnect();
-            
+
             _logger.LogWarning("Клієнта відключено через невірний ключ");
             return;
         }
-        
-        var outputDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "live", streamKey);
-        Directory.CreateDirectory(outputDir);
 
-        var ffmpegArgs =
-            $"-i rtmp://localhost:1935/live/{streamKey} -c:v copy -c:a copy -f hls -hls_time 2 -hls_list_size 3 -hls_flags delete_segments {outputDir}/index.m3u8";
+        var startResult = await service.StartStreamByKeyAsync(
+            streamKey,
+            CancellationToken.None);
 
-        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        if (startResult.IsFailure)
         {
-            FileName = "ffmpeg",
-            Arguments = ffmpegArgs,
-            CreateNoWindow = true,
-            UseShellExecute = false,
-        });
-        
+            _logger.LogError("Failed to start stream lifecycle for key {StreamKey}",
+                streamKey);
+
+            return;
+        }
+
         _logger.LogInformation("Стрім опубліковано! Клієнт: {ClientId}", clientId);
     }
-
-    public ValueTask OnRtmpStreamUnpublishedAsync(IEventContext context, uint clientId, string streamPath)
+    public async ValueTask OnRtmpStreamUnpublishedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath)
     {
-        _logger.LogInformation("Стрім зупинено. Клієнт: {ClientId}", clientId);
-        return ValueTask.CompletedTask;
+        var streamKey = streamPath.Replace("/live/", "");
+
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider
+            .GetRequiredService<IStreamService>();
+
+        var result = await service.EndStreamByKeyAsync(
+            streamKey,
+            CancellationToken.None);
+
+        if (result.IsFailure)
+        {
+            _logger.LogError(
+                "Failed to stop stream lifecycle for key {StreamKey}",
+                streamKey);
+
+            return;
+        }
+
+        _logger.LogInformation(
+            "Стрім зупинено. Клієнт: {ClientId}",
+            clientId);
     }
 
-    public ValueTask OnRtmpStreamSubscribedAsync(IEventContext context, uint clientId, string streamPath, 
-        IReadOnlyDictionary<string, string> streamArguments) => ValueTask.CompletedTask;
+    public ValueTask OnRtmpStreamSubscribedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath,
+        IReadOnlyDictionary<string, string> streamArguments)
+        => ValueTask.CompletedTask;
 
-    public ValueTask OnRtmpStreamUnsubscribedAsync(IEventContext context, uint clientId, string streamPath) => ValueTask.CompletedTask;
+    public ValueTask OnRtmpStreamUnsubscribedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath)
+        => ValueTask.CompletedTask;
 
-    public ValueTask OnRtmpStreamMetaDataReceivedAsync(IEventContext context, uint clientId, string streamPath,
-        IReadOnlyDictionary<string, object> metaData) => ValueTask.CompletedTask;
-    
-    
-    
-    
-    
-    
-    
+    public ValueTask OnRtmpStreamMetaDataReceivedAsync(
+        IEventContext context,
+        uint clientId,
+        string streamPath,
+        IReadOnlyDictionary<string, object> metaData)
+        => ValueTask.CompletedTask;
+
 }

@@ -35,6 +35,12 @@ public sealed class TestStreamService : IStreamService
         CancellationToken cancellationToken) =>
         throw new NotSupportedException();
 
+    public Task<Result<StreamStatusDto, Failure>> GetStreamStatusAsync(
+        Guid streamId,
+        Guid userId,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
     public Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(
         GetStreamByIdDto streamDto,
         CancellationToken cancellationToken) =>
@@ -46,6 +52,16 @@ public sealed class TestStreamService : IStreamService
         throw new NotSupportedException();
 
     public Task<Result<bool, Failure>> ValidateStreamKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<Result<bool, Failure>> StartStreamByKeyAsync(
+        string streamKey,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<Result<bool, Failure>> EndStreamByKeyAsync(
         string streamKey,
         CancellationToken cancellationToken) =>
         throw new NotSupportedException();
