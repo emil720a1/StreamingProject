@@ -70,6 +70,20 @@ public class StreamsController(
         return HandleResult(result);
     }
 
+    [Authorize(Policy = "Permission.Read")]
+    [HttpGet("{streamId:guid}/status")]
+    public async Task<IActionResult> GetStreamStatus(
+        [FromRoute] Guid streamId,
+        CancellationToken cancellationToken)
+    {
+        var result = await streamService.GetStreamStatusAsync(
+            streamId,
+            currentUser.Id,
+            cancellationToken);
+
+        return HandleResult(result);
+    }
+
     [HttpGet("{streamId:guid}/hls")]
     public async Task<IActionResult> GetHlsUrl(
         [FromRoute] Guid streamId,

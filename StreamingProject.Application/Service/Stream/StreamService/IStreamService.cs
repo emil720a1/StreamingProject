@@ -29,6 +29,11 @@ public interface IStreamService
 
     Task<Result<List<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(CancellationToken cancellationToken);
 
+    Task<Result<StreamStatusDto, Failure>> GetStreamStatusAsync(
+        Guid streamId,
+        Guid userId,
+        CancellationToken cancellationToken);
+
     /// <summary>
     /// Завершити стріми
     /// </summary>

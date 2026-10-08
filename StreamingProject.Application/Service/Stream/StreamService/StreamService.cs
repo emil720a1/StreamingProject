@@ -109,6 +109,28 @@ public class StreamService : IStreamService
         return Result.Success<List<StreamListItemDto>, Failure>(streamDtos);
     }
 
+    public async Task<Result<StreamStatusDto, Failure>> GetStreamStatusAsync(
+        Guid streamId,
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var stream = await _streamRepository.GetStreamByIdAsync(streamId);
+
+        if (stream == null)
+            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+
+        if (stream.UserId != userId)
+            return Failure.FromError(Error.Unauthorized("Stream.Unauthorized", "Cannot view another user's stream status"));
+
+        var status = stream.EndTime.HasValue
+            ? "Ended"
+            : stream.StartTime.HasValue
+                ? "Live"
+                : "Preparing";
+
+        return new StreamStatusDto(stream.Id, status);
+    }
+
     public async Task<Result<bool, Failure>> ValidateStreamKeyAsync(string streamKey, CancellationToken cancellationToken)
     {
         var keyExists = await _streamRepository.CheckStreamKeyExistsAsync(streamKey);

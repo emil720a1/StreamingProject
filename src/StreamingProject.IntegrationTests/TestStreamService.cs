@@ -35,6 +35,12 @@ public sealed class TestStreamService : IStreamService
         CancellationToken cancellationToken) =>
         throw new NotSupportedException();
 
+    public Task<Result<StreamStatusDto, Failure>> GetStreamStatusAsync(
+        Guid streamId,
+        Guid userId,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
     public Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(
         GetStreamByIdDto streamDto,
         CancellationToken cancellationToken) =>

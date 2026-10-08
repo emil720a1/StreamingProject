@@ -1,0 +1,109 @@
+<form [formGroup]="streamForm" (ngSubmit)="submit()">
+  <label>
+    Title
+    <input type="text" formControlName="title" />
+
+    @if (streamForm.controls.title.touched &&
+    streamForm.controls.title.invalid) {
+      <small>Title is required and must contain at least 3 characters.</small>
+    }
+  </label>
+
+  <label>
+    Description
+    <textarea formControlName="description"></textarea>
+
+    @if (streamForm.controls.description.touched &&
+    streamForm.controls.description.invalid) {
+      <small>Description is required.</small>
+    }
+  </label>
+
+  <label>
+    Category
+    <input type="text" formControlName="category" />
+
+    @if (streamForm.controls.category.touched &&
+    streamForm.controls.category.invalid) {
+      <small>Category is required.</small>
+    }
+  </label>
+
+  <label>
+    Thumbnail URL
+    <input type="url" formControlName="thumbnailUrl" />
+  </label>
+
+  @if (errorMessage) {
+    <p>{{ errorMessage }}</p>
+  }
+
+  <button type="submit" [disabled]="isSubmitting">
+    @if (isSubmitting) {
+      Creating...
+    } @else {
+      Create stream
+    }
+  </button>
+</form>
+
+@if (createdStream) {
+  <section>
+    <h2>Stream created successfully</h2>
+
+    <p>Your stream key:</p>
+    <code>{{ createdStream.streamKey }}</code>
+    <button type="button" (click)="copyStreamKey()">
+      Copy stream key
+    </button>
+
+    <section class="stream-status">
+      <h2>Stream status</h2>
+
+      @if (isLoadingStatus) {
+        <p>Loading stream status...</p>
+      }
+
+      @if (status) {
+        <p>Status: {{ status }}</p>
+      }
+
+      @if (statusError) {
+        <p>{{ statusError }}</p>
+      }
+    </section>
+
+    @if (isLoadingHls) {
+      <p>Loading HLS URL...</p>
+    }
+
+    @if (hlsUrl) {
+      <p>HLS playback URL:</p>
+      <code>{{ hlsUrl }}</code>
+    }
+
+    @if (hlsError) {
+      <p>{{ hlsError }}</p>
+    }
+
+    <button
+      type="button"
+      (click)="endCreatedStream()"
+      [disabled]="isEnding"
+    >
+      @if (isEnding) {
+        Ending stream...
+      } @else {
+        End stream
+      }
+    </button>
+
+    @if (endMessage) {
+      <p>{{ endMessage }}</p>
+    }
+
+    @if (copyMessage) {
+      <p>{{ copyMessage }}</p>
+    }
+  </section>
+}

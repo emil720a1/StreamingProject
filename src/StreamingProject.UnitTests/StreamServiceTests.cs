@@ -121,4 +121,103 @@ public sealed class StreamServiceTests
             Times.Once);
     }
 
+    [Test]
+    public async Task GetStreamStatusAsync_ShouldReturnPreparing_WhenStreamHasNotStarted()
+    {
+        var userId = Guid.NewGuid();
+        var stream = StreamEntity.Create(
+            userId,
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByIdAsync(stream.Id))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.GetStreamStatusAsync(
+            stream.Id,
+            userId,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEquivalentTo(new StreamStatusDto(stream.Id, "Preparing"));
+    }
+
+    [Test]
+    public async Task GetStreamStatusAsync_ShouldReturnLive_WhenStreamHasStarted()
+    {
+        var userId = Guid.NewGuid();
+        var stream = StreamEntity.Create(
+            userId,
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByIdAsync(stream.Id))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.GetStreamStatusAsync(
+            stream.Id,
+            userId,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Status.Should().Be("Live");
+    }
+
+    [Test]
+    public async Task GetStreamStatusAsync_ShouldReturnEnded_WhenStreamHasEnded()
+    {
+        var userId = Guid.NewGuid();
+        var stream = StreamEntity.Create(
+            userId,
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+        stream.EndStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByIdAsync(stream.Id))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.GetStreamStatusAsync(
+            stream.Id,
+            userId,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Status.Should().Be("Ended");
+    }
+
+    [Test]
+    public async Task GetStreamStatusAsync_ShouldFail_WhenUserDoesNotOwnStream()
+    {
+        var ownerId = Guid.NewGuid();
+        var otherUserId = Guid.NewGuid();
+        var stream = StreamEntity.Create(
+            ownerId,
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByIdAsync(stream.Id))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.GetStreamStatusAsync(
+            stream.Id,
+            otherUserId,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+    }
+
 }

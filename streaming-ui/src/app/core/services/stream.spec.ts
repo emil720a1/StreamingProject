@@ -173,4 +173,21 @@ describe('StreamService', () => {
       startTime: '2026-10-05T18:00:00Z',
     });
   });
+
+  it('should request stream through the API', () => {
+    service.getStreamStatus('stream-1').subscribe((result) => {
+      expect(result.status).toBe('Preparing');
+    });
+
+    const request = httpTesting.expectOne(
+      `${environment.apiUrl}/Streams/stream-1/status`,
+    );
+
+    expect(request.request.method).toBe('GET');
+
+    request.flush({
+      streamId: 'stream-1',
+      status: 'Preparing',
+    });
+  })
 });
