@@ -137,7 +137,38 @@ dotnet ef database update --project StreamingProject.Infrastructure.Postgres --s
 
 ## Authentication
 
-The API uses JWT access tokens for authenticated requests. Refresh tokens are used to obtain new access tokens after the access token expires.
+The browser client uses cookie-based authentication. The backend still issues
+JWT access tokens and refresh tokens internally, but both tokens are transported
+only in `HttpOnly` cookies. Login and token-refresh responses do not return the
+tokens in JSON. Angular neither reads nor stores them in `localStorage`, and it
+does not add an `Authorization: Bearer` header. The API intentionally reads the
+access token only from its cookie; Bearer headers are not a fallback
+authentication mechanism.
+
+### Authentication cookies in local Docker
+
+The Docker Compose environment serves the frontend at `http://localhost:4200` and
+the backend at `http://localhost:5228`. Because this local environment uses HTTP,
+authentication cookies are configured differently depending on the application
+environment:
+
+- in `Development`, both authentication cookies are `HttpOnly`, use
+  `SameSite=Lax` and do not use the `Secure` flag, so the browser can send them
+  over local HTTP;
+- outside `Development`, both cookies use `SameSite=None` and always have the
+  `Secure` flag, so they can only be sent over HTTPS.
+
+The Angular client sends API requests with credentials, and the backend CORS
+policy explicitly allows credentials from `http://localhost:4200`. The access
+cookie authenticates protected requests. The refresh cookie is sent only to
+`POST /api/Auth/refresh-token`, which rotates both cookies. Logging out calls
+`POST /api/Auth/logout`, which expires both cookies. `GET /api/Auth/session`
+allows Angular to check the server-side session without reading either token.
+
+To verify the local authentication flow, start Docker Compose, log in through
+`http://localhost:4200`, confirm that authenticated API requests succeed, and
+then log out. After logout, the same protected request must return `401
+Unauthorized`.
 
 The authentication flow is documented in [docs/flows.md](docs/flows.md).
 

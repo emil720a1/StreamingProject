@@ -14,19 +14,11 @@ import { AuthService } from '../services/auth';
 import { authInterceptor } from './auth-interceptor';
 
 describe('authInterceptor', () => {
-  let token: string | null;
-  let refreshToken: string | null;
-
   const authServiceMock = {
-    getToken: () => token,
-    getRefreshToken: () => refreshToken,
     refreshToken: vi.fn(),
-    logout: vi.fn(),
   };
 
   beforeEach(() => {
-    token = 'test-token';
-    refreshToken = 'test-refresh-token';
     vi.clearAllMocks();
 
     TestBed.configureTestingModule({
@@ -39,223 +31,148 @@ describe('authInterceptor', () => {
     });
   });
 
-  it('should refresh token and retry request after 401', () => {
+  it('should refresh cookies and retry an API request after 401', () => {
     const request = new HttpRequest(
       'GET',
-      '/api/streams',
+      'http://localhost:5228/api/Streams',
     );
-
-    const refreshResponse = {
-      token: 'new-token',
-      refreshToken: 'new-refresh-token',
-    };
-
+    const unauthorizedError = new HttpErrorResponse({ status: 401 });
     const next = vi.fn()
-      .mockReturnValueOnce(
-        throwError(() => new HttpErrorResponse({
-          status: 401,
-          statusText: 'Unauthorized',
-        })),
-      )
-      .mockReturnValueOnce(
-        of(
-          new HttpResponse({
-            status: 200,
-            body: {},
-          }),
-        ),
-      );
+      .mockReturnValueOnce(throwError(() => unauthorizedError))
+      .mockReturnValueOnce(of(new HttpResponse({ status: 200 })));
 
-    authServiceMock.refreshToken
-      .mockReturnValue(of(refreshResponse));
+    authServiceMock.refreshToken.mockReturnValue(of(undefined));
 
     TestBed.runInInjectionContext(() => {
       authInterceptor(request, next).subscribe();
     });
 
-    expect(authServiceMock.refreshToken)
-      .toHaveBeenCalledWith('test-refresh-token');
-
+    expect(authServiceMock.refreshToken).toHaveBeenCalledOnce();
     expect(next).toHaveBeenCalledTimes(2);
 
     const retriedRequest = next.mock.calls[1][0];
-
-    expect(
-      retriedRequest.headers.get('Authorization'),
-    ).toBe('Bearer new-token');
+    expect(retriedRequest.withCredentials).toBe(true);
+    expect(retriedRequest.headers.has('Authorization')).toBe(false);
   });
 
-  it('should logout when refresh token request fails', () => {
+  it('should propagate an error when cookie refresh fails', () => {
     const request = new HttpRequest(
       'GET',
-      '/api/streams',
+      'http://localhost:5228/api/Streams',
     );
+    const unauthorizedError = new HttpErrorResponse({ status: 401 });
+    const next = vi.fn(() => throwError(() => unauthorizedError));
 
-    const unauthorizedError = new HttpErrorResponse({
-      status: 401,
-      statusText: 'Unauthorized',
-    });
-
-    const next = vi.fn(() =>
+    authServiceMock.refreshToken.mockReturnValue(
       throwError(() => unauthorizedError),
     );
 
-    authServiceMock.refreshToken
-      .mockReturnValue(
-        throwError(() => unauthorizedError),
-      );
-
     TestBed.runInInjectionContext(() => {
-      authInterceptor(request, next).subscribe({
-        error: () => {},
-      });
+      authInterceptor(request, next).subscribe({ error: () => {} });
     });
 
-    expect(authServiceMock.refreshToken)
-      .toHaveBeenCalledWith('test-refresh-token');
-
-    expect(authServiceMock.logout)
-      .toHaveBeenCalled();
-
+    expect(authServiceMock.refreshToken).toHaveBeenCalledOnce();
     expect(next).toHaveBeenCalledTimes(1);
   });
 
   it('should share one refresh request between concurrent 401 responses', () => {
     const firstRequest = new HttpRequest(
       'GET',
-      '/api/streams/1',
+      'http://localhost:5228/api/Streams/1',
     );
     const secondRequest = new HttpRequest(
       'GET',
-      '/api/streams/2',
+      'http://localhost:5228/api/Streams/2',
     );
-    const refreshResponse$ = new Subject<{
-      token: string;
-      refreshToken: string;
-    }>();
-    const unauthorizedError = new HttpErrorResponse({
-      status: 401,
-      statusText: 'Unauthorized',
-    });
-
+    const refreshResponse$ = new Subject<void>();
+    const unauthorizedError = new HttpErrorResponse({ status: 401 });
     const next = vi.fn()
       .mockReturnValueOnce(throwError(() => unauthorizedError))
       .mockReturnValueOnce(throwError(() => unauthorizedError))
-      .mockReturnValue(
-        of(
-          new HttpResponse({
-            status: 200,
-            body: {},
-          }),
-        ),
-      );
+      .mockReturnValue(of(new HttpResponse({ status: 200 })));
 
-    authServiceMock.refreshToken
-      .mockReturnValue(refreshResponse$.asObservable());
+    authServiceMock.refreshToken.mockReturnValue(
+      refreshResponse$.asObservable(),
+    );
 
     TestBed.runInInjectionContext(() => {
       authInterceptor(firstRequest, next).subscribe();
       authInterceptor(secondRequest, next).subscribe();
     });
 
-    expect(authServiceMock.refreshToken)
-      .toHaveBeenCalledTimes(1);
+    expect(authServiceMock.refreshToken).toHaveBeenCalledOnce();
 
-    refreshResponse$.next({
-      token: 'new-token',
-      refreshToken: 'new-refresh-token',
-    });
+    refreshResponse$.next();
     refreshResponse$.complete();
 
     expect(next).toHaveBeenCalledTimes(4);
-    expect(next.mock.calls[2][0].headers.get('Authorization'))
-      .toBe('Bearer new-token');
-    expect(next.mock.calls[3][0].headers.get('Authorization'))
-      .toBe('Bearer new-token');
   });
 
-  it('should logout when there is no refresh token', () => {
-    refreshToken = null;
-
+  it('should not refresh after a failed login request', () => {
     const request = new HttpRequest(
-      'GET',
-      '/api/streams',
+      'POST',
+      'http://localhost:5228/api/Auth/login',
+      {},
     );
-    const unauthorizedError = new HttpErrorResponse({
-      status: 401,
-      statusText: 'Unauthorized',
-    });
     const next = vi.fn(() =>
-      throwError(() => unauthorizedError),
+      throwError(() => new HttpErrorResponse({ status: 401 })),
     );
 
     TestBed.runInInjectionContext(() => {
-      authInterceptor(request, next).subscribe({
-        error: () => {},
-      });
+      authInterceptor(request, next).subscribe({ error: () => {} });
     });
 
-    expect(authServiceMock.refreshToken)
-      .not.toHaveBeenCalled();
-    expect(authServiceMock.logout)
-      .toHaveBeenCalledTimes(1);
+    expect(authServiceMock.refreshToken).not.toHaveBeenCalled();
   });
 
-  it('should add Authorization header when token exists', () => {
+  it('should not add an Authorization header to API requests', () => {
     const request = new HttpRequest(
       'GET',
-      '/api/streams',
+      'http://localhost:5228/api/Streams',
     );
-
     const next = vi.fn((forwardedRequest: HttpRequest<unknown>) =>
-      of(
-        new HttpResponse({
-          status: 200,
-          body: {},
-        }),
-      ),
+      of(new HttpResponse({ status: 200 })),
     );
 
     TestBed.runInInjectionContext(() => {
-      authInterceptor(request, next);
+      authInterceptor(request, next).subscribe();
     });
 
-    expect(next).toHaveBeenCalledTimes(1);
-
     const forwardedRequest = next.mock.calls[0][0];
-
-    expect(
-      forwardedRequest.headers.get('Authorization'),
-    ).toBe('Bearer test-token');
+    expect(forwardedRequest.headers.has('Authorization')).toBe(false);
   });
 
-  it('should not add Authorization header when token does not exist', () => {
-    token = null;
-
+  it('should enable credentials for backend API requests', () => {
     const request = new HttpRequest(
-      'GET',
-      '/api/streams',
+      'POST',
+      'http://localhost:5228/api/Auth/login',
+      {},
     );
-
     const next = vi.fn((forwardedRequest: HttpRequest<unknown>) =>
-      of(
-        new HttpResponse({
-          status: 200,
-          body: {},
-        }),
-      ),
+      of(new HttpResponse({ status: 200 })),
     );
 
     TestBed.runInInjectionContext(() => {
-      authInterceptor(request, next);
+      authInterceptor(request, next).subscribe();
     });
 
-    expect(next).toHaveBeenCalledTimes(1);
+    expect(next.mock.calls[0][0].withCredentials).toBe(true);
+  });
 
-    const forwardedRequest = next.mock.calls[0][0];
+  it('should not enable credentials or refresh for external requests', () => {
+    const request = new HttpRequest(
+      'GET',
+      'https://example.com/resource',
+    );
+    const next = vi.fn((forwardedRequest: HttpRequest<unknown>) =>
+      of(new HttpResponse({ status: 200 })),
+    );
 
-    expect(
-      forwardedRequest.headers.has('Authorization'),
-    ).toBe(false);
+    TestBed.runInInjectionContext(() => {
+      authInterceptor(request, next).subscribe();
+    });
+
+    expect(next.mock.calls[0][0].withCredentials).toBe(false);
+    expect(authServiceMock.refreshToken).not.toHaveBeenCalled();
   });
 });
