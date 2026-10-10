@@ -1,5 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import {
   catchError,
   finalize,
@@ -40,13 +41,18 @@ const getRefreshRequest = (
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const authService = inject(AuthService);
+  const isApiRequest = request.url.startsWith(environment.apiUrl);
+
+  const requestWithCredentials = isApiRequest
+    ? request.clone({ withCredentials: true })
+    : request;
   const token = authService.getToken();
 
   if (!token) {
-    return next(request);
+    return next(requestWithCredentials);
   }
 
-  const requestWithToken = request.clone({
+  const requestWithToken = requestWithCredentials.clone({
     setHeaders: {
       Authorization: `Bearer ${token}`,
     },
@@ -62,13 +68,13 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
       }
 
       if (!authService.getRefreshToken()) {
-        authService.logout();
+        authService.clearSession();
         return throwError(() => error);
       }
 
       return getRefreshRequest(authService).pipe(
         switchMap((response) => {
-          const retryRequest = request.clone({
+          const retryRequest = requestWithCredentials.clone({
             setHeaders: {
               Authorization: `Bearer ${response.token}`,
             },
@@ -77,7 +83,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
           return next(retryRequest);
         }),
         catchError((refreshError) => {
-          authService.logout();
+          authService.clearSession();
           return throwError(() => refreshError);
         }),
       );

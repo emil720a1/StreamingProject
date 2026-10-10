@@ -139,6 +139,27 @@ dotnet ef database update --project StreamingProject.Infrastructure.Postgres --s
 
 The API uses JWT access tokens for authenticated requests. Refresh tokens are used to obtain new access tokens after the access token expires.
 
+### Authentication cookies in local Docker
+
+The Docker Compose environment serves the frontend at `http://localhost:4200` and
+the backend at `http://localhost:5228`. Because this local environment uses HTTP,
+authentication cookies are configured differently depending on the application
+environment:
+
+- in `Development`, the authentication cookie is `HttpOnly`, uses `SameSite=Lax`
+  and does not use the `Secure` flag, so the browser can send it over local HTTP;
+- outside `Development`, the cookie uses `SameSite=None` and always has the
+  `Secure` flag, so it can only be sent over HTTPS.
+
+The Angular client sends API requests with credentials, and the backend CORS
+policy explicitly allows credentials from `http://localhost:4200`. Logging out
+calls `POST /api/Auth/logout`, which expires the authentication cookie.
+
+To verify the local authentication flow, start Docker Compose, log in through
+`http://localhost:4200`, confirm that authenticated API requests succeed, and
+then log out. After logout, the same protected request must return `401
+Unauthorized`.
+
 The authentication flow is documented in [docs/flows.md](docs/flows.md).
 
 ## Streaming and Chat

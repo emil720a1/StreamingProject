@@ -1,4 +1,4 @@
-
+using StreamingProject.Presenters.Authentication;
 using System.Net;
 using Extensions.Hosting.AsyncInitialization;
 using LiveStreamingServerNet;
@@ -29,10 +29,12 @@ services.AddCors(options =>
         policy
             .WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
+services.AddSingleton<AuthenticationCookieOptionsFactory>();
 services.AddApiAuthentication(configuration);
 
     services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
@@ -73,12 +75,15 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Strict,
+    MinimumSameSitePolicy = SameSiteMode.Unspecified,
     HttpOnly = HttpOnlyPolicy.Always,
-    Secure = CookieSecurePolicy.Always
+    Secure = app.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always
 });
 
-if (!app.Environment.IsEnvironment("Testing"))
+if (!app.Environment.IsDevelopment()
+    && !app.Environment.IsEnvironment("Testing"))
 {
     app.UseHttpsRedirection();
 }

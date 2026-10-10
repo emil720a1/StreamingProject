@@ -21,7 +21,7 @@ describe('authInterceptor', () => {
     getToken: () => token,
     getRefreshToken: () => refreshToken,
     refreshToken: vi.fn(),
-    logout: vi.fn(),
+    clearSession: vi.fn(),
   };
 
   beforeEach(() => {
@@ -85,7 +85,7 @@ describe('authInterceptor', () => {
     ).toBe('Bearer new-token');
   });
 
-  it('should logout when refresh token request fails', () => {
+  it('should clear the session when refresh token request fails', () => {
     const request = new HttpRequest(
       'GET',
       '/api/streams',
@@ -114,7 +114,7 @@ describe('authInterceptor', () => {
     expect(authServiceMock.refreshToken)
       .toHaveBeenCalledWith('test-refresh-token');
 
-    expect(authServiceMock.logout)
+    expect(authServiceMock.clearSession)
       .toHaveBeenCalled();
 
     expect(next).toHaveBeenCalledTimes(1);
@@ -174,7 +174,7 @@ describe('authInterceptor', () => {
       .toBe('Bearer new-token');
   });
 
-  it('should logout when there is no refresh token', () => {
+  it('should clear the session when there is no refresh token', () => {
     refreshToken = null;
 
     const request = new HttpRequest(
@@ -197,7 +197,7 @@ describe('authInterceptor', () => {
 
     expect(authServiceMock.refreshToken)
       .not.toHaveBeenCalled();
-    expect(authServiceMock.logout)
+    expect(authServiceMock.clearSession)
       .toHaveBeenCalledTimes(1);
   });
 
@@ -257,5 +257,42 @@ describe('authInterceptor', () => {
     expect(
       forwardedRequest.headers.has('Authorization'),
     ).toBe(false);
+  });
+
+  it('should enable credentials for backend API requests', () => {
+    token = null;
+
+    const request = new HttpRequest(
+      'POST',
+      'http://localhost:5228/api/Auth/login',
+      {},
+    );
+    const next = vi.fn((forwardedRequest: HttpRequest<unknown>) =>
+      of(new HttpResponse({ status: 200 })),
+    );
+
+    TestBed.runInInjectionContext(() => {
+      authInterceptor(request, next).subscribe();
+    });
+
+    expect(next.mock.calls[0][0].withCredentials).toBe(true);
+  });
+
+  it('should not enable credentials for external requests', () => {
+    token = null;
+
+    const request = new HttpRequest(
+      'GET',
+      'https://example.com/resource',
+    );
+    const next = vi.fn((forwardedRequest: HttpRequest<unknown>) =>
+      of(new HttpResponse({ status: 200 })),
+    );
+
+    TestBed.runInInjectionContext(() => {
+      authInterceptor(request, next).subscribe();
+    });
+
+    expect(next.mock.calls[0][0].withCredentials).toBe(false);
   });
 });

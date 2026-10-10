@@ -4,12 +4,16 @@ using StreamingProject.Application.Service.User.UserService;
 using StreamingProject.Contracts.User;
 using StreamingProject.Contracts.User.AuthDto;
 using StreamingProject.Presenters.ResponseExtensions;
+using StreamingProject.Presenters.Authentication;
 
 namespace StreamingProject.Presenters.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IUserService userService) : ApiControllerBase
+public class AuthController(
+    IUserService userService,
+    AuthenticationCookieOptionsFactory cookieOptionsFactory)
+    : ApiControllerBase
 {
     [HttpPost("register")]
     public async Task<IActionResult> Register(
@@ -17,17 +21,17 @@ public class AuthController(IUserService userService) : ApiControllerBase
         CancellationToken cancellationToken)
     {
         var addUserDto = new AddUserDto(
-            request.Username, 
-            request.Password, 
+            request.Username,
+            request.Password,
             request.Email,
-            null, 
+            null,
             null);
-        
+
         var result = await userService.RegisterAsync(addUserDto, cancellationToken);
-        
+
         return HandleResult(result);
     }
-    
+
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         [FromBody] LoginUserRequest request,
@@ -39,19 +43,16 @@ public class AuthController(IUserService userService) : ApiControllerBase
         {
             return result.Error.ToResponse();
         }
-        
-        HttpContext.Response.Cookies.Append("tasty-cookies", result.Value.AccessToken, new CookieOptions
+
+        HttpContext.Response.Cookies.Append(
+            AuthenticationCookieOptionsFactory.CookieName,
+            result.Value.AccessToken,
+            cookieOptionsFactory.Create());
+
+        return Ok(new
         {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None,
-            Expires = DateTimeOffset.UtcNow.AddHours(1)
-        });
-        
-        return Ok(new 
-        { 
             Token = result.Value.AccessToken,
-            RefreshToken = result.Value.RefreshToken 
+            RefreshToken = result.Value.RefreshToken
         });
     }
 
@@ -61,24 +62,31 @@ public class AuthController(IUserService userService) : ApiControllerBase
         CancellationToken cancellationToken)
     {
         var result = await userService.RefreshTokenAsync(request.RefreshToken, cancellationToken);
-        
+
         if (result.IsFailure)
         {
             return result.Error.ToResponse();
         }
-        
-        HttpContext.Response.Cookies.Append("tasty-cookies", result.Value.AccessToken, new CookieOptions
+
+        HttpContext.Response.Cookies.Append(
+            AuthenticationCookieOptionsFactory.CookieName,
+            result.Value.AccessToken,
+            cookieOptionsFactory.Create());
+
+        return Ok(new
         {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None,
-            Expires = DateTimeOffset.UtcNow.AddHours(1)
-        });
-        
-        return Ok(new 
-        { 
             Token = result.Value.AccessToken,
-            RefreshToken = result.Value.RefreshToken 
+            RefreshToken = result.Value.RefreshToken
         });
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete(
+            AuthenticationCookieOptionsFactory.CookieName,
+            cookieOptionsFactory.Create());
+
+        return NoContent();
     }
 }

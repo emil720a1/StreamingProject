@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, finalize, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -69,7 +69,13 @@ export class AuthService {
     return this.getToken() !== null;
   }
 
-  logout(): void {
+  logout(): Observable<void> {
+    return this.http
+      .post<void>(`${this.apiUrl}/logout`, {})
+      .pipe(finalize(() => this.clearSession()));
+  }
+
+  clearSession(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.refreshTokenKey);
   }

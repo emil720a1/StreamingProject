@@ -92,4 +92,21 @@ describe('AuthService', () => {
     expect(testRequest.request.body).toEqual(request);
     testRequest.flush({});
   });
+
+  it('should call logout endpoint and clear stored tokens', () => {
+    localStorage.setItem('access_token', 'access-token');
+    localStorage.setItem('refresh_token', 'refresh-token');
+
+    service.logout().subscribe();
+
+    const testRequest = http.expectOne(
+      'http://localhost:5228/api/Auth/logout',
+    );
+
+    expect(testRequest.request.method).toBe('POST');
+    testRequest.flush(null);
+
+    expect(localStorage.getItem('access_token')).toBeNull();
+    expect(localStorage.getItem('refresh_token')).toBeNull();
+  });
 });
