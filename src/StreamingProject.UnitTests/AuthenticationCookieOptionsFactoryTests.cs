@@ -23,12 +23,30 @@ public class AuthenticationCookieOptionsFactoryTests
 
         var factory = new AuthenticationCookieOptionsFactory(environment.Object);
 
-        var options = factory.Create();
+        var options = factory.CreateAccessTokenOptions();
 
         options.Secure.Should().Be(expectedSecure);
         options.SameSite.Should().Be(expectedSameSite);
         options.HttpOnly.Should().BeTrue();
         options.Path.Should().Be("/");
         options.Expires.Should().NotBeNull();
+    }
+
+    [Test]
+    public void RefreshTokenCookie_ShouldLiveLongerThanAccessTokenCookie()
+    {
+        var environment = new Mock<IHostEnvironment>();
+        environment
+            .SetupGet(item => item.EnvironmentName)
+            .Returns("Development");
+
+        var factory = new AuthenticationCookieOptionsFactory(environment.Object);
+
+        var accessTokenOptions = factory.CreateAccessTokenOptions();
+        var refreshTokenOptions = factory.CreateRefreshTokenOptions();
+
+        refreshTokenOptions.Expires.Should().BeAfter(
+            accessTokenOptions.Expires!.Value);
+        refreshTokenOptions.Path.Should().Be("/api/Auth/refresh-token");
     }
 }

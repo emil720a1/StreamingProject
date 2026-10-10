@@ -28,7 +28,6 @@ describe('AuthService', () => {
 
   afterEach(() => {
     http.verify();
-    localStorage.clear();
   });
 
   it('should be created', () => {
@@ -46,36 +45,19 @@ describe('AuthService', () => {
     const testRequest = http.expectOne('http://localhost:5228/api/Auth/login');
     expect(testRequest.request.method).toBe('POST');
     expect(testRequest.request.body).toEqual(request);
-    testRequest.flush({ token: 'token', refreshToken: 'refresh-token' });
+    testRequest.flush(null);
   });
 
-  it('should refresh tokens and store new ones', () => {
-    const oldRefreshToken = 'old-refresh-token';
-    const response = {
-      token: 'new-access-token',
-      refreshToken: 'new-refresh-token',
-    };
-
-    service.refreshToken(oldRefreshToken).subscribe((result) => {
-      expect(result).toEqual(response);
-    });
+  it('should refresh authentication using the HttpOnly cookie', () => {
+    service.refreshToken().subscribe();
 
     const testRequest = http.expectOne(
       'http://localhost:5228/api/Auth/refresh-token',
     );
 
     expect(testRequest.request.method).toBe('POST');
-    expect(testRequest.request.body).toEqual({
-      refreshToken: oldRefreshToken,
-    });
-
-    testRequest.flush(response);
-
-    expect(localStorage.getItem('access_token'))
-      .toBe('new-access-token');
-
-    expect(localStorage.getItem('refresh_token'))
-      .toBe('new-refresh-token');
+    expect(testRequest.request.body).toEqual({});
+    testRequest.flush(null);
   });
 
   it('should send registration data to the API', () => {
@@ -93,10 +75,7 @@ describe('AuthService', () => {
     testRequest.flush({});
   });
 
-  it('should call logout endpoint and clear stored tokens', () => {
-    localStorage.setItem('access_token', 'access-token');
-    localStorage.setItem('refresh_token', 'refresh-token');
-
+  it('should call logout endpoint', () => {
     service.logout().subscribe();
 
     const testRequest = http.expectOne(
@@ -105,8 +84,38 @@ describe('AuthService', () => {
 
     expect(testRequest.request.method).toBe('POST');
     testRequest.flush(null);
+  });
 
-    expect(localStorage.getItem('access_token')).toBeNull();
-    expect(localStorage.getItem('refresh_token')).toBeNull();
+  it('should report an authenticated server session', () => {
+    let isAuthenticated = false;
+
+    service.isAuthenticated().subscribe((result) => {
+      isAuthenticated = result;
+    });
+
+    const testRequest = http.expectOne(
+      'http://localhost:5228/api/Auth/session',
+    );
+    testRequest.flush(null);
+
+    expect(isAuthenticated).toBe(true);
+  });
+
+  it('should report an unauthenticated server session', () => {
+    let isAuthenticated = true;
+
+    service.isAuthenticated().subscribe((result) => {
+      isAuthenticated = result;
+    });
+
+    const testRequest = http.expectOne(
+      'http://localhost:5228/api/Auth/session',
+    );
+    testRequest.flush(null, {
+      status: 401,
+      statusText: 'Unauthorized',
+    });
+
+    expect(isAuthenticated).toBe(false);
   });
 });

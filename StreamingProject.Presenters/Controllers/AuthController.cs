@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StreamingProject.Application.Service.User.UserService;
 using StreamingProject.Contracts.User;
 using StreamingProject.Contracts.User.AuthDto;
-using StreamingProject.Presenters.ResponseExtensions;
 using StreamingProject.Presenters.Authentication;
+using StreamingProject.Presenters.ResponseExtensions;
 
 namespace StreamingProject.Presenters.Controllers;
 
@@ -44,49 +44,66 @@ public class AuthController(
             return result.Error.ToResponse();
         }
 
-        HttpContext.Response.Cookies.Append(
-            AuthenticationCookieOptionsFactory.CookieName,
-            result.Value.AccessToken,
-            cookieOptionsFactory.Create());
+        AppendAuthenticationCookies(result.Value);
 
-        return Ok(new
-        {
-            Token = result.Value.AccessToken,
-            RefreshToken = result.Value.RefreshToken
-        });
+        return NoContent();
     }
 
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken(
-        [FromBody] RefreshTokenRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await userService.RefreshTokenAsync(request.RefreshToken, cancellationToken);
+        var refreshToken = Request.Cookies[
+            AuthenticationCookieOptionsFactory.RefreshTokenCookieName];
+
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return Unauthorized();
+        }
+
+        var result = await userService.RefreshTokenAsync(refreshToken, cancellationToken);
 
         if (result.IsFailure)
         {
             return result.Error.ToResponse();
         }
 
-        HttpContext.Response.Cookies.Append(
-            AuthenticationCookieOptionsFactory.CookieName,
-            result.Value.AccessToken,
-            cookieOptionsFactory.Create());
+        AppendAuthenticationCookies(result.Value);
 
-        return Ok(new
-        {
-            Token = result.Value.AccessToken,
-            RefreshToken = result.Value.RefreshToken
-        });
+        return NoContent();
+    }
+
+    [Authorize]
+    [HttpGet("session")]
+    public IActionResult Session()
+    {
+        return NoContent();
     }
 
     [HttpPost("logout")]
     public IActionResult Logout()
     {
         Response.Cookies.Delete(
-            AuthenticationCookieOptionsFactory.CookieName,
-            cookieOptionsFactory.Create());
+            AuthenticationCookieOptionsFactory.AccessTokenCookieName,
+            cookieOptionsFactory.CreateAccessTokenOptions());
+
+        Response.Cookies.Delete(
+            AuthenticationCookieOptionsFactory.RefreshTokenCookieName,
+            cookieOptionsFactory.CreateRefreshTokenOptions());
 
         return NoContent();
+    }
+
+    private void AppendAuthenticationCookies(TokenResponse tokenResponse)
+    {
+        Response.Cookies.Append(
+            AuthenticationCookieOptionsFactory.AccessTokenCookieName,
+            tokenResponse.AccessToken,
+            cookieOptionsFactory.CreateAccessTokenOptions());
+
+        Response.Cookies.Append(
+            AuthenticationCookieOptionsFactory.RefreshTokenCookieName,
+            tokenResponse.RefreshToken,
+            cookieOptionsFactory.CreateRefreshTokenOptions());
     }
 }

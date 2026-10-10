@@ -11,7 +11,16 @@ Client
   → PostgreSQL
 ```
 
-During login, the client sends credentials, the service finds the user, verifies the password, creates an access token and creates a refresh token.
+During login, the client sends credentials, the service finds the user, verifies
+the password, and creates access and refresh tokens. The controller writes both
+tokens to `HttpOnly` cookies and returns no tokens in the response body. The
+browser sends the cookies automatically because Angular API requests use
+`withCredentials: true`. The frontend does not store tokens or send a Bearer
+header.
+
+In local `Development`, cookies use `SameSite=Lax` without `Secure` so they work
+through `http://localhost:4200`. Outside `Development`, cookies use
+`SameSite=None; Secure` and therefore require HTTPS.
 
 ## Refresh Token Flow
 
@@ -23,7 +32,19 @@ Client
   → Client
 ```
 
-The backend validates the refresh token, checks expiration and revocation status, then generates a new access token.
+The browser sends the refresh-token cookie to `POST /api/Auth/refresh-token`.
+The backend validates it, checks expiration and revocation status, generates new
+tokens, and rotates both `HttpOnly` cookies. No token is exposed to frontend
+JavaScript.
+
+## Logout Flow
+
+```text
+Client
+  → POST /api/Auth/logout
+  → Backend expires access and refresh cookies
+  → Protected request returns 401 Unauthorized
+```
 
 ## Stream Creation Flow
 

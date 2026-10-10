@@ -9,6 +9,7 @@ using StreamingProject.Application.Service.Permission.PermissionService;
 using StreamingProject.Domain.Enums;
 using StreamingProject.Domain.User;
 using StreamingProject.Domain.User.UserRole;
+using StreamingProject.Presenters.Authentication;
 using StreamingProject.Repository;
 using StreamingProject.Repository.Authentication;
 
@@ -20,8 +21,6 @@ public static class ApiExtensions
         this IServiceCollection services,
        IConfiguration configuration)
     {
-        var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
-
         services.AddIdentity<UserEntity, RoleEntity>(options =>
         {
             options.Password.RequireDigit = false;
@@ -40,6 +39,18 @@ public static class ApiExtensions
         })
         .AddJwtBearer(options =>
         {
+            var jwtOptions = configuration
+                .GetRequiredSection(nameof(JwtOptions))
+                .Get<JwtOptions>()
+                ?? throw new InvalidOperationException(
+                    "JWT configuration is missing.");
+
+            if (string.IsNullOrWhiteSpace(jwtOptions.SecretKey))
+            {
+                throw new InvalidOperationException(
+                    "JWT secret key is missing.");
+            }
+
             options.RequireHttpsMetadata = true;
             options.SaveToken = true;
             options.TokenValidationParameters = new TokenValidationParameters
@@ -47,14 +58,24 @@ public static class ApiExtensions
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions!.SecretKey))
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
             };
             
             options.Events = new JwtBearerEvents
             {
                 OnMessageReceived = context =>
                 {
-                    context.Token = context.Request.Cookies["tasty-cookies"];
+                    var cookieToken = context.Request.Cookies[
+                        AuthenticationCookieOptionsFactory.AccessTokenCookieName];
+
+                    if (string.IsNullOrWhiteSpace(cookieToken))
+                    {
+                        context.NoResult();
+                        return Task.CompletedTask;
+                    }
+
+                    context.Token = cookieToken;
                     return Task.CompletedTask;
                 }
             };

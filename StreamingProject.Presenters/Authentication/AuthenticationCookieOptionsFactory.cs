@@ -6,9 +6,16 @@ namespace StreamingProject.Presenters.Authentication;
 public sealed class AuthenticationCookieOptionsFactory(
     IHostEnvironment environment)
 {
-    public const string CookieName = "tasty-cookies";
+    public const string AccessTokenCookieName = "tasty-cookies";
+    public const string RefreshTokenCookieName = "tasty-refresh-token";
 
-    public CookieOptions Create()
+    public CookieOptions CreateAccessTokenOptions() =>
+        Create(TimeSpan.FromHours(1), "/");
+
+    public CookieOptions CreateRefreshTokenOptions() =>
+        Create(TimeSpan.FromDays(7), "/api/Auth/refresh-token");
+
+    private CookieOptions Create(TimeSpan lifetime, string path)
     {
         var isDevelopment = environment.IsDevelopment();
 
@@ -19,8 +26,8 @@ public sealed class AuthenticationCookieOptionsFactory(
             SameSite = isDevelopment
                 ? SameSiteMode.Lax
                 : SameSiteMode.None,
-            Path = "/",
-            Expires = DateTimeOffset.UtcNow.AddHours(1)
+            Path = path,
+            Expires = DateTimeOffset.UtcNow.Add(lifetime),
         };
     }
 }

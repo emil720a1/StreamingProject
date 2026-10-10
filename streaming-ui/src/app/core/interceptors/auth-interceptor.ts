@@ -11,21 +11,14 @@ import {
 } from 'rxjs';
 
 import { AuthService } from '../services/auth';
-import { AuthResponse } from '../../shared/models/auth';
 
-let refreshRequest$: Observable<AuthResponse> | null = null;
+let refreshRequest$: Observable<void> | null = null;
 
 const getRefreshRequest = (
   authService: AuthService,
-): Observable<AuthResponse> => {
+): Observable<void> => {
   if (!refreshRequest$) {
-    const refreshToken = authService.getRefreshToken();
-
-    if (!refreshToken) {
-      return throwError(() => new Error('Refresh token is missing'));
-    }
-
-    refreshRequest$ = authService.refreshToken(refreshToken).pipe(
+    refreshRequest$ = authService.refreshToken().pipe(
       finalize(() => {
         refreshRequest$ = null;
       }),
@@ -46,46 +39,28 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const requestWithCredentials = isApiRequest
     ? request.clone({ withCredentials: true })
     : request;
-  const token = authService.getToken();
 
-  if (!token) {
-    return next(requestWithCredentials);
-  }
-
-  const requestWithToken = requestWithCredentials.clone({
-    setHeaders: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return next(requestWithToken).pipe(
+  return next(requestWithCredentials).pipe(
     catchError((error) => {
-      if (
-        error.status !== 401
+      const isAuthenticationRequest =
+        request.url.includes('/Auth/login')
+        || request.url.includes('/Auth/register')
         || request.url.includes('/Auth/refresh-token')
+        || request.url.includes('/Auth/logout');
+
+      if (
+        !isApiRequest
+        || error.status !== 401
+        || isAuthenticationRequest
       ) {
         return throwError(() => error);
       }
 
-      if (!authService.getRefreshToken()) {
-        authService.clearSession();
-        return throwError(() => error);
-      }
-
       return getRefreshRequest(authService).pipe(
-        switchMap((response) => {
-          const retryRequest = requestWithCredentials.clone({
-            setHeaders: {
-              Authorization: `Bearer ${response.token}`,
-            },
-          });
-
-          return next(retryRequest);
-        }),
-        catchError((refreshError) => {
-          authService.clearSession();
-          return throwError(() => refreshError);
-        }),
+        switchMap(() => next(requestWithCredentials)),
+        catchError((refreshError) =>
+          throwError(() => refreshError),
+        ),
       );
     }),
   );

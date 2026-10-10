@@ -1,4 +1,3 @@
-using StreamingProject.Presenters.Authentication;
 using System.Net;
 using Extensions.Hosting.AsyncInitialization;
 using LiveStreamingServerNet;
@@ -8,6 +7,7 @@ using LiveStreamingServerNet.Rtmp.Server.Installer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common;
+using StreamingProject.Presenters.Authentication;
 using StreamingProject.Presenters.Handlers;
 using StreamingProject.Repository;
 using StreamingProject.Repository.Authentication;
@@ -48,15 +48,19 @@ services.AddApiAuthentication(configuration);
 services.AddScoped<ISeeder, RoleSeeder>();
 services.AddScoped<ISeeder, UserSeeder>();
 
+if (!builder.Environment.IsEnvironment("Testing"))
+{
     builder.Services.AddSingleton<IRtmpServerStreamEventHandler, RtmpServerEventHandler>();
 
-    var serverEndPoint = new ServerEndPoint(new IPEndPoint(IPAddress.Any, 1935), false);
+    var serverEndPoint = new ServerEndPoint(
+        new IPEndPoint(IPAddress.Any, 1935),
+        false);
 
     services.AddLiveStreamingServer(serverEndPoint, rtmp =>
     {
         rtmp.AddStreamEventHandler<RtmpServerEventHandler>();
-
-     });
+    });
+}
 
 services.AddLogging(logging => logging.AddConsole());
 
@@ -77,9 +81,7 @@ app.UseCookiePolicy(new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.Unspecified,
     HttpOnly = HttpOnlyPolicy.Always,
-    Secure = app.Environment.IsDevelopment()
-        ? CookieSecurePolicy.SameAsRequest
-        : CookieSecurePolicy.Always
+    Secure = CookieSecurePolicy.SameAsRequest,
 });
 
 if (!app.Environment.IsDevelopment()
