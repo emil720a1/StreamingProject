@@ -40,7 +40,8 @@ public class StreamsControllerTests
         using var client = factory.CreateClient();
         client.DefaultRequestHeaders.Add("X-Test-Auth", "Read");
 
-        var response = await client.GetAsync("/api/Streams");
+        var response = await client.GetAsync(
+            "/api/Streams?page=1&pageSize=12&category=Gaming&search=test&sortBy=viewerCount&sortDirection=asc");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -48,6 +49,12 @@ public class StreamsControllerTests
 
         body.Should().Contain("Test stream");
         body.Should().Contain("test-streamer");
+        body.Should().Contain("\"totalCount\":1");
+        body.Should().Contain("\"currentPage\":1");
+        body.Should().Contain("\"pageSize\":12");
+        body.Should().Contain("\"totalPages\":1");
+        body.Should().Contain("\"viewerCount\":42");
+        body.Should().Contain("\"category\":\"Gaming\"");
         body.Should().NotContain("StreamKey");
     }
 }

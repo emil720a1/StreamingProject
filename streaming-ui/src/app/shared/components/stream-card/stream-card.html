@@ -1,5 +1,8 @@
 <article class="stream-card">
   <div class="stream-preview">
+    @if (stream.thumbnailUrl) {
+      <img [src]="stream.thumbnailUrl" [alt]="stream.title" />
+    }
     <span class="live">LIVE</span>
   </div>
 
@@ -13,6 +16,8 @@
     <span>
       {{ stream.description }}
     </span>
+
+    <span>{{ stream.category }} · {{ stream.viewerCount }} viewers</span>
 
     @if (stream.startTime) {
       <time [attr.datetime]="stream.startTime">

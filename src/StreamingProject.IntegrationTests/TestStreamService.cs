@@ -7,7 +7,8 @@ namespace StreamingProject.IntegrationTests;
 
 public sealed class TestStreamService : IStreamService
 {
-    public Task<Result<List<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(
+    public Task<Result<PaginatedResponseDto<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(
+        GetStreamsRequestDto request,
         CancellationToken cancellationToken)
     {
         var streams = new List<StreamListItemDto>
@@ -18,11 +19,21 @@ public sealed class TestStreamService : IStreamService
                 "test-streamer",
                 "Test stream",
                 "Integration test stream",
-                DateTime.UtcNow)
+                DateTime.UtcNow,
+                "Gaming",
+                "test-thumbnail.jpg",
+                42)
         };
 
+        var response = new PaginatedResponseDto<StreamListItemDto>(
+            streams,
+            1,
+            request.Page,
+            request.PageSize,
+            1);
+
         return Task.FromResult(
-            Result.Success<List<StreamListItemDto>, Failure>(streams));
+            Result.Success<PaginatedResponseDto<StreamListItemDto>, Failure>(response));
     }
 
     public Task<Result<CreateStreamResponseDto, Failure>> CreateStreamAsync(

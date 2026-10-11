@@ -6,4 +6,7 @@ public record StreamListItemDto(
     string? StreamerUsername,
     string Title,
     string Description,
-    DateTime? StartTime);
+    DateTime? StartTime,
+    string Category,
+    string? ThumbnailUrl,
+    int ViewerCount);

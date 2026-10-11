@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shared;
@@ -20,6 +21,7 @@ public sealed class StreamServiceTests
     private Mock<ILogger<StreamService>> _loggerMock = null!;
     private Mock<IValidator<CreateStreamDto>> _createValidatorMock = null!;
     private Mock<IValidator<JoinStreamDto>> _joinValidatorMock = null!;
+    private Mock<IValidator<GetStreamsRequestDto>> _getStreamsValidatorMock = null!;
     private Mock<IHlsTranscoderService> _hlsServiceMock = null!;
 
     private StreamService _sut = null!;
@@ -32,7 +34,14 @@ public sealed class StreamServiceTests
         _loggerMock = new Mock<ILogger<StreamService>>();
         _createValidatorMock = new Mock<IValidator<CreateStreamDto>>();
         _joinValidatorMock = new Mock<IValidator<JoinStreamDto>>();
+        _getStreamsValidatorMock = new Mock<IValidator<GetStreamsRequestDto>>();
         _hlsServiceMock = new Mock<IHlsTranscoderService>();
+
+        _getStreamsValidatorMock
+            .Setup(validator => validator.ValidateAsync(
+                It.IsAny<GetStreamsRequestDto>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ValidationResult());
 
         _sut = new StreamService(
             _repositoryMock.Object,
@@ -40,6 +49,7 @@ public sealed class StreamServiceTests
             _createValidatorMock.Object,
             _mapperMock.Object,
             _joinValidatorMock.Object,
+            _getStreamsValidatorMock.Object,
             _hlsServiceMock.Object);
     }
 
@@ -49,76 +59,105 @@ public sealed class StreamServiceTests
     {
         var userId = Guid.NewGuid();
 
-        var entities = new List<StreamEntity>
-        {
-            StreamEntity.Create(userId, "Gaming Live", "Gaming stream", "Gaming", null),
-            StreamEntity.Create(userId, "Music Session", "Music stream", "Music", null),
-        };
-
-        var expectedDtos = new List<StreamListItemDto>
+        var request = new GetStreamsRequestDto();
+        var items = new List<StreamListItemReadModel>
         {
             new(
-                entities[0].Id,
-                entities[0].UserId,
+                Guid.NewGuid(),
+                userId,
                 "alex",
                 "Gaming Live",
                 "Gaming stream",
-                DateTime.UtcNow),
+                DateTime.UtcNow,
+                "Gaming",
+                "gaming.jpg",
+                15),
             new(
-                entities[1].Id,
-                entities[1].UserId,
+                Guid.NewGuid(),
+                userId,
                 "maria",
                 "Music Session",
                 "Music stream",
-                DateTime.UtcNow),
+                DateTime.UtcNow,
+                "Music",
+                null,
+                8),
         };
 
         _repositoryMock
-            .Setup(repository => repository.GetAvailableStreamsAsync())
-            .ReturnsAsync(entities);
-
-        _mapperMock
-            .Setup(mapper => mapper.Map<List<StreamListItemDto>>(entities))
-            .Returns(expectedDtos);
+            .Setup(repository => repository.GetAvailableStreamsAsync(
+                request,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new StreamPage(items, 14));
 
         var result = await _sut.GetAvailableStreamsAsync(
+            request,
             CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEquivalentTo(expectedDtos);
+        result.Value.Items.Should().HaveCount(2);
+        result.Value.TotalCount.Should().Be(14);
+        result.Value.CurrentPage.Should().Be(1);
+        result.Value.PageSize.Should().Be(12);
+        result.Value.TotalPages.Should().Be(2);
+        result.Value.Items[0].ViewerCount.Should().Be(15);
 
         _repositoryMock.Verify(
-            repository => repository.GetAvailableStreamsAsync(),
-            Times.Once);
-
-        _mapperMock.Verify(
-            mapper => mapper.Map<List<StreamListItemDto>>(entities),
+            repository => repository.GetAvailableStreamsAsync(
+                request,
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
     [Test]
     public async Task GetAvailableStreamsAsync_ShouldReturnEmptyList_WhenNoStreamsExist()
     {
-        var entities = new List<StreamEntity>();
-        var expectedDtos = new List<StreamListItemDto>();
+        var request = new GetStreamsRequestDto();
 
         _repositoryMock
-            .Setup(repository => repository.GetAvailableStreamsAsync())
-            .ReturnsAsync(entities);
-
-        _mapperMock
-            .Setup(mapper => mapper.Map<List<StreamListItemDto>>(entities))
-            .Returns(expectedDtos);
+            .Setup(repository => repository.GetAvailableStreamsAsync(
+                request,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new StreamPage([], 0));
 
         var result = await _sut.GetAvailableStreamsAsync(
+            request,
             CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.Value.Items.Should().BeEmpty();
+        result.Value.TotalPages.Should().Be(0);
 
         _repositoryMock.Verify(
-            repository => repository.GetAvailableStreamsAsync(),
+            repository => repository.GetAvailableStreamsAsync(
+                request,
+                It.IsAny<CancellationToken>()),
             Times.Once);
+    }
+
+    [Test]
+    public async Task GetAvailableStreamsAsync_ShouldNotQueryRepository_WhenRequestIsInvalid()
+    {
+        var request = new GetStreamsRequestDto { Page = 0 };
+        _getStreamsValidatorMock
+            .Setup(validator => validator.ValidateAsync(
+                request,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ValidationResult(
+            [
+                new ValidationFailure(nameof(request.Page), "Page must be at least 1."),
+            ]));
+
+        var result = await _sut.GetAvailableStreamsAsync(
+            request,
+            CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        _repositoryMock.Verify(
+            repository => repository.GetAvailableStreamsAsync(
+                It.IsAny<GetStreamsRequestDto>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Test]

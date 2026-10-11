@@ -30,25 +30,45 @@ describe('StreamService', () => {
   });
 
   it('should request streams from the API', () => {
-    const expectedStreams = [
-      {
+    const expectedResponse = {
+      items: [{
         id: 'stream-1',
         userId: 'user-1',
         streamerUsername: 'Alex',
         title: 'Gaming Live',
         description: 'Gaming stream',
         startTime: '2026-10-05T18:00:00Z',
-      },
-    ];
+        category: 'Gaming',
+        thumbnailUrl: null,
+        viewerCount: 25,
+      }],
+      totalCount: 1,
+      currentPage: 1,
+      pageSize: 12,
+      totalPages: 1,
+    };
 
-    service.getStreams().subscribe((streams) => {
-      expect(streams).toEqual(expectedStreams);
+    service.getStreams({
+      category: ' Gaming ',
+      search: ' Alex ',
+      sortBy: 'viewerCount',
+      sortDirection: 'asc',
+    }).subscribe((response) => {
+      expect(response).toEqual(expectedResponse);
     });
 
-    const request = httpTesting.expectOne(`${environment.apiUrl}/Streams`);
+    const request = httpTesting.expectOne(
+      request => request.url === `${environment.apiUrl}/Streams`,
+    );
 
     expect(request.request.method).toBe('GET');
-    request.flush(expectedStreams);
+    expect(request.request.params.get('page')).toBe('1');
+    expect(request.request.params.get('pageSize')).toBe('12');
+    expect(request.request.params.get('category')).toBe('Gaming');
+    expect(request.request.params.get('search')).toBe('Alex');
+    expect(request.request.params.get('sortBy')).toBe('viewerCount');
+    expect(request.request.params.get('sortDirection')).toBe('asc');
+    request.flush(expectedResponse);
   });
 
   it('should request a stream by id from the API', () => {
@@ -82,6 +102,9 @@ describe('StreamService', () => {
         title: 'Gaming Live',
         description: 'Gaming stream',
         startTime: '2026-10-05T18:00:00Z',
+        category: 'Gaming',
+        thumbnailUrl: null,
+        viewerCount: 25,
       },
     ];
 

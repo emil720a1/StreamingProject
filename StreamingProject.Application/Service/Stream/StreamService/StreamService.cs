@@ -20,6 +20,7 @@ public class StreamService : IStreamService
     private readonly ILogger<StreamService> _logger;
     private readonly IValidator<CreateStreamDto> _createStreamDtoValidator;
     private readonly IValidator<JoinStreamDto> _joinStreamDtoValidator;
+    private readonly IValidator<GetStreamsRequestDto> _getStreamsRequestValidator;
     private readonly Application.Interfaces.Hls.IHlsTranscoderService _hlsTranscoderService;
 
 
@@ -29,11 +30,13 @@ public class StreamService : IStreamService
         IValidator<CreateStreamDto> createStreamDtoValidator,
         IMapper mapper,
         IValidator<JoinStreamDto> joinStreamDtoValidator,
+        IValidator<GetStreamsRequestDto> getStreamsRequestValidator,
         Application.Interfaces.Hls.IHlsTranscoderService hlsTranscoderService)
     {
         _streamRepository = streamRepository;
         _createStreamDtoValidator = createStreamDtoValidator;
         _joinStreamDtoValidator = joinStreamDtoValidator;
+        _getStreamsRequestValidator = getStreamsRequestValidator;
         _mapper = mapper;
         _logger = logger;
         _hlsTranscoderService = hlsTranscoderService;
@@ -97,13 +100,46 @@ public class StreamService : IStreamService
         return _mapper.Map<StreamDetailsDto>(stream);
     }
 
-    public async Task<Result<List<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(CancellationToken cancellationToken)
+    public async Task<Result<PaginatedResponseDto<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(
+        GetStreamsRequestDto request,
+        CancellationToken cancellationToken)
     {
-        var streams = await _streamRepository.GetAvailableStreamsAsync();
+        var validationResult = await _getStreamsRequestValidator.ValidateAsync(
+            request,
+            cancellationToken);
 
-        var streamDtos = _mapper.Map<List<StreamListItemDto>>(streams);
+        if (!validationResult.IsValid)
+            return validationResult.ToErrors();
 
-        return Result.Success<List<StreamListItemDto>, Failure>(streamDtos);
+        var page = await _streamRepository.GetAvailableStreamsAsync(
+            request,
+            cancellationToken);
+
+        var streamDtos = page.Items
+            .Select(stream => new StreamListItemDto(
+                stream.Id,
+                stream.UserId,
+                stream.StreamerUsername,
+                stream.Title,
+                stream.Description,
+                stream.StartTime,
+                stream.Category,
+                stream.ThumbnailUrl,
+                stream.ViewerCount))
+            .ToList();
+
+        var totalPages = page.TotalCount == 0
+            ? 0
+            : (int)Math.Ceiling(page.TotalCount / (double)request.PageSize);
+
+        var response = new PaginatedResponseDto<StreamListItemDto>(
+            streamDtos,
+            page.TotalCount,
+            request.Page,
+            request.PageSize,
+            totalPages);
+
+        return Result.Success<PaginatedResponseDto<StreamListItemDto>, Failure>(response);
     }
 
     public async Task<Result<StreamStatusDto, Failure>> GetStreamStatusAsync(

@@ -27,7 +27,9 @@ public interface IStreamService
     Task<Result<StreamDetailsDto, Failure>> GetStreamByIdAsync(GetStreamByIdDto streamDto, CancellationToken cancellationToken);
 
 
-    Task<Result<List<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(CancellationToken cancellationToken);
+    Task<Result<PaginatedResponseDto<StreamListItemDto>, Failure>> GetAvailableStreamsAsync(
+        GetStreamsRequestDto request,
+        CancellationToken cancellationToken);
 
     Task<Result<StreamStatusDto, Failure>> GetStreamStatusAsync(
         Guid streamId,

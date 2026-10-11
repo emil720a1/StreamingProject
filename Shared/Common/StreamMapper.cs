@@ -33,7 +33,10 @@ public class StreamMapper : Profile
                 s.User != null ? s.User.UserName : null,
                 s.Title,
                 s.Description,
-                s.StartTime
+                s.StartTime,
+                s.Category,
+                s.ThumbnailUrl,
+                s.Participants.Count
                 ));
     }
 }

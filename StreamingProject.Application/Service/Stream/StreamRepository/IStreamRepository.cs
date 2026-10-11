@@ -1,6 +1,4 @@
-using CSharpFunctionalExtensions;
-using Shared;
-using StreamingProject.Domain;
+using StreamingProject.Contracts.Streams;
 using StreamingProject.Domain.Stream;
 using StreamingProject.Domain.Stream.UserStream;
 
@@ -15,7 +13,9 @@ public interface IStreamRepository
     // Stream queries
     Task<StreamEntity?> GetStreamByIdAsync(Guid id);
     Task<StreamEntity?> GetActiveStream(Guid userId);
-    Task<List<StreamEntity>> GetAvailableStreamsAsync();
+    Task<StreamPage> GetAvailableStreamsAsync(
+        GetStreamsRequestDto request,
+        CancellationToken cancellationToken);
     Task<List<StreamEntity>> GetStreamsByUserId(Guid userId);
 
     Task<StreamEntity?> GetStreamByKeyAsync(string streamKey);

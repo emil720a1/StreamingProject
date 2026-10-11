@@ -7,6 +7,48 @@
     </div>
   </div>
 
+  <form class="stream-filters" (ngSubmit)="applyFilters()">
+    <label>
+      Search
+      <input
+        type="search"
+        name="search"
+        [(ngModel)]="search"
+        placeholder="Title or streamer"
+      />
+    </label>
+
+    <label>
+      Category
+      <input
+        type="text"
+        name="category"
+        [(ngModel)]="category"
+        placeholder="Gaming"
+      />
+    </label>
+
+    <label>
+      Sort by
+      <select name="sortBy" [(ngModel)]="sortBy">
+        <option value="startTime">Start time</option>
+        <option value="viewerCount">Viewer count</option>
+      </select>
+    </label>
+
+    <label>
+      Direction
+      <select name="sortDirection" [(ngModel)]="sortDirection">
+        <option value="desc">Descending</option>
+        <option value="asc">Ascending</option>
+      </select>
+    </label>
+
+    <button type="submit">Apply</button>
+  </form>
+
+  <p class="result-count">{{ totalCount }} streams found</p>
+
   @if (isLoading) {
     <p>Loading streams...</p>
   } @else if (errorMessage) {
@@ -19,5 +61,27 @@
         <app-stream-card [stream]="stream" />
       }
     </div>
+
+    @if (totalPages > 1) {
+      <nav class="pagination" aria-label="Stream pages">
+        <button
+          type="button"
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >
+          Previous
+        </button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button
+          type="button"
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >
+          Next
+        </button>
+      </nav>
+    }
   }
 </section>

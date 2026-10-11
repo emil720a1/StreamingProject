@@ -5,14 +5,26 @@ import { provideRouter } from '@angular/router';
 import { StreamListItem } from '../../../shared/models/stream-list-item';
 import { StreamService } from '../../../core/services/stream';
 import { Dashboard } from './dashboard';
+import { PaginatedResponse } from '../../../shared/models/paginated-response';
 
 describe('Dashboard', () => {
   let component: Dashboard;
   let fixture: ComponentFixture<Dashboard>;
-  let streamsResponse: Observable<StreamListItem[]>;
+  let streamsResponse: Observable<PaginatedResponse<StreamListItem>>;
+
+  const page = (
+    items: StreamListItem[],
+    totalCount = items.length,
+  ): PaginatedResponse<StreamListItem> => ({
+    items,
+    totalCount,
+    currentPage: 1,
+    pageSize: 12,
+    totalPages: totalCount === 0 ? 0 : Math.ceil(totalCount / 12),
+  });
 
   beforeEach(async () => {
-    streamsResponse = of([]);
+    streamsResponse = of(page([]));
     await TestBed.configureTestingModule({
       imports: [Dashboard],
       providers: [
@@ -56,7 +68,7 @@ describe('Dashboard', () => {
 
     expect(retryButton).toBeTruthy();
 
-    streamsResponse = of([]);
+    streamsResponse = of(page([]));
 
     retryButton.click();
     fixture.detectChanges();
@@ -75,20 +87,24 @@ describe('Dashboard', () => {
         title: 'Gaming Live',
         description: 'Gaming stream',
         startTime: '2026-10-05T18:00:00Z',
+        category: 'Gaming',
+        thumbnailUrl: null,
+        viewerCount: 25,
       },
     ];
 
-    streamsResponse = of(streams);
+    streamsResponse = of(page(streams, 25));
 
     fixture = TestBed.createComponent(Dashboard);
 
     expect(fixture.componentInstance.streams).toEqual(streams);
+    expect(fixture.componentInstance.totalCount).toBe(25);
     expect(fixture.componentInstance.isLoading).toBe(false);
     expect(fixture.componentInstance.errorMessage).toBe('');
   });
 
   it('should show empty state when no streams are available', () => {
-    streamsResponse = of([]);
+    streamsResponse = of(page([]));
 
     fixture = TestBed.createComponent(Dashboard);
     fixture.detectChanges();
@@ -119,10 +135,13 @@ describe('Dashboard', () => {
         title: 'Gaming Live',
         description: 'Gaming stream',
         startTime: '2026-10-05T18:00:00Z',
+        category: 'Gaming',
+        thumbnailUrl: null,
+        viewerCount: 25,
       },
     ];
 
-    streamsResponse = of(streams);
+    streamsResponse = of(page(streams));
 
     fixture = TestBed.createComponent(Dashboard);
 
