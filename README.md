@@ -135,6 +135,27 @@ Apply migrations according to the configured database connection:
 dotnet ef database update --project StreamingProject.Infrastructure.Postgres --startup-project StreamingProject.Web
 ```
 
+### Automated database initialization
+
+In `Development`, database initialization is enabled by default. Docker Compose
+also sets `DatabaseInitialization__Enabled=true` explicitly. During startup the
+backend waits for PostgreSQL through the Compose dependency health check, applies
+only pending EF Core migrations, and then runs the registered seeders in order.
+Both the migration history and the seeders are safe to process again after a
+normal container restart; the existing database and its data are not deleted or
+recreated.
+
+If a migration or seeder fails, the error is logged and rethrown. The backend
+process therefore exits before it can report a healthy state.
+
+Automatic initialization is disabled by default outside `Development`. For a
+production deployment, apply reviewed migrations as a separate controlled
+deployment step, for example with `dotnet ef database update` or an EF Core
+migration bundle. Set `DatabaseInitialization__Enabled=true` only when the
+deployment process intentionally delegates this responsibility to the backend.
+Never use `docker compose down -v` as a production migration mechanism because it
+deletes the database volume.
+
 ## Authentication
 
 The browser client uses cookie-based authentication. The backend still issues

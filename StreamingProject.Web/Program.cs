@@ -16,7 +16,6 @@ using StreamingProject.Repository.Repositories.RoleRepositories;
 using StreamProject.Web;
 using StreamProject.Web.Extensions;
 using StreamProject.Web.Middlewares;
-using StreamProject.Web.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -101,16 +100,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dbContext = scope.ServiceProvider.GetService<StreamingDbContext>();
-//     await dbContext.Database.MigrateAsync();
-// }
+var databaseInitializationEnabled =
+    configuration.GetValue<bool?>("DatabaseInitialization:Enabled")
+    ?? app.Environment.IsDevelopment();
 
-if (!app.Environment.IsEnvironment("Testing"))
+if (databaseInitializationEnabled
+    && !app.Environment.IsEnvironment("Testing"))
 {
     await app.InitAsync();
-    await app.UseSeeders();
 }
 
 app.UseStaticFiles();
