@@ -47,7 +47,7 @@ export class StreamService {
     request: CreateStreamRequest,
   ): Observable<StreamCreated>{
     return this.http.post<StreamCreated>(
-      `${this.apiUrl}/create`,
+      this.apiUrl,
       request,
     );
   }
@@ -61,8 +61,8 @@ export class StreamService {
 
   joinStream(id: string): Observable<StreamDetails> {
     return this.http.post<StreamDetails>(
-      `${this.apiUrl}/join`,
-      id,
+      `${this.apiUrl}/${id}/join`,
+      {},
     );
   }
 }
