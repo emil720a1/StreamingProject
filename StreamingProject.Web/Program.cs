@@ -34,6 +34,9 @@ services.AddCors(options =>
     });
 });
 
+services.AddHealthChecks()
+    .AddDbContextCheck<StreamingDbContext>("postgresql");
+
 services.AddSingleton<AuthenticationCookieOptionsFactory>();
 services.AddApiAuthentication(configuration);
 
@@ -89,6 +92,9 @@ if (!app.Environment.IsDevelopment()
 {
     app.UseHttpsRedirection();
 }
+
+app.MapHealthChecks("/health");
+
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
