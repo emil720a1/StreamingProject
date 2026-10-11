@@ -5,4 +5,7 @@ export interface StreamListItem {
   title: string;
   description: string;
   startTime: string | null;
+  category: string;
+  thumbnailUrl: string | null;
+  viewerCount: number;
 }

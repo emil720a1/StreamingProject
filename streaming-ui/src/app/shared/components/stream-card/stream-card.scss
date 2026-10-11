@@ -7,6 +7,7 @@
 }
 
 .stream-preview {
+  position: relative;
   display: flex;
   min-height: 160px;
   align-items: flex-start;
@@ -15,7 +16,16 @@
   background: linear-gradient(135deg, #312e81, #7c3aed);
 }
 
+.stream-preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .stream-preview span {
+  position: relative;
   border-radius: 6px;
   padding: 4px 8px;
   background: #374151;

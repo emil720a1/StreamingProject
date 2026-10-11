@@ -45,6 +45,9 @@ describe('Profile', () => {
         title: 'Gaming Live',
         description: 'Gaming stream',
         startTime: '2026-10-05T18:00:00Z',
+        category: 'Gaming',
+        thumbnailUrl: null,
+        viewerCount: 25,
       },
     ];
 

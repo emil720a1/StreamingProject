@@ -1,5 +1,9 @@
-import { StreamListItem } from './stream-list-item';
-
-export interface StreamDetails extends StreamListItem {
+export interface StreamDetails {
+  id: string;
+  userId: string;
+  streamerUsername: string | null;
+  title: string;
+  description: string;
+  startTime: string | null;
   endTime: string | null;
 }

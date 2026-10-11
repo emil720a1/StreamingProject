@@ -13,6 +13,7 @@ import { StreamCard } from '../../../shared/components/stream-card/stream-card';
 })
 export class Dashboard {
   streams: StreamListItem[] = [];
+  totalCount = 0;
   isLoading = true;
   errorMessage = '';
 
@@ -24,14 +25,17 @@ export class Dashboard {
     this.isLoading = true;
     this.errorMessage = '';
     this.streams = [];
+    this.totalCount = 0;
 
-    this.streamService.getStreams().subscribe({
-      next: (streams) => {
-        this.streams = streams;
+    this.streamService.getStreams({ page: 1, pageSize: 12 }).subscribe({
+      next: (response) => {
+        this.streams = response.items;
+        this.totalCount = response.totalCount;
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Failed to load streams', error);
+        this.totalCount = 0;
         this.errorMessage = 'Failed to load streams';
         this.isLoading = false;
       },

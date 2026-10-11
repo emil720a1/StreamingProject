@@ -15,6 +15,52 @@
   color: #6b7280;
 }
 
+.stream-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.stream-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stream-filters input,
+.stream-filters select,
+.stream-filters button,
+.pagination button {
+  min-height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: white;
+}
+
+.stream-filters button,
+.pagination button {
+  cursor: pointer;
+  color: #4338ca;
+  font-weight: 600;
+}
+
+.stream-filters button {
+  border-color: #4f46e5;
+  background: #4f46e5;
+  color: white;
+}
+
+.result-count {
+  margin: 0 0 20px;
+  color: #6b7280;
+}
+
 .category-filters {
   display: flex;
   gap: 12px;
@@ -112,7 +158,24 @@
   text-decoration: underline;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 @media (max-width: 900px) {
+  .stream-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .stream-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -121,6 +184,10 @@
 @media (max-width: 600px) {
   .streams-page {
     padding: 20px;
+  }
+
+  .stream-filters {
+    grid-template-columns: 1fr;
   }
 
   .stream-grid {
