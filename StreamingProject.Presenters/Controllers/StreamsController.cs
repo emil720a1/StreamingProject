@@ -14,7 +14,7 @@ public class StreamsController(
     Application.Interfaces.Hls.IHlsTranscoderService hlsTranscoderService) : ApiControllerBase
 {
     [Authorize(Policy = "Permission.Create")]
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<IActionResult> CreateStream(
         [FromBody] CreateStreamRequestDto body,
         CancellationToken cancellationToken)
@@ -47,9 +47,9 @@ public class StreamsController(
     }
 
     [Authorize(Policy = "Permission.Read")]
-    [HttpPost("join")]
+    [HttpPost("{streamId:guid}/join")]
     public async Task<IActionResult> JoinStream(
-        [FromBody] Guid streamId,
+        [FromRoute] Guid streamId,
         CancellationToken cancellationToken)
     {
         var request = new JoinStreamDto(currentUser.Id, streamId);

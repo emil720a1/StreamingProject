@@ -130,7 +130,7 @@ describe('StreamService', () => {
     });
 
     const request = httpTesting.expectOne(
-      `${environment.apiUrl}/Streams/create`,
+      `${environment.apiUrl}/Streams`,
     );
 
     expect(request.request.method).toBe('POST');
@@ -153,24 +153,26 @@ describe('StreamService', () => {
   });
 
   it('should join a stream through the API', () => {
-    service.joinStream('stream-1').subscribe((stream) => {
-      expect(stream.id).toBe('stream-1');
+    const streamId = '11111111-1111-1111-1111-111111111111';
+
+    service.joinStream(streamId).subscribe((stream) => {
+      expect(stream.id).toBe(streamId);
     });
 
     const request = httpTesting.expectOne(
-      `${environment.apiUrl}/Streams/join`,
+      `${environment.apiUrl}/Streams/${streamId}/join`,
     );
 
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toBe('stream-1');
+    expect(request.request.body).toEqual({});
 
     request.flush({
-      id: 'stream-1',
+      id: streamId,
       userId: 'user-1',
-      streamerUsername: 'Alex',
-      title: 'Gaming Live',
-      description: 'Gaming stream',
-      startTime: '2026-10-05T18:00:00Z',
+      title: 'Test stream',
+      description: 'Test description',
+      category: 'Gaming',
+      thumbnailUrl: null,
     });
   });
 
