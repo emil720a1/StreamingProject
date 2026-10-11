@@ -1,10 +1,18 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import {
+  HttpClient,
+  HttpErrorResponse,
+} from '@angular/common/http';
+import {
+  catchError,
+  map,
+  Observable,
+  of,
+  throwError,
+} from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
-  AuthResponse,
   LoginRequest,
   RegisterRequest,
 } from '../../shared/models/auth';
@@ -16,21 +24,9 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly apiUrl = `${environment.apiUrl}/Auth`;
-  private readonly tokenKey = 'access_token';
-  private readonly refreshTokenKey = 'refresh_token';
 
-  login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.apiUrl}/login`, request)
-      .pipe(
-        tap((response) => {
-          localStorage.setItem(this.tokenKey, response.token);
-          localStorage.setItem(
-            this.refreshTokenKey,
-            response.refreshToken,
-          );
-        }),
-      );
+  login(request: LoginRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/login`, request);
   }
 
   register(request: RegisterRequest): Observable<unknown> {
@@ -40,37 +36,22 @@ export class AuthService {
     );
   }
 
-  refreshToken(refreshToken: string): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(
-      `${this.apiUrl}/refresh-token`,
-      { refreshToken },
-    )
-      .pipe(
-        tap((response) => {
-          localStorage.setItem(this.tokenKey, response.token);
-          localStorage.setItem(
-            this.refreshTokenKey,
-            response.refreshToken,
-          );
-        }),
-      );
+  refreshToken(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/refresh-token`, {});
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+  isAuthenticated(): Observable<boolean> {
+    return this.http.get<void>(`${this.apiUrl}/session`).pipe(
+      map(() => true),
+      catchError((error: HttpErrorResponse) =>
+        error.status === 401
+          ? of(false)
+          : throwError(() => error),
+      ),
+    );
   }
 
-  getRefreshToken(): string | null {
-    return localStorage.getItem(this.refreshTokenKey);
-  }
-
-  isAuthenticated(): boolean {
-    return this.getToken() !== null;
-  }
-
-  logout(): void {
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.refreshTokenKey);
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/logout`, {});
   }
 }

@@ -26,6 +26,7 @@
       <ProjectReference Include="..\..\Shared\Shared.csproj" />
       <ProjectReference Include="..\..\StreamingProject.Application\StreamingProject.Application.csproj" />
       <ProjectReference Include="..\..\StreamingProject.Contracts\StreamingProject.Contracts.csproj" />
+      <ProjectReference Include="..\..\StreamingProject.Presenters\StreamingProject.Presenters.csproj" />
     </ItemGroup>
 
 </Project>

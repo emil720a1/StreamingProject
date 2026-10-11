@@ -7,6 +7,11 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
+import {
+  firstValueFrom,
+  Observable,
+  of,
+} from 'rxjs';
 
 import { AuthService } from '../services/auth';
 import { authGuard } from './auth-guard';
@@ -15,7 +20,7 @@ describe('authGuard', () => {
   let isAuthenticated = true;
 
   const authServiceMock = {
-    isAuthenticated: () => isAuthenticated,
+    isAuthenticated: () => of(isAuthenticated),
   };
 
   const executeGuard = () =>
@@ -40,18 +45,22 @@ describe('authGuard', () => {
     });
   });
 
-  it('should allow authenticated user', () => {
+  it('should allow authenticated user', async () => {
     isAuthenticated = true;
 
-    const result = executeGuard();
+    const result = await firstValueFrom(
+      executeGuard() as Observable<boolean | UrlTree>,
+    );
 
     expect(result).toBe(true);
   });
 
-  it('should redirect unauthenticated user to login', () => {
+  it('should redirect unauthenticated user to login', async () => {
     isAuthenticated = false;
 
-    const result = executeGuard();
+    const result = await firstValueFrom(
+      executeGuard() as Observable<boolean | UrlTree>,
+    );
     const router = TestBed.inject(Router);
 
     expect(result).toBeInstanceOf(UrlTree);

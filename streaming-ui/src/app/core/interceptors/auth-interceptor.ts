@@ -1,5 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import {
   catchError,
   finalize,
@@ -10,21 +11,14 @@ import {
 } from 'rxjs';
 
 import { AuthService } from '../services/auth';
-import { AuthResponse } from '../../shared/models/auth';
 
-let refreshRequest$: Observable<AuthResponse> | null = null;
+let refreshRequest$: Observable<void> | null = null;
 
 const getRefreshRequest = (
   authService: AuthService,
-): Observable<AuthResponse> => {
+): Observable<void> => {
   if (!refreshRequest$) {
-    const refreshToken = authService.getRefreshToken();
-
-    if (!refreshToken) {
-      return throwError(() => new Error('Refresh token is missing'));
-    }
-
-    refreshRequest$ = authService.refreshToken(refreshToken).pipe(
+    refreshRequest$ = authService.refreshToken().pipe(
       finalize(() => {
         refreshRequest$ = null;
       }),
@@ -40,46 +34,33 @@ const getRefreshRequest = (
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const authService = inject(AuthService);
-  const token = authService.getToken();
+  const isApiRequest = request.url.startsWith(environment.apiUrl);
 
-  if (!token) {
-    return next(request);
-  }
+  const requestWithCredentials = isApiRequest
+    ? request.clone({ withCredentials: true })
+    : request;
 
-  const requestWithToken = request.clone({
-    setHeaders: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return next(requestWithToken).pipe(
+  return next(requestWithCredentials).pipe(
     catchError((error) => {
-      if (
-        error.status !== 401
+      const isAuthenticationRequest =
+        request.url.includes('/Auth/login')
+        || request.url.includes('/Auth/register')
         || request.url.includes('/Auth/refresh-token')
+        || request.url.includes('/Auth/logout');
+
+      if (
+        !isApiRequest
+        || error.status !== 401
+        || isAuthenticationRequest
       ) {
         return throwError(() => error);
       }
 
-      if (!authService.getRefreshToken()) {
-        authService.logout();
-        return throwError(() => error);
-      }
-
       return getRefreshRequest(authService).pipe(
-        switchMap((response) => {
-          const retryRequest = request.clone({
-            setHeaders: {
-              Authorization: `Bearer ${response.token}`,
-            },
-          });
-
-          return next(retryRequest);
-        }),
-        catchError((refreshError) => {
-          authService.logout();
-          return throwError(() => refreshError);
-        }),
+        switchMap(() => next(requestWithCredentials)),
+        catchError((refreshError) =>
+          throwError(() => refreshError),
+        ),
       );
     }),
   );
