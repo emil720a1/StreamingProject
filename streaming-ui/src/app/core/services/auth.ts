@@ -1,10 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import {
   catchError,
   map,
   Observable,
   of,
+  throwError,
 } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -39,7 +43,11 @@ export class AuthService {
   isAuthenticated(): Observable<boolean> {
     return this.http.get<void>(`${this.apiUrl}/session`).pipe(
       map(() => true),
-      catchError(() => of(false)),
+      catchError((error: HttpErrorResponse) =>
+        error.status === 401
+          ? of(false)
+          : throwError(() => error),
+      ),
     );
   }
 

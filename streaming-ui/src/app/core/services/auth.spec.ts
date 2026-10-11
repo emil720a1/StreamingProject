@@ -118,4 +118,24 @@ describe('AuthService', () => {
 
     expect(isAuthenticated).toBe(false);
   });
+
+  it('should propagate session errors other than unauthorized', () => {
+    let receivedStatus: number | undefined;
+
+    service.isAuthenticated().subscribe({
+      error: (error) => {
+        receivedStatus = error.status;
+      },
+    });
+
+    const testRequest = http.expectOne(
+      'http://localhost:5228/api/Auth/session',
+    );
+    testRequest.flush(null, {
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
+
+    expect(receivedStatus).toBe(500);
+  });
 });
