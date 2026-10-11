@@ -96,9 +96,12 @@ public class StreamsController(
     [Authorize(Policy = "Permission.Read")]
     [HttpGet]
     public async Task<IActionResult> GetAvailableStreams(
+        [FromQuery] GetStreamsRequestDto request,
         CancellationToken cancellationToken)
     {
-        var result = await streamService.GetAvailableStreamsAsync(cancellationToken);
+        var result = await streamService.GetAvailableStreamsAsync(
+            request,
+            cancellationToken);
 
         return HandleResult(result);
     }

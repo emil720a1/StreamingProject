@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StreamingProject.Application.Service.Stream.StreamRepository;
-using StreamingProject.Domain;
+using StreamingProject.Contracts.Streams;
 using StreamingProject.Domain.Stream;
 using StreamingProject.Domain.Stream.UserStream;
 
@@ -47,15 +47,71 @@ public class StreamRepositories : IStreamRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<List<StreamEntity>> GetAvailableStreamsAsync()
+    public async Task<StreamPage> GetAvailableStreamsAsync(
+        GetStreamsRequestDto request,
+        CancellationToken cancellationToken)
     {
-        return await _dbContext.Streams
+        var query = _dbContext.Streams
             .AsNoTracking()
-            .Include(s => s.User)
-            .Where(stream => stream.EndTime == null)
-            .OrderByDescending(s => s.StartTime)
-            .ToListAsync();
+            .Where(stream => stream.EndTime == null);
+
+        if (!string.IsNullOrWhiteSpace(request.Category))
+        {
+            var category = request.Category.Trim().ToLowerInvariant();
+            query = query.Where(stream => stream.Category.ToLower() == category);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var searchPattern = $"%{EscapeLikePattern(request.Search.Trim())}%";
+
+            query = query.Where(stream =>
+                EF.Functions.ILike(stream.Title, searchPattern, "\\")
+                || (stream.User.UserName != null
+                    && EF.Functions.ILike(stream.User.UserName, searchPattern, "\\")));
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var sortDescending = request.SortDirection.Equals(
+            "desc",
+            StringComparison.OrdinalIgnoreCase);
+
+        var orderedQuery = request.SortBy.Equals(
+            "viewerCount",
+            StringComparison.OrdinalIgnoreCase)
+            ? sortDescending
+                ? query.OrderByDescending(stream => stream.Participants.Count)
+                    .ThenBy(stream => stream.Id)
+                : query.OrderBy(stream => stream.Participants.Count)
+                    .ThenBy(stream => stream.Id)
+            : sortDescending
+                ? query.OrderByDescending(stream => stream.StartTime)
+                    .ThenBy(stream => stream.Id)
+                : query.OrderBy(stream => stream.StartTime)
+                    .ThenBy(stream => stream.Id);
+
+        var items = await orderedQuery
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(stream => new StreamListItemReadModel(
+                stream.Id,
+                stream.UserId,
+                stream.User.UserName,
+                stream.Title,
+                stream.Description,
+                stream.StartTime,
+                stream.Category,
+                stream.ThumbnailUrl,
+                stream.Participants.Count))
+            .ToListAsync(cancellationToken);
+
+        return new StreamPage(items, totalCount);
     }
+
+    private static string EscapeLikePattern(string value) => value
+        .Replace("\\", "\\\\", StringComparison.Ordinal)
+        .Replace("%", "\\%", StringComparison.Ordinal)
+        .Replace("_", "\\_", StringComparison.Ordinal);
 
     public async Task<List<StreamEntity>> GetStreamsByUserId(Guid userId)
     {
