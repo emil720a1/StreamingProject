@@ -24,6 +24,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: "http://+:8080"
+      DatabaseInitialization__Enabled: "true"
       ConnectionStrings__StreamingDbContext: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       JwtOptions__SecretKey: ${JWT_SECRET_KEY}
       JwtOptions__Audience: streaming-project
