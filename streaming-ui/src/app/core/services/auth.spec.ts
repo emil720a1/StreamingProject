@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { environment } from '../../../environments/environment';
 import {
   provideHttpClient,
   withInterceptorsFromDi,
@@ -42,7 +43,7 @@ describe('AuthService', () => {
 
     service.login(request).subscribe();
 
-    const testRequest = http.expectOne('http://localhost:5228/api/Auth/login');
+    const testRequest = http.expectOne(`${environment.apiUrl}/Auth/login`);
     expect(testRequest.request.method).toBe('POST');
     expect(testRequest.request.body).toEqual(request);
     testRequest.flush(null);
@@ -52,7 +53,7 @@ describe('AuthService', () => {
     service.refreshToken().subscribe();
 
     const testRequest = http.expectOne(
-      'http://localhost:5228/api/Auth/refresh-token',
+      `${environment.apiUrl}/Auth/refresh-token`,
     );
 
     expect(testRequest.request.method).toBe('POST');
@@ -69,7 +70,7 @@ describe('AuthService', () => {
 
     service.register(request).subscribe();
 
-    const testRequest = http.expectOne('http://localhost:5228/api/Auth/register');
+    const testRequest = http.expectOne(`${environment.apiUrl}/Auth/register`);
     expect(testRequest.request.method).toBe('POST');
     expect(testRequest.request.body).toEqual(request);
     testRequest.flush({});
@@ -79,7 +80,7 @@ describe('AuthService', () => {
     service.logout().subscribe();
 
     const testRequest = http.expectOne(
-      'http://localhost:5228/api/Auth/logout',
+      `${environment.apiUrl}/Auth/logout`,
     );
 
     expect(testRequest.request.method).toBe('POST');
@@ -94,7 +95,7 @@ describe('AuthService', () => {
     });
 
     const testRequest = http.expectOne(
-      'http://localhost:5228/api/Auth/session',
+      `${environment.apiUrl}/Auth/session`,
     );
     testRequest.flush(null);
 
@@ -109,7 +110,7 @@ describe('AuthService', () => {
     });
 
     const testRequest = http.expectOne(
-      'http://localhost:5228/api/Auth/session',
+      `${environment.apiUrl}/Auth/session`,
     );
     testRequest.flush(null, {
       status: 401,
@@ -129,7 +130,7 @@ describe('AuthService', () => {
     });
 
     const testRequest = http.expectOne(
-      'http://localhost:5228/api/Auth/session',
+      `${environment.apiUrl}/Auth/session`,
     );
     testRequest.flush(null, {
       status: 500,

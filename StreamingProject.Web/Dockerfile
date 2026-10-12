@@ -19,6 +19,8 @@ RUN apt-get update \
 
 WORKDIR /app
 
+RUN mkdir -p /app/wwwroot/hls
+
 COPY --from=build /app/publish .
 
 ENV ASPNETCORE_URLS=http://+:8080

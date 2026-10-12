@@ -121,7 +121,7 @@ describe('StreamService', () => {
   });
 
   it('should request HLS URL from the API', () =>{
-    const expectedHlsUrl = 'http://localhost:8080/streams/stream-1/index.m3u8';
+    const expectedHlsUrl = '/hls/stream-1/index.m3u8';
 
     service.getHlsUrl('stream-1').subscribe((hlsUrl) => {
       expect(hlsUrl).toBe(expectedHlsUrl);
