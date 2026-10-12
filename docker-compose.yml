@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -31,7 +29,6 @@ services:
       JwtOptions__Issuer: streaming-project
       JwtOptions__ExpireHours: 12
     ports:
-      - "5228:8080"
       - "1935:1935"
     healthcheck:
       test: [ "CMD", "curl", "--fail", "--silent", "--show-error", "http://localhost:8080/health" ]
@@ -48,10 +45,29 @@ services:
       context: ./streaming-ui
       dockerfile: Dockerfile
     container_name: streaming-frontend
-    ports:
-      - "4200:80"
     depends_on:
       backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  proxy:
+    image: nginx:alpine
+    container_name: streaming-proxy
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
         condition: service_healthy
 
 volumes:

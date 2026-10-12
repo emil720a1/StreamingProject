@@ -12,6 +12,7 @@ import {
 
 import { AuthService } from '../services/auth';
 import { authInterceptor } from './auth-interceptor';
+import { environment } from '../../../environments/environment';
 
 describe('authInterceptor', () => {
   const authServiceMock = {
@@ -34,7 +35,7 @@ describe('authInterceptor', () => {
   it('should refresh cookies and retry an API request after 401', () => {
     const request = new HttpRequest(
       'GET',
-      'http://localhost:5228/api/Streams',
+      `${environment.apiUrl}/Streams`,
     );
     const unauthorizedError = new HttpErrorResponse({ status: 401 });
     const next = vi.fn()
@@ -58,7 +59,7 @@ describe('authInterceptor', () => {
   it('should propagate an error when cookie refresh fails', () => {
     const request = new HttpRequest(
       'GET',
-      'http://localhost:5228/api/Streams',
+      `${environment.apiUrl}/Streams`,
     );
     const unauthorizedError = new HttpErrorResponse({ status: 401 });
     const next = vi.fn(() => throwError(() => unauthorizedError));
@@ -78,11 +79,11 @@ describe('authInterceptor', () => {
   it('should share one refresh request between concurrent 401 responses', () => {
     const firstRequest = new HttpRequest(
       'GET',
-      'http://localhost:5228/api/Streams/1',
+      `${environment.apiUrl}/Streams/1`,
     );
     const secondRequest = new HttpRequest(
       'GET',
-      'http://localhost:5228/api/Streams/2',
+      `${environment.apiUrl}/Streams/2`,
     );
     const refreshResponse$ = new Subject<void>();
     const unauthorizedError = new HttpErrorResponse({ status: 401 });
@@ -111,7 +112,7 @@ describe('authInterceptor', () => {
   it('should not refresh after a failed login request', () => {
     const request = new HttpRequest(
       'POST',
-      'http://localhost:5228/api/Auth/login',
+      `${environment.apiUrl}/Auth/login`,
       {},
     );
     const next = vi.fn(() =>
@@ -128,7 +129,7 @@ describe('authInterceptor', () => {
   it('should not add an Authorization header to API requests', () => {
     const request = new HttpRequest(
       'GET',
-      'http://localhost:5228/api/Streams',
+      `${environment.apiUrl}/Streams`,
     );
     const next = vi.fn((forwardedRequest: HttpRequest<unknown>) =>
       of(new HttpResponse({ status: 200 })),
@@ -145,7 +146,7 @@ describe('authInterceptor', () => {
   it('should enable credentials for backend API requests', () => {
     const request = new HttpRequest(
       'POST',
-      'http://localhost:5228/api/Auth/login',
+      `${environment.apiUrl}/Auth/login`,
       {},
     );
     const next = vi.fn((forwardedRequest: HttpRequest<unknown>) =>

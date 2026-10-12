@@ -20,7 +20,7 @@ describe('CreatorStudio', () => {
     streamServiceMock.getStreamStatus.mockReset();
     streamServiceMock.endStream.mockReset();
     streamServiceMock.getHlsUrl.mockReturnValue(
-      of('http://localhost:5228/hls/stream-1/index.m3u8'),
+      of('/hls/stream-1/index.m3u8'),
     );
     streamServiceMock.getStreamStatus.mockReturnValue(
       of({
@@ -121,7 +121,7 @@ describe('CreatorStudio', () => {
 
     expect(streamServiceMock.getHlsUrl).toHaveBeenCalledWith('stream-1');
     expect(component.hlsUrl).toBe(
-      'http://localhost:5228/hls/stream-1/index.m3u8',
+      '/hls/stream-1/index.m3u8',
     );
     expect(component.isLoadingHls).toBe(false);
   });

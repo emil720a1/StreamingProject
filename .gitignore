@@ -69,3 +69,5 @@ node_modules/
 .angular/
 dist/
 coverage/
+
+deploy/nginx/certs/*
