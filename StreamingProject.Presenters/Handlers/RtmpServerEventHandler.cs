@@ -51,8 +51,8 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
 
         if (startResult.IsFailure)
         {
-            _logger.LogError("Failed to start stream lifecycle for key {StreamKey}",
-                streamKey);
+            _logger.LogError("Failed to start stream lifecycle for client {ClientId}",
+                clientId);
 
             return;
         }
@@ -77,8 +77,8 @@ public class RtmpServerEventHandler : IRtmpServerStreamEventHandler
         if (result.IsFailure)
         {
             _logger.LogError(
-                "Failed to stop stream lifecycle for key {StreamKey}",
-                streamKey);
+                "Failed to stop stream lifecycle for client {ClientId}",
+                clientId);
 
             return;
         }

@@ -6,7 +6,7 @@ loki.source.docker "containers" {
   host       = "unix:///var/run/docker.sock"
   targets    = discovery.docker.containers.targets
   labels     = {
-    job = "docker"
+    job = "docker",
   }
   forward_to = [loki.write.local.receiver]
 }

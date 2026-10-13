@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Extensions;
+using StreamingProject.Application.Observability;
 using StreamingProject.Application.Service.Stream.StreamRepository;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Domain;
@@ -22,6 +23,7 @@ public class StreamService : IStreamService
     private readonly IValidator<JoinStreamDto> _joinStreamDtoValidator;
     private readonly IValidator<GetStreamsRequestDto> _getStreamsRequestValidator;
     private readonly Application.Interfaces.Hls.IHlsTranscoderService _hlsTranscoderService;
+    private readonly StreamingMetrics _metrics;
 
 
     public StreamService(
@@ -31,7 +33,8 @@ public class StreamService : IStreamService
         IMapper mapper,
         IValidator<JoinStreamDto> joinStreamDtoValidator,
         IValidator<GetStreamsRequestDto> getStreamsRequestValidator,
-        Application.Interfaces.Hls.IHlsTranscoderService hlsTranscoderService)
+        Application.Interfaces.Hls.IHlsTranscoderService hlsTranscoderService,
+        StreamingMetrics metrics)
     {
         _streamRepository = streamRepository;
         _createStreamDtoValidator = createStreamDtoValidator;
@@ -40,6 +43,7 @@ public class StreamService : IStreamService
         _mapper = mapper;
         _logger = logger;
         _hlsTranscoderService = hlsTranscoderService;
+        _metrics = metrics;
     }
 
     public async Task<Result<CreateStreamResponseDto, Failure>> CreateStreamAsync(CreateStreamDto request, CancellationToken cancellationToken)
@@ -197,6 +201,12 @@ public class StreamService : IStreamService
 
         await _streamRepository.UpdateStreamAsync(stream);
 
+        _metrics.StreamStarted();
+
+        _logger.LogInformation(
+            "Stream {StreamId} started",
+            stream.Id);
+
         return true;
     }
 
@@ -216,14 +226,25 @@ public class StreamService : IStreamService
         if (hlsResult.IsFailure)
         {
             _logger.LogError(
-                "Failed to stop HLS transcoding for stream {StreamKey}",
-                streamKey);
+                "Failed to stop HLS transcoding for stream {StreamId}",
+                stream.Id);
 
             return hlsResult.Error;
         }
 
+        var duration = stream.StartTime.HasValue
+            ? DateTime.UtcNow - stream.StartTime.Value
+            : TimeSpan.Zero;
+
         stream.EndStream();
+
         await _streamRepository.UpdateStreamAsync(stream);
+
+        _metrics.StreamEnded(duration);
+
+        _logger.LogInformation(
+            "Stream {StreamId} ended",
+            stream.Id);
 
         return true;
     }
@@ -258,14 +279,24 @@ public class StreamService : IStreamService
         if (hlsResult.IsFailure)
         {
             _logger.LogError(
-                "Failed to stop HLS transcoding for stream {StreamKey}",
-                stream.StreamKey);
+                "Failed to stop HLS transcoding for stream {StreamId}",
+                stream.Id);
 
             return hlsResult.Error;
         }
 
+        var duration = stream.StartTime.HasValue
+            ? DateTime.UtcNow - stream.StartTime.Value
+            : TimeSpan.Zero;
+
         stream.EndStream();
         await _streamRepository.UpdateStreamAsync(stream);
+
+        _metrics.StreamEnded(duration);
+
+        _logger.LogInformation(
+            "Stream {StreamId} ended by owner",
+            stream.Id);
 
         return true;
     }
