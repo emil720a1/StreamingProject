@@ -22,12 +22,12 @@ public class UserService : IUserService
     private readonly IJwtProvider _jwtProvider;
     private readonly IMapper _mapper;
     private readonly ILogger<UserService> _logger;
-    
+
     public UserService(
-        UserManager<UserEntity> userManager, 
+        UserManager<UserEntity> userManager,
         IValidator<AddUserDto> addUserDtoValidator,
-        IMapper mapper, 
-        ILogger<UserService> logger, 
+        IMapper mapper,
+        ILogger<UserService> logger,
         IJwtProvider jwtProvider,
         IStreamRepository streamRepository)
     {
@@ -43,7 +43,7 @@ public class UserService : IUserService
     {
         var validation = await _addUserDtoValidator.ValidateAsync(request, cancellationToken);
         if (!validation.IsValid) return validation.ToErrors();
-        
+
         var user = new UserEntity
         {
             Id = Guid.NewGuid(),
@@ -55,7 +55,7 @@ public class UserService : IUserService
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
-        
+
         if (!result.Succeeded)
         {
             var errors = result.Errors.Select(e => Error.Validation(e.Code, e.Description)).ToList();
@@ -66,7 +66,7 @@ public class UserService : IUserService
         await _userManager.AddToRoleAsync(user, "User");
 
         _logger.LogInformation("User {Username} registered with ID {UserID}", user.UserName, user.Id);
-        
+
         return _mapper.Map<UserDetailsDto>(user);
     }
 
@@ -76,6 +76,9 @@ public class UserService : IUserService
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, password))
         {
+            _logger.LogWarning(
+                "Authentication failed: invalid credentials");
+
             return Failure.FromError(Error.Unauthorized("InvalidCredentials", "Invalid email or password"));
         }
 
@@ -92,7 +95,12 @@ public class UserService : IUserService
         }
         catch (Exception ex)
         {
-            return Failure.FromError(Error.Unauthorized("InvalidToken", ex.Message));
+            _logger.LogWarning(
+                ex,
+                "Authentication failed: refresh token validation error");
+
+            return Failure.FromError(
+                Error.Unauthorized("InvalidToken", "Invalid refresh token"));
         }
     }
 
@@ -101,7 +109,7 @@ public class UserService : IUserService
         var streams = await _streamRepository.GetStreamsByUserId(request.UserId);
 
         var streamDto = _mapper.Map<List<StreamListItemDto>>(streams);
-        
+
         return Result.Success<List<StreamListItemDto>, Failure>(streamDto);
     }
 
@@ -113,9 +121,9 @@ public class UserService : IUserService
         {
             return Failure.FromError(Error.NotFound("UserNotFound", "User not found", null));
         }
-        
+
         var userDto = _mapper.Map<UserDetailsDto>(user);
-        
+
         return Result.Success<UserDetailsDto, Failure>(userDto);
     }
 }

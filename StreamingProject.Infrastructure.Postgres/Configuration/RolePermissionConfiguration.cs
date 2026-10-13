@@ -6,7 +6,7 @@ using StreamingProject.Domain.Permission;
 
 namespace StreamingProject.Repository.Configuration;
 
-public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissionEntity>
+public class RolePermissionConfiguration
 {
     private readonly AuthorizationOptions _authorizationOptions;
 

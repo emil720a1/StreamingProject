@@ -1,10 +1,13 @@
+using System.Diagnostics.Metrics;
 using AutoMapper;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shared;
+using StreamingProject.Application.Observability;
 using StreamingProject.Application.Interfaces.Hls;
 using StreamingProject.Application.Service.Stream.StreamRepository;
 using StreamingProject.Application.Service.Stream.StreamService;
@@ -23,6 +26,7 @@ public sealed class StreamServiceTests
     private Mock<IValidator<JoinStreamDto>> _joinValidatorMock = null!;
     private Mock<IValidator<GetStreamsRequestDto>> _getStreamsValidatorMock = null!;
     private Mock<IHlsTranscoderService> _hlsServiceMock = null!;
+    private ServiceProvider _serviceProvider = null!;
 
     private StreamService _sut = null!;
 
@@ -37,6 +41,13 @@ public sealed class StreamServiceTests
         _getStreamsValidatorMock = new Mock<IValidator<GetStreamsRequestDto>>();
         _hlsServiceMock = new Mock<IHlsTranscoderService>();
 
+        _serviceProvider = new ServiceCollection()
+            .AddMetrics()
+            .BuildServiceProvider();
+
+        var metrics = new StreamingMetrics(
+            _serviceProvider.GetRequiredService<IMeterFactory>());
+
         _getStreamsValidatorMock
             .Setup(validator => validator.ValidateAsync(
                 It.IsAny<GetStreamsRequestDto>(),
@@ -50,7 +61,14 @@ public sealed class StreamServiceTests
             _mapperMock.Object,
             _joinValidatorMock.Object,
             _getStreamsValidatorMock.Object,
-            _hlsServiceMock.Object);
+            _hlsServiceMock.Object,
+            metrics);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _serviceProvider.Dispose();
     }
 
 
@@ -302,6 +320,69 @@ public sealed class StreamServiceTests
     }
 
     [Test]
+    public async Task StartStreamByKeyAsync_ShouldBeIdempotent_WhenStreamIsAlreadyActive()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.StartStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        _hlsServiceMock.Verify(
+            service => service.StartTranscodingAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task StartStreamByKeyAsync_ShouldFail_WhenStreamHasAlreadyEnded()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+        stream.EndStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.StartStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        _hlsServiceMock.Verify(
+            service => service.StartTranscodingAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
+            Times.Never);
+    }
+
+    [Test]
     public async Task EndStreamByKeyAsync_ShouldEndPersistAndStopTranscoding()
     {
         var stream = StreamEntity.Create(
@@ -367,6 +448,37 @@ public sealed class StreamServiceTests
 
         result.IsFailure.Should().BeTrue();
         stream.EndTime.Should().BeNull();
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task EndStreamByKeyAsync_ShouldBeIdempotent_WhenStreamWasAlreadyEnded()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+        stream.EndStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.EndStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        _hlsServiceMock.Verify(
+            service => service.StopTranscodingAsync(
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
         _repositoryMock.Verify(
             repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
             Times.Never);

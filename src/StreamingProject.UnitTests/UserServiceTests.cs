@@ -113,4 +113,54 @@ public class UserServiceTests
         result.Value.AccessToken.Should().Be("fake-token");
         result.Value.RefreshToken.Should().Be("fake-refresh");
     }
+
+    [Test]
+    public async Task LoginAsync_ShouldLogWarning_WhenCredentialsAreInvalid()
+    {
+        _userManagerMock
+            .Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync((UserEntity?)null);
+
+        var result = await _sut.LoginAsync(
+            "invalid@test.com",
+            "wrong-password");
+
+        result.IsFailure.Should().BeTrue();
+
+        _loggerMock.Verify(
+            logger => logger.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>(
+                    (state, _) => state.ToString()!.Contains(
+                        "Authentication failed: invalid credentials")),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task RefreshTokenAsync_ShouldLogWarning_WhenTokenIsInvalid()
+    {
+        _jwtProviderMock
+            .Setup(jwt => jwt.RefreshTokenAsync(
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("internal token error"));
+
+        var result = await _sut.RefreshTokenAsync("fake-refresh-token");
+
+        result.IsFailure.Should().BeTrue();
+
+        _loggerMock.Verify(
+            logger => logger.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>(
+                    (state, _) => state.ToString()!.Contains(
+                        "Authentication failed: refresh token validation error")),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
 }

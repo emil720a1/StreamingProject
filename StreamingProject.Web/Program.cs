@@ -6,7 +6,10 @@ using LiveStreamingServerNet.Rtmp.Server.Contracts;
 using LiveStreamingServerNet.Rtmp.Server.Installer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Shared.Common;
+using StreamingProject.Application.Observability;
 using StreamingProject.Presenters.Authentication;
 using StreamingProject.Presenters.Handlers;
 using StreamingProject.Repository;
@@ -18,6 +21,16 @@ using StreamProject.Web.Extensions;
 using StreamProject.Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+
+builder.Logging.AddJsonConsole(options =>
+{
+    options.IncludeScopes = true;
+    options.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+    options.UseUtcTimestamp = true;
+});
+
 var services = builder.Services;
 var configuration = builder.Configuration;
 
@@ -33,8 +46,22 @@ services.AddCors(options =>
     });
 });
 
+services.AddSingleton<StreamingMetrics>();
+
 services.AddHealthChecks()
     .AddDbContextCheck<StreamingDbContext>("postgresql");
+
+services.AddOpenTelemetry()
+    .ConfigureResource(resource =>
+    {
+        resource.AddService("streaming-backend");
+    })
+    .WithMetrics(metrics =>
+        metrics.AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddPrometheusExporter()
+            .AddMeter(StreamingMetrics.MeterName));
 
 services.AddSingleton<AuthenticationCookieOptionsFactory>();
 services.AddApiAuthentication(configuration);
@@ -42,9 +69,18 @@ services.AddApiAuthentication(configuration);
     services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
     services.Configure<AuthorizationOptions>(configuration.GetSection(nameof(AuthorizationOptions)));
 
+    var connectionString = configuration.GetConnectionString(nameof(StreamingDbContext));
+    if (!builder.Environment.IsEnvironment("Testing")
+        && string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException(
+            "ConnectionStrings:StreamingDbContext is missing. " +
+            "Run the application through Docker Compose or configure the connection string in appsettings.Development.json.");
+    }
+
     services.AddDbContext<StreamingDbContext>(options =>
     {
-        options.UseNpgsql(configuration.GetConnectionString(nameof(StreamingDbContext)));
+        options.UseNpgsql(connectionString);
     });
 
 services.AddScoped<ISeeder, RoleSeeder>();
@@ -64,8 +100,6 @@ if (!builder.Environment.IsEnvironment("Testing"))
     });
 }
 
-services.AddLogging(logging => logging.AddConsole());
-
 services.AddAutoMapper(typeof(StreamMapper));
 services.AddProgramDependencies();
 
@@ -77,6 +111,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "StreamingProject.Web"));
 }
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCookiePolicy(new CookiePolicyOptions
@@ -86,13 +122,15 @@ app.UseCookiePolicy(new CookiePolicyOptions
     Secure = CookieSecurePolicy.SameAsRequest,
 });
 
-if (!app.Environment.IsDevelopment()
-    && !app.Environment.IsEnvironment("Testing"))
-{
-    app.UseHttpsRedirection();
-}
+// if (!app.Environment.IsDevelopment()
+//     && !app.Environment.IsEnvironment("Testing"))
+// {
+//     app.UseHttpsRedirection();
+// }
 
 app.MapHealthChecks("/health");
+
+app.MapPrometheusScrapingEndpoint();
 
 app.UseCors("Frontend");
 app.UseAuthentication();
