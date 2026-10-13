@@ -320,6 +320,69 @@ public sealed class StreamServiceTests
     }
 
     [Test]
+    public async Task StartStreamByKeyAsync_ShouldBeIdempotent_WhenStreamIsAlreadyActive()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.StartStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        _hlsServiceMock.Verify(
+            service => service.StartTranscodingAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task StartStreamByKeyAsync_ShouldFail_WhenStreamHasAlreadyEnded()
+    {
+        var stream = StreamEntity.Create(
+            Guid.NewGuid(),
+            "Gaming Live",
+            "Gaming stream",
+            "Gaming",
+            null);
+        stream.StartStream();
+        stream.EndStream();
+
+        _repositoryMock
+            .Setup(repository => repository.GetStreamByKeyAsync(stream.StreamKey))
+            .ReturnsAsync(stream);
+
+        var result = await _sut.StartStreamByKeyAsync(
+            stream.StreamKey,
+            CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        _hlsServiceMock.Verify(
+            service => service.StartTranscodingAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+        _repositoryMock.Verify(
+            repository => repository.UpdateStreamAsync(It.IsAny<StreamEntity>()),
+            Times.Never);
+    }
+
+    [Test]
     public async Task EndStreamByKeyAsync_ShouldEndPersistAndStopTranscoding()
     {
         var stream = StreamEntity.Create(

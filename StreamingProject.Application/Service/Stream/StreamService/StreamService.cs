@@ -181,6 +181,25 @@ public class StreamService : IStreamService
                 "Stream not found",
                 null));
 
+        if (stream.EndTime.HasValue)
+        {
+            _logger.LogWarning(
+                "Cannot start already ended stream {StreamId}",
+                stream.Id);
+
+            return Failure.FromError(
+                Error.Validation(
+                    "Stream.AlreadyEnded",
+                    "This stream has already ended",
+                    null));
+        }
+
+        if (stream.StartTime.HasValue)
+        {
+            _logger.LogDebug("Stream {StreamId} is already active", stream.Id);
+            return true;
+        }
+
         var outputDirectory = Path.Combine(
             Directory.GetCurrentDirectory(),
             "wwwroot",
