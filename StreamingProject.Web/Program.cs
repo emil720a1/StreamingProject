@@ -69,9 +69,18 @@ services.AddApiAuthentication(configuration);
     services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
     services.Configure<AuthorizationOptions>(configuration.GetSection(nameof(AuthorizationOptions)));
 
+    var connectionString = configuration.GetConnectionString(nameof(StreamingDbContext));
+    if (!builder.Environment.IsEnvironment("Testing")
+        && string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException(
+            "ConnectionStrings:StreamingDbContext is missing. " +
+            "Run the application through Docker Compose or configure the connection string in appsettings.Development.json.");
+    }
+
     services.AddDbContext<StreamingDbContext>(options =>
     {
-        options.UseNpgsql(configuration.GetConnectionString(nameof(StreamingDbContext)));
+        options.UseNpgsql(connectionString);
     });
 
 services.AddScoped<ISeeder, RoleSeeder>();

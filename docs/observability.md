@@ -24,7 +24,9 @@ The local interfaces are:
 | Grafana | http://localhost:3000 |
 | Loki API | http://localhost:3100 |
 
-The default local Grafana credentials are `admin` / `admin`.
+Grafana credentials are read from `GRAFANA_ADMIN_USER` and
+`GRAFANA_ADMIN_PASSWORD` in your local `.env` file. Do not commit the real
+password. Generate a strong password for local and production environments.
 
 ## Verify metrics
 

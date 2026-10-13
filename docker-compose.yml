@@ -25,7 +25,7 @@ services:
       - "3100:3100"
 
   alloy:
-    image: grafana/alloy:latest
+    image: grafana/alloy:v1.10.2
     container_name: streaming-alloy
     command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
     volumes:
@@ -35,7 +35,7 @@ services:
       - loki
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.5.0
     container_name: streaming-prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -47,11 +47,11 @@ services:
       - "9090:9090"
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.1.1
     container_name: streaming-grafana
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?GRAFANA_ADMIN_USER must be set}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD must be set}
     volumes:
       - grafana-data:/var/lib/grafana
     ports:

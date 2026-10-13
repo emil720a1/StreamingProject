@@ -219,6 +219,15 @@ public class StreamService : IStreamService
         if (stream == null)
             return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
 
+        // RTMP and the owner API can both request stream shutdown. Treat a
+        // repeated shutdown as an idempotent success so lifecycle metrics are
+        // not counted twice.
+        if (stream.EndTime.HasValue)
+        {
+            _logger.LogDebug("Stream {StreamId} was already ended", stream.Id);
+            return true;
+        }
+
         var hlsResult = await _hlsTranscoderService.StopTranscodingAsync(
             streamKey,
             cancellationToken);
@@ -271,6 +280,15 @@ public class StreamService : IStreamService
 
         if (stream.UserId != request.UserId)
             return Failure.FromError(Error.Unauthorized("Stream.Unauthorized", "Cannot end someone else's stream"));
+
+        // The RTMP lifecycle handler may have ended the stream already.
+        // Returning success keeps the endpoint idempotent and prevents
+        // duplicate persistence and metric updates.
+        if (stream.EndTime.HasValue)
+        {
+            _logger.LogDebug("Stream {StreamId} was already ended", stream.Id);
+            return true;
+        }
 
         var hlsResult = await _hlsTranscoderService.StopTranscodingAsync(
             stream.StreamKey,

@@ -69,6 +69,9 @@ dotnet run --project StreamingProject.Web
 ```
 
 The exact HTTP and HTTPS ports are defined by the web project's launch settings and environment configuration.
+When running outside Docker Compose, configure
+`ConnectionStrings:StreamingDbContext` in `StreamingProject.Web/appsettings.Development.json`
+or set the `ConnectionStrings__StreamingDbContext` environment variable first.
 
 ## Docker Compose
 

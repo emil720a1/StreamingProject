@@ -44,7 +44,7 @@ public class StreamingDbContext : IdentityDbContext<UserEntity, RoleEntity, Guid
             typeof(StreamingDbContext).Assembly,
             type => type != typeof(RolePermissionConfiguration));
 
-        modelBuilder.ApplyConfiguration(
-            new RolePermissionConfiguration(_authOptions.Value));
+        new RolePermissionConfiguration(_authOptions.Value)
+            .Configure(modelBuilder.Entity<RolePermissionEntity>());
     }
 }
