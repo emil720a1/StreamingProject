@@ -14,6 +14,7 @@ RUN dotnet publish StreamingProject.Web/StreamingProject.Web.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 

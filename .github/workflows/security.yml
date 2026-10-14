@@ -1,0 +1,129 @@
+name: Security
+
+on:
+  push:
+    branches:
+      - dev
+
+  pull_request:
+    branches:
+      - dev
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  secret-scan:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan repository with Gitleaks
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/repo" \
+            zricethezav/gitleaks:v8.28.0 \
+            detect \
+            --source=/repo \
+            --no-banner \
+            --redact
+
+  dependency-scan:
+    name: Dependency scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Restore .NET dependencies
+        run: dotnet restore StreamingProject.sln
+
+      - name: Scan NuGet dependencies
+        run: |
+          dotnet list StreamingProject.sln package \
+            --vulnerable \
+            --include-transitive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.3"
+          cache: npm
+          cache-dependency-path: streaming-ui/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: streaming-ui
+        run: npm ci
+
+      - name: Scan npm dependencies
+        working-directory: streaming-ui
+        run: npm audit --audit-level=high
+
+  compose-validation:
+    name: Validate Docker Compose
+    runs-on: ubuntu-latest
+
+    env:
+      GRAFANA_ADMIN_USER: ci-admin
+      GRAFANA_ADMIN_PASSWORD: ci-password-for-validation-only
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: docker compose config --quiet
+
+  image-scan:
+    name: Scan Docker images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: |
+          docker build \
+            --file StreamingProject.Web/Dockerfile \
+            --tag streamingproject-backend:security \
+            .
+
+      - name: Build frontend image
+        run: |
+          docker build \
+            --file streaming-ui/Dockerfile \
+            --tag streamingproject-frontend:security \
+            streaming-ui
+
+      - name: Scan backend image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: "streamingproject-backend:security"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "CRITICAL"
+
+      - name: Scan frontend image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: "streamingproject-frontend:security"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "CRITICAL"
