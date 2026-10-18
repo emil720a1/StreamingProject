@@ -20,11 +20,20 @@ RUN apt-get update \
 
 WORKDIR /app
 
-RUN mkdir -p /app/wwwroot/hls
+RUN useradd --create-home --uid 10001 appuser \
+    && mkdir -p \
+    /app/wwwroot/hls \
+    /home/appuser/.aspnet/DataProtection-Keys
 
 COPY --from=build /app/publish .
 
+RUN chown -R appuser:appuser \
+    /app \
+    /home/appuser/.aspnet
+
 ENV ASPNETCORE_URLS=http://+:8080
+
+USER appuser
 
 EXPOSE 8080
 EXPOSE 1935
