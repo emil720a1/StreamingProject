@@ -1,0 +1,51 @@
+groups:
+  - name: streamingproject.availability
+    rules:
+      - alert: StreamingBackendDown
+        expr: up{job="streaming-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: streaming-backend
+        annotations:
+          summary: Streaming backend is down
+          description: Prometheus cannot reach the streaming backend.
+
+
+      - alert: StreamingBackendHighServerErrors
+        expr: |
+          sum(
+            rate(
+              http_server_request_duration_seconds_count{
+                job="streaming-backend",
+                http_response_status_code=~"5.."
+              }[5m]
+            )
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: streaming-backend
+        annotations:
+          summary: Streaming backend has a high 5xx error rate
+          description: The streaming backend is returning more than 0.1 HTTP 5xx responses per second.
+
+      - alert: StreamingBackendHighLatency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (
+              rate(
+                http_server_request_duration_seconds_bucket{
+                  job="streaming-backend"
+                }[5m]
+              )
+            )
+          ) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: streaming-backend
+        annotations:
+          summary: Streaming backend has high HTTP latency
+          description: The 95th percentile HTTP latency is above 1 second for 5 minutes.

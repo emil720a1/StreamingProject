@@ -69,6 +69,14 @@ jobs:
             prom/prometheus:v3.5.0 \
             check config /etc/prometheus/prometheus.yaml
 
+      - name: Validate Prometheus alert rules
+        run: |
+          docker run --rm \
+            -v "$PWD/deploy/observability/prometheus/rules:/etc/prometheus/rules:ro" \
+            --entrypoint promtool \
+            prom/prometheus:v3.5.0 \
+            check rules /etc/prometheus/rules/streamingproject-alerts.yaml
+
       - name: Start observability services
         run: docker compose up -d prometheus loki grafana
 
