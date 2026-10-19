@@ -272,7 +272,7 @@
           "unit": "short",
           "min": 0
         },
-        "overrider": []
+        "overrides": []
       },
       "options": {
         "legend": {
