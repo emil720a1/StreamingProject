@@ -68,13 +68,13 @@ services.AddOpenTelemetry()
         tracing
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
-            .AddSource("StreamingProject.*")
+            .AddSource(StreamingActivitySource.Name)
             .AddOtlpExporter(options =>
             {
                 options.Protocol = OtlpExportProtocol.HttpProtobuf;
                 options.Endpoint = new Uri(
                     configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
-                    ?? "http://localhost:4317");
+                    ?? "http://localhost:4317/v1/traces");
             }));
 
 services.AddSingleton<AuthenticationCookieOptionsFactory>();
