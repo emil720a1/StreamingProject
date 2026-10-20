@@ -9,6 +9,7 @@ using StreamingProject.Application.Service.Stream.StreamRepository;
 using StreamingProject.Contracts.Streams;
 using StreamingProject.Domain;
 using StreamingProject.Domain.Chat;
+using System.Diagnostics;
 using StreamingProject.Domain.Stream;
 using StreamingProject.Domain.Stream.UserStream;
 
@@ -172,14 +173,25 @@ public class StreamService : IStreamService
         string streamKey,
         CancellationToken cancellationToken)
     {
+        using var activity =
+            StreamingActivitySource.Source.StartActivity("Stream.Start");
+
+        activity?.SetTag("stream.operation", "start");
+
         var stream = await _streamRepository.GetStreamByKeyAsync(streamKey);
 
         if (stream == null)
-            return Failure.FromError(
-                Error.NotFound(
-                "Stream.NotFound",
-                "Stream not found",
-                null));
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Stream not found");
+
+           return Failure.FromError(
+               Error.NotFound(
+                   "Stream.NotFound",
+                   "Stream not found",
+                   null));
+        }
+
+        activity?.SetTag("stream.id", stream.Id);
 
         if (stream.EndTime.HasValue)
         {
@@ -233,10 +245,25 @@ public class StreamService : IStreamService
         string streamKey,
         CancellationToken cancellationToken)
     {
+        using var activity =
+            StreamingActivitySource.Source.StartActivity("Stream.End");
+
+        activity?.SetTag("stream.operation", "end");
+
         var stream = await _streamRepository.GetStreamByKeyAsync(streamKey);
 
         if (stream == null)
-            return Failure.FromError(Error.NotFound("Stream.NotFound", "Stream not found", null));
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Stream not found");
+
+            return Failure.FromError(
+                Error.NotFound(
+                    "Stream.NotFound",
+                    "Stream not found",
+                    null));
+        }
+
+        activity?.SetTag("stream.id", stream.Id);
 
         // RTMP and the owner API can both request stream shutdown. Treat a
         // repeated shutdown as an idempotent success so lifecycle metrics are
