@@ -31,8 +31,11 @@ services:
     volumes:
       - ./deploy/observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "12345:12345"
     depends_on:
       - loki
+      - tempo
 
   prometheus:
     image: prom/prometheus:v3.5.0
@@ -78,6 +81,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: "http://+:8080"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces"
       DatabaseInitialization__Enabled: "true"
       ConnectionStrings__StreamingDbContext: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       JwtOptions__SecretKey: ${JWT_SECRET_KEY}
@@ -134,9 +138,23 @@ services:
       frontend:
         condition: service_healthy
 
+  tempo:
+    image: grafana/tempo:2.8.2
+    container_name: streaming-tempo
+    command:
+      - "-config.file=/etc/tempo/tempo.yaml"
+    volumes:
+      - "./deploy/observability/tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro"
+      - tempo-data:/var/tempo
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+      - "4318:4318"
+
 volumes:
   postgres-data:
   dataprotection-keys:
   loki-data:
   prometheus-data:
   grafana-data:
+  tempo-data:

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Exporter;
 using Shared.Common;
 using StreamingProject.Application.Observability;
 using StreamingProject.Presenters.Authentication;
@@ -61,7 +63,19 @@ services.AddOpenTelemetry()
             .AddHttpClientInstrumentation()
             .AddRuntimeInstrumentation()
             .AddPrometheusExporter()
-            .AddMeter(StreamingMetrics.MeterName));
+            .AddMeter(StreamingMetrics.MeterName))
+    .WithTracing(tracing =>
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddSource("StreamingProject.*")
+            .AddOtlpExporter(options =>
+            {
+                options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                options.Endpoint = new Uri(
+                    configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+                    ?? "http://localhost:4317");
+            }));
 
 services.AddSingleton<AuthenticationCookieOptionsFactory>();
 services.AddApiAuthentication(configuration);
