@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{07C2787E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.LoadTests", "tools\StreamingProject.LoadTests\StreamingProject.LoadTests.csproj", "{6444990B-3E81-49B9-BDC5-4A8F5158C3AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingProject.HttpSignalRLoadTests", "tools\StreamingProject.HttpSignalRLoadTests\StreamingProject.HttpSignalRLoadTests.csproj", "{51E4207E-72D4-4AA9-BC45-4D37347810D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,6 +156,18 @@ Global
 		{6444990B-3E81-49B9-BDC5-4A8F5158C3AE}.Release|x64.Build.0 = Release|Any CPU
 		{6444990B-3E81-49B9-BDC5-4A8F5158C3AE}.Release|x86.ActiveCfg = Release|Any CPU
 		{6444990B-3E81-49B9-BDC5-4A8F5158C3AE}.Release|x86.Build.0 = Release|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Debug|x64.Build.0 = Debug|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Debug|x86.Build.0 = Debug|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Release|x64.ActiveCfg = Release|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Release|x64.Build.0 = Release|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Release|x86.ActiveCfg = Release|Any CPU
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,5 +182,6 @@ Global
 		{D6DA168E-4216-4B52-BACD-6C64A6D7EAEF} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
 		{602E2989-F04B-4FCC-A05B-FEA216D6265C} = {7758B04D-87BE-49EE-89AF-A41909D349C3}
 		{6444990B-3E81-49B9-BDC5-4A8F5158C3AE} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{51E4207E-72D4-4AA9-BC45-4D37347810D9} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 	EndGlobalSection
 EndGlobal
