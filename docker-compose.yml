@@ -102,6 +102,16 @@ services:
       postgres:
         condition: service_healthy
 
+  load-tester:
+    build:
+      context: .
+      dockerfile: tools/StreamingProject.LoadTests/Dockerfile
+    profiles:
+      - loadtest
+    depends_on:
+      backend:
+        condition: service_healthy
+
   frontend:
     build:
       context: ./streaming-ui
