@@ -2,14 +2,14 @@ namespace StreamingProject.LoadTests;
 
 public sealed record LoadTestOptions(
     string Endpoint,
-    string StreamKey,
+    IReadOnlyList<string> StreamKeys,
     int DurationSeconds,
     int Clients)
 {
     public static LoadTestOptions Parse(string[] args)
     {
         var endpoint = "rtmp://backend:1935/live";
-        var streamKey = string.Empty;
+        var streamKeys = Array.Empty<string>();
         var durationSeconds = 30;
         var clients = 1;
 
@@ -21,8 +21,13 @@ public sealed record LoadTestOptions(
                     endpoint = args[++index];
                     break;
 
+                case "--stream-keys":
                 case "--stream-key":
-                    streamKey = args[++index];
+                    streamKeys = args[++index]
+                        .Split(
+                            ',',
+                            StringSplitOptions.RemoveEmptyEntries |
+                            StringSplitOptions.TrimEntries);
                     break;
 
                 case "--duration":
@@ -39,10 +44,10 @@ public sealed record LoadTestOptions(
             }
         }
 
-        if (string.IsNullOrWhiteSpace(streamKey))
+        if (streamKeys.Length == 0)
         {
             throw new ArgumentException(
-                "The --stream-key argument is required.");
+                "The --stream-keys argument is required.");
         }
 
         if (durationSeconds <= 0)
@@ -57,9 +62,15 @@ public sealed record LoadTestOptions(
                 "Clients must be greater than zero.");
         }
 
+        if (clients > streamKeys.Length)
+        {
+            throw new ArgumentException(
+                "The number of clients cannot exceed the number of stream keys.");
+        }
+
         return new LoadTestOptions(
             endpoint,
-            streamKey,
+            streamKeys,
             durationSeconds,
             clients);
     }
