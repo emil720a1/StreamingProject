@@ -112,6 +112,16 @@ services:
       backend:
         condition: service_healthy
 
+  http-signalr-load-tester:
+    build:
+      context: .
+      dockerfile: tools/StreamingProject.HttpSignalRLoadTests/Dockerfile
+    profiles:
+      - http-signalr-loadtest
+    depends_on:
+      backend:
+        condition: service_healthy
+
   frontend:
     build:
       context: ./streaming-ui
