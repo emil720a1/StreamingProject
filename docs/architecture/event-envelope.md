@@ -241,9 +241,9 @@ The detailed Outbox implementation is a separate task (#84). This document only 
 - [x] Producers and consumers are listed.
 - [x] Security rules are documented.
 - [x] Versioning and idempotency rules are documented.
-- [ ] Event contract classes are implemented.
+- [x] Event contract classes are implemented.
 - [ ] Outbox publication is implemented in issue #84.
 
 ## Next step
 
-Implement the shared event contract classes and tests, then design the Outbox flow in Issue #84.
+The event contract classes and tests are implemented. The next step is to design the Outbox flow in Issue #84.
