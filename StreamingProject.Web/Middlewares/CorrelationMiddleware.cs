@@ -1,3 +1,5 @@
+using Shared.Correlation;
+
 namespace StreamProject.Web.Middlewares;
 
 public sealed class CorrelationIdMiddleware
@@ -6,13 +8,16 @@ public sealed class CorrelationIdMiddleware
 
     private readonly RequestDelegate _next;
     private readonly ILogger<CorrelationIdMiddleware> _logger;
+    private readonly ICorrelationContext _correlationContext;
 
     public CorrelationIdMiddleware(
         RequestDelegate next,
-        ILogger<CorrelationIdMiddleware> logger)
+        ILogger<CorrelationIdMiddleware> logger,
+        ICorrelationContext correlationContext)
     {
         _next = next;
         _logger = logger;
+        _correlationContext = correlationContext;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -27,6 +32,8 @@ public sealed class CorrelationIdMiddleware
         }
 
         context.Response.Headers[HeaderName] = correlationId;
+
+        _correlationContext.CorrelationId = correlationId;
 
         using (_logger.BeginScope(new Dictionary<string, object>
                {

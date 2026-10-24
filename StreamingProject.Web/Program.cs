@@ -22,6 +22,7 @@ using StreamingProject.Repository.Repositories.RoleRepositories;
 using StreamProject.Web;
 using StreamProject.Web.Extensions;
 using StreamProject.Web.Middlewares;
+using Shared.Correlation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,8 @@ else
 
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+services.AddScoped<ICorrelationContext, CorrelationContext>();
 
 services.AddCors(options =>
 {
