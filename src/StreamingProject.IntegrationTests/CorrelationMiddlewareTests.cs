@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
+using Shared.Correlation;
 using StreamProject.Web.Middlewares;
 
 namespace StreamingProject.IntegrationTests;
@@ -18,15 +19,17 @@ public sealed class CorrelationMiddlewareTests
         context.Request.Headers[HeaderName] = correlationId;
 
         var nextCalled = false;
+        var correlationContext = new CorrelationContext();
         var middleware = CreateMiddleware(_ =>
         {
             nextCalled = true;
             return Task.CompletedTask;
-        });
+        }, correlationContext);
 
         await middleware.InvokeAsync(context);
 
         context.Response.Headers[HeaderName].ToString().Should().Be(correlationId);
+        correlationContext.CorrelationId.Should().Be(correlationId);
         nextCalled.Should().BeTrue();
     }
 
@@ -34,7 +37,8 @@ public sealed class CorrelationMiddlewareTests
     public async Task InvokeAsync_ShouldGenerateCorrelationId_WhenHeaderIsMissing()
     {
         var context = new DefaultHttpContext();
-        var middleware = CreateMiddleware(_ => Task.CompletedTask);
+        var correlationContext = new CorrelationContext();
+        var middleware = CreateMiddleware(_ => Task.CompletedTask, correlationContext);
 
         await middleware.InvokeAsync(context);
 
@@ -43,6 +47,7 @@ public sealed class CorrelationMiddlewareTests
         correlationId.Should().NotBeNullOrWhiteSpace();
         correlationId.Should().HaveLength(32);
         Guid.TryParseExact(correlationId, "N", out _).Should().BeTrue();
+        correlationContext.CorrelationId.Should().Be(correlationId);
     }
 
     [Test]
@@ -50,7 +55,8 @@ public sealed class CorrelationMiddlewareTests
     {
         var context = new DefaultHttpContext();
         context.Request.Headers[HeaderName] = new string('a', 129);
-        var middleware = CreateMiddleware(_ => Task.CompletedTask);
+        var correlationContext = new CorrelationContext();
+        var middleware = CreateMiddleware(_ => Task.CompletedTask, correlationContext);
 
         await middleware.InvokeAsync(context);
 
@@ -58,6 +64,7 @@ public sealed class CorrelationMiddlewareTests
 
         correlationId.Should().HaveLength(32);
         Guid.TryParseExact(correlationId, "N", out _).Should().BeTrue();
+        correlationContext.CorrelationId.Should().Be(correlationId);
     }
 
     [Test]
@@ -65,11 +72,12 @@ public sealed class CorrelationMiddlewareTests
     {
         var context = new DefaultHttpContext();
         var nextCalls = 0;
+        var correlationContext = new CorrelationContext();
         var middleware = CreateMiddleware(_ =>
         {
             nextCalls++;
             return Task.CompletedTask;
-        });
+        }, correlationContext);
 
         await middleware.InvokeAsync(context);
 
@@ -77,10 +85,12 @@ public sealed class CorrelationMiddlewareTests
     }
 
     private static CorrelationIdMiddleware CreateMiddleware(
-        RequestDelegate next)
+        RequestDelegate next,
+        ICorrelationContext correlationContext)
     {
         return new CorrelationIdMiddleware(
             next,
-            NullLogger<CorrelationIdMiddleware>.Instance);
+            NullLogger<CorrelationIdMiddleware>.Instance,
+            correlationContext);
     }
 }
